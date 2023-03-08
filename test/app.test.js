@@ -1,10 +1,17 @@
 require('dotenv').config();
 const assert = require('assert');
 const { describe } = require('mocha');
+
+const chai = require('chai');
+const chaiHTTP = require('chai-http');
+const should = chai.should();
+chai.use(chaiHTTP);
+
 var expect  = require("chai").expect;
 var request = require("request");
+const app = require('../dist/index.js')
 
-var url = `${process.env.HOST}${process.env.PORT}/`
+var url = `${process.env.HOST}:${process.env.PORT}/`
 
 describe('App Initialization', () => {
     before(() => {
@@ -16,10 +23,13 @@ describe('App Initialization', () => {
 
     describe(`Server Starts on ${url}`, () => {
         
-        it('returns status 200', () => {
-            request(url, (err, res, body) => {
-                expect(res.statusCode).to.equal(200);
-            })
+        it('returns status 200', (done) => {
+            chai.request(app)
+                .get('/')
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    done();
+                });
         })
     })
 })

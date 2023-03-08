@@ -1,0 +1,14 @@
+{
+  "name": "spotify_app",
+  "version": "1.0.0",
+  "description": "App that connects to spotify API to do enable OSC members access to music",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

@@ -32,7 +32,7 @@ app.use('/', (req: any, res: any) => {
 })
 
 app.listen(port, () => {
-    console.log(`Listening on ${host}:${port}`);
+    console.log(`Listening on http://${host}:${port}`);
 });
 
 

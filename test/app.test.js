@@ -9,9 +9,9 @@ chai.use(chaiHTTP);
 
 var expect  = require("chai").expect;
 var request = require("request");
-const app = require('../dist/index.js')
 
-var url = `${process.env.HOST}:${process.env.PORT}/`
+
+var url = `http://${process.env.HOST}:${process.env.PORT}`
 
 describe('App Initialization', () => {
     before(() => {
@@ -19,17 +19,15 @@ describe('App Initialization', () => {
     });
     after(() => {
         console.log(`\n${'='.repeat(5)}\tTest Suite Finished\t${'='.repeat(5)}`);
-    })
+    });
 
-    describe(`Server Starts on ${url}`, () => {
+    describe(`Server running on ${url}`, () => {
         
         it('returns status 200', (done) => {
-            chai.request(app)
-                .get('/')
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    done();
-                });
-        })
-    })
-})
+            request(url, (err, res, body) => {
+                expect(res.statusCode).to.equal(200);
+                done();
+            });
+        });
+    });
+});

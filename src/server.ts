@@ -31,11 +31,7 @@ app.use('/', (req: any, res: any) => {
     res.send('<h1>App Works</h1>');
 })
 
-// app.on('SIGINT', () => {
-//     // do all the cleanup, close connections, etc
-//     console.log("closing down...");
-// })
-module.exports = app.listen(port, () => {
+app.listen(port, () => {
     console.log(`Listening on ${host}:${port}`);
 });
 

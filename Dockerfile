@@ -6,7 +6,7 @@ FROM node:16.13.1-alpine3.14
 WORKDIR /usr/src/app
 
 # Copies package.json, package-lock.json, tsconfig.json, .env to the root of WORKDIR in Docker image
-COPY ["package.json", "tsconfig.json", ".env", "./"]
+COPY ["package.json", "tsconfig.json", "./"]
 
 # Copies everything in the local src directory to Docker WORKDIR/src
 COPY ./src ./src

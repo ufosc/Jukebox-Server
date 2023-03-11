@@ -25,12 +25,12 @@ In order to properly set up this project on your computer you only need Docker D
 
 ### 1. Git Clone
 Once they are installed, run the following command in terminal to pull the code from GitHub:
-```
-git clone https://github.com/IkeHunter/Jukebox.git
+```console
+$ git clone https://github.com/IkeHunter/Jukebox.git
 ```
 Then navigate to that new folder (make sure you are in the project directory)
-```
-cd Jukebox
+```console
+$ cd Jukebox
 ```
 ### 2. Configure the project
 You will need to create the environment variables and any other private variables (secrets) the project uses, you can easily do so with this command which will walk you through the steps:  
@@ -83,8 +83,40 @@ npm run playground
 ```
 
 ## Tutorial
-*Coming soon!*  
+### Using Docker
+[...Intro here...]
 
+```
+docker-compose up
+```
+This runs the services defined in the docker-compose.yml file  
+
+```
+docker-compose run [command] [service] [command]
+```
+This runs the container and overrides the command specified in the `Dockerfile` with the `CMD` label. You can view the docs here: [docs.docker.com](https://docs.docker.com/engine/reference/commandline/compose_run/). Common uses are as follows: (note: do not copy $ sign)  
+```console
+# Run playground in docker
+$ docker-compose run --rm api sh -c "npm run playground"
+
+# Run Tests
+$ docker-compose run --rm api sh -c "npm install ; npm run test" 
+
+# Run specific Test
+$ docker-compose run --rm api sh -c "npx mocha ; npm run build ; mocha --grep 'returns status 200'"
+```
+Flags and Commands:
+- --rm: removes the temporary container when process is done, this is important because you don't want the temporary container persisting
+- api: this is the service to be run. Additionally, you could run other services defined in docker-compose.yml
+- sh -c: this runs an instance of the shell and passes the command in quotations
+- Commands in quotes: 
+    - "npm run playground": this runs the playground server inside a fresh docker container
+    - "npm install ; npm run test": this runs the test suite inside a fresh container. This will fail since the server is not running
+    - "npx mocha ; npm run build ; mocha --grep 'returns status 200'": this runs three commands separated by colons to install mocha, build the dist files, and run a specific mocha test using the --grep flag to select which test (defined using it())
+
+
+
+## Resources
 Helpful websites:  
 
 setup docker, node, postgres, typescript:   

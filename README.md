@@ -114,6 +114,8 @@ Flags and Commands:
     - "npm install ; npm run test": this runs the test suite inside a fresh container. This will fail since the server is not running
     - "npx mocha ; npm run build ; mocha --grep 'returns status 200'": this runs three commands separated by colons to install mocha, build the dist files, and run a specific mocha test using the --grep flag to select which test (defined using it())
 
+## Spotify Resources
+https://developer.spotify.com/documentation/general/guides/authorization/scopes/   
 
 
 ## Resources

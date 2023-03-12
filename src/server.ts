@@ -1,4 +1,7 @@
 const express = require('express');
+var cookieParser = require('cookie-parser');
+
+const mainRoutes = require('./routes/routes');
 require('dotenv').config();
 
 const env   = process.env;
@@ -27,12 +30,11 @@ connectDB();
 
 const app = express();
 
-app.use('/', (req: any, res: any) => {
-    res.send('<h1>App Works</h1>');
-})
+app.use(mainRoutes);
+app.use(cookieParser());
 
 app.listen(port, () => {
-    console.log(`Listening on http://${host}:${port}`);
+    console.log(`Listening on http://${(host=='127.0.0.1') ? 'localhost' : host}:${port}`);
 });
 
 

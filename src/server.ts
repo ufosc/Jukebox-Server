@@ -1,5 +1,7 @@
-const express = require('express');
-var cookieParser = require('cookie-parser');
+const express       = require('express');
+var cookieParser    = require('cookie-parser');
+const swaggerUi     = require('swagger-ui-express')
+const swaggerFile   = require('./swagger_output.json')
 
 const mainRoutes = require('./routes/routes');
 require('dotenv').config();
@@ -32,6 +34,7 @@ const app = express();
 
 app.use(mainRoutes);
 app.use(cookieParser());
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 
 app.listen(port, () => {
     console.log(`Listening on http://${(host=='127.0.0.1') ? 'localhost' : host}:${port}`);

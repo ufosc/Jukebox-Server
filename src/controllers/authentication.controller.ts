@@ -28,12 +28,25 @@ var generateRandomString = function (length: number) {
 };
 
 exports.getSpotifyCreds = (req: any, res: any, next: any) => {
+  /**
+   * #swagger.tags = ['Authentication']
+   * #swagger.summary = "Log into spotify"
+   * #swagger.description = "This endpoint redirects to spotify to authenticate and return access token"
+   */
+
+
   var state = generateRandomString(16);
   res.cookie(stateKey, state);
 
   // your application requests authorization
   var scope = "user-read-private user-read-email";
   console.log("pre state: " + state);
+  /**
+    #swagger.responses[301] = {
+      description: 'This is an example return value if spotify successfully redirects to /spotify-login-callback, which redirects to /spotify-token',
+      schema: { $ref: '#/definitions/SpotifyAuthSuccess' }
+    }
+  */
   res.redirect(
     "https://accounts.spotify.com/authorize?" +
       querystring.stringify({
@@ -78,6 +91,7 @@ exports.SpotifyLoginCallback = (req: any, res: any, next: any) => {
     };
 
     request.post(authOptions, (error: any, response: any, body: any) => {
+      // #swagger.ignore = true
       if (!error && response.statusCode === 200) {
         var access_token = body.access_token,
           refresh_token = body.refresh_token;
@@ -114,6 +128,7 @@ exports.SpotifyLoginCallback = (req: any, res: any, next: any) => {
 };
 
 exports.SpotifyLoginToken = (req: any, res: any, next: any) => {
+    // #swagger.ignore = true
     var access_token = req.query.access_token || null;
     var refresh_token = req.query.access_token || null;
     var err = req.query.err || null;

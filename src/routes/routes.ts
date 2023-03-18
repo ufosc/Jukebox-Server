@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const mainController = require('../controllers/main.controller');
-const spotifyController = require('../controllers/spotify.controller');
+const spotifyController = require('../controllers/authentication.controller');
 
 /** Primary Routes **/
 router.get('/', mainController.getIndex);

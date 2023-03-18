@@ -5,13 +5,13 @@ services:
     container_name: api
     restart: always
     build: .
-    ports: 
+    ports:
       - ${PORT}:${PORT}
-    # depends_on:
-    #   - db
+    depends_on:
+      - db
     volumes:
       - .:/usr/src/app
-  
+
   db:
     container_name: postgres
     image: postgres
@@ -22,6 +22,6 @@ services:
     environment:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
-    
+
 volumes:
   data: {}

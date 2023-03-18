@@ -1,9 +1,9 @@
+/*====== Authentication into Spotify =======*/
 var querystring = require("querystring");
 var cookieParser = require("cookie-parser");
 var request = require("request"); // "Request" library
 var fs = require('fs');
 require("dotenv").config();
-// const env_file = require('../../.env');
 
 var client_id = process.env.SP_ID; // Your client id
 var client_secret = process.env.SP_SECRET; // Your secret

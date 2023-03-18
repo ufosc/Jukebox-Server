@@ -14,82 +14,146 @@ Description coming soon ...
 
 
 
-## Setup
+## Project Prerequisites
 
-In order to properly set up this project on your computer you only need Docker Desktop, though it is recommended that you also have Node.js installed.
+In order to properly set up this project on your computer it is recommended that you have both Docker and Node.js installed on your computer, but technically you only need Docker. Here are the links to both installation packages:
 > Download Docker: [Docker.com](https://www.docker.com/products/docker-desktop/)  
 > Docker Tutorial: [FreeCodeCamp.org](https://www.freecodecamp.org/news/a-beginners-guide-to-docker-how-to-create-your-first-docker-application-cc03de9b639f/  )
 
 > Download Node.js: [Nodejs.org](https://nodejs.org/en/)  
 > Node.js Tutorial: [PluralSight.com](https://www.pluralsight.com/guides/getting-started-with-nodejs)  
 
-### 1. Git Clone
-Once they are installed, run the following command in terminal to pull the code from GitHub:
-```sh
+<br>
+
+## Project Quick Setup
+1. Create Spotify Developer app [here](https://developer.spotify.com/documentation/general/guides/authorization/app-settings/). Save **Client ID** and **Client Secret**, set Redirect URI to `http://localhost:3000/spotify-login-callback`.
+2. Set up project:
+```sh  
 git clone https://github.com/IkeHunter/Jukebox.git
-```
-Then navigate to that new folder (make sure you are in the project directory)
-```sh
+
 cd Jukebox
-```
-### 2. Configure the project
-You will need to create the environment variables and any other private variables (secrets) the project uses, you can easily do so with this command which will walk you through the steps:  
-```sh
-npm run config
-```
-This will create a .env file that contains the necessary environment variables for the server, database, and any other applications that are used. It also creates a new directory called `/Playground` which is described below.
-### 3. Build Docker
-The next command builds the docker containers:  
-```sh
-docker build .
-```
-### 4. Run Docker
-After the docker containers are built, you simply need to run them with this command to activate the server and database:  
-```sh
-docker-compose up
+
+docker build .  # builds docker image
+
+docker-compose run --rm api sh -c "npm run config"  # (optional) creates .env file, could do this manually
+
+docker-compose up  # runs project on port 3000
+
 ```
 
-[... describe accessing localhost]
+3. Authenticate Spotify account by going to http://localhost:3000/login. Enter Access Token into the .env file.
+
+<br>
+
+## Project Setup `--verbose`
+
+Below is a more in-depth explanation of the setup instructions provided in the quick setup, and is recommended if you are a beginner, encountering errors, would like to learn more about setting up Spotify, or are just plain confused (which is understandable). The guide below will take you through the 3 steps of setting up the project:   
+1. Creating the Spotify App
+2. Setting up the Project
+3. Getting the Access Token
+
+The steps are the same ones explained in spotify's documentation, but are geared towards this project since it already implements their `login` and `callback` endpoints described in their docs.
+
+### 1. Create spotify app
+A Spotify app is essentially a spotify developer account where you can access their api and other developer services. After you get access to the dashboard you can create additional apps in the future for other personal projects.
+
+To create an app refer to their guide: [Developer.Spotify.com](https://developer.spotify.com/documentation/general/guides/authorization/app-settings/). During setup, here are the recommended settings:
+- The name can be anything, I chose OSC Jukebox
+- For Website, enter `http://localhost:3000` as this is what they will test for when you access their api
+- For Redirect URI enter `http://localhost:3000/spotify-login-callback`, this is the redirect url that spotify will send you to once you are authenticated. This is also the url will give you your spotify auth token.
+- Ignore Bundle IDs and Android Packages
+
+### 2. Setting up the project  
+This next step involves starting up the project. If you are more comfortable with Docker or want to learn Docker, you may opt for the first method; but if you don't want to deal with docker more than you already have to - then select the second.  
+<br>
+
+#### Method A: With Docker
+
+If you prefer to work with docker, and would like to keep all of the node modules purely inside the docker container, you simple have the run the two commands below.
+
+```sh
+docker build .
+
+docker-compose run --rm api sh -c "npm run config"
+```
+
+The Docker build command automatically runs `npm install` inside the container, initializing the project. The `npm run config` command that is passed into the second Docker command sets up the environment variables. If you prefer, you could manually create the environment variables, but this must be done before you run `docker-compose up`.   
+<br>
+#### Method B: With Node
+
+If you prefer to stay away from Docker and instead rely on Node, you can use the commands below.
+
+```sh
+npm install # install node packages
+
+npm run config  # configure environment variables
+
+docker build .  # builds docker image
+
+docker-compose up  # runs docker container
+```
+
+This does the same thing as Method 1, except it creates all the necessary files in your local directory first and then transfers them to the Docker container - creating two instances of these files. 
+
+These commands are more straightforward than the docker commands, and are easier for those not versed in Docker, but they have more of an impact on storage.
+
+### 3. Getting The Spotify Auth Code
+Once you have the Spotify App and the project set up, the last step is to authenticate your account directly with Spotify. To do so, you must visit http://localhost:3000/login. This will redirect you to the `/spotify-token` route which will display your new **access token** in JSON format.
+
+Take the Access Token and inter it into the `.env` file at the root of the project in the variable named `SP_ACCESS`. This will allow you to access all of Spotify's API routes.  
+
+In the project, `/login` has implemented Spotify's access token authorization code they provide on GitHub, you can look over it [here](https://github.com/spotify/web-api-examples/blob/master/authentication/authorization_code/app.js).
+<br>
 
 ## Developing 
 There are a host of commands built in to this project to make certain tasks easier and more streamlined. Since this project is contained within Docker, running the Node server and Test suite may not be the most intuitive, however. That and more is explained below.
+### Environment Setup
+The .env file must contain the following v
 
 ### *Running the server*
-The containers defined in docker-compose.yml run automatically with docker-compose, but this will attach the Node server to the API container - essentially making the container unable to run without Node running. To get around this you can either use docker instead of docker-compose, or just restart the docker container when you need to hard restart the server (it restarts automatically with nodemon).
+
+You can use the following command to run the Node.js server with Nodemon:
+```sh
+docker-compose up
+```
+The containers defined in `docker-compose.yml` run automatically with docker-compose, which includes starting up the database and running the `npm run dev` command which compiles the TypeScript code into JS code inside the `/dist` directory (using `npm build`), then it runs the server with Nodemon. 
 
 ### *Running Tests*
-In order to run tests with the docker-compose containers, you first need to access the container shell in a new terminal window with the following command:  
+In order to run tests with the docker-compose containers, the containers need to be running. In order to access the shell of the running container, you must use Docker's `exec [option] [container] [command]` commmand. Once the shell is opened, you can go ahead and run the test script defined in `package.json`.
 <br>
 **Open Container Shell**
 ```sh
 docker exec -it api sh
+
+npm test
 ```
 
-After the container shell is opened, you are able to run tests on the active Node server. Node: the server must be running while tests are performing. To run the `mocha` test suite, use the following command:  
-<br>
-**Run Unit Tests**
-```sh
-npm test
-```  
+This will run the Mocha tests defined inside the `test/` directory.
 
 ### *Playground*
 Sometimes you may want to test a bit of code or a feature without effecting the main project, you can do so inside the `/playground` directory created during configuration. This directory is hidden from git, so anything added to this folder will be excluded from commits, version control, and GitHub. 
 
-This directory contains a simple `server.js` file that can be run using the following command:  
-<br>
-**Open Container Shell**
+This directory contains a simple `server.js` file that can be run using a script defined in `package.json`. You can either run this server inside or outside of docker.
+
+To run it with Docker:
+```sh
+docker-compose run --rm api sh -c "npm run playground"
+```
+
+To run it locally:
 ```sh
 npm run playground
 ```
 
 ## Tutorial
+
 ### Using Docker
-[...Intro here...]
+This runs the services defined in the docker-compose.yml file  
 
 ```sh
 docker-compose up
 ```
-This runs the services defined in the docker-compose.yml file  
+Instead of using the `up` command, you could also use the `run` command which is structured like this:
 
 ```sh
 docker-compose run [command] [service] [command]
@@ -110,13 +174,16 @@ Flags and Commands:
 - api: this is the service to be run. Additionally, you could run other services defined in docker-compose.yml
 - sh -c: this runs an instance of the shell and passes the command in quotations
 - Commands in quotes: 
-    - "npm run playground": this runs the playground server inside a fresh docker container
-    - "npm install ; npm run test": this runs the test suite inside a fresh container. This will fail since the server is not running
-    - "npx mocha ; npm run build ; mocha --grep 'returns status 200'": this runs three commands separated by colons to install mocha, build the dist files, and run a specific mocha test using the --grep flag to select which test (defined using it())
+    - "`npm run playground`": this runs the playground server inside a fresh docker container
+    - "`npm install ; npm run test`": this runs the test suite inside a fresh container. This will fail since the server is not running
+    - "`npx mocha ; npm run build ; mocha --grep 'returns status 200'`": this runs three commands separated by colons to install mocha, build the dist files, and run a specific mocha test using the --grep flag to select which test (defined using it())
 
 ## Spotify Resources
+API guide:  
 https://developer.spotify.com/documentation/general/guides/authorization/scopes/   
 
+Setting up their Access Token code:  
+https://github.com/spotify/web-api-examples/blob/master/authentication/authorization_code/app.js
 
 ## Resources
 Helpful websites:  

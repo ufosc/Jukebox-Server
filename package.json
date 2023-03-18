@@ -10,8 +10,7 @@
     "build": "tsc",
     "config": "node utils/config.js",
     "playground": "nodemon playground/server.js",
-    "docker-cli": "docker exec -it api sh",
-    "clean": "docker-compose down"
+    "docker-cli": "docker exec -it api sh"
   },
   "author": "",
   "license": "ISC",

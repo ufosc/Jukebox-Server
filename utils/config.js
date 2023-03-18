@@ -13,7 +13,7 @@ console.log(`${'='.repeat(5)} Running Project Configuration ${'='.repeat(5)}\n`)
 const main = () => {
     
     return new Promise(async (resolve) => {
-        console.log(`Checking prereqs${'.'.repeat(5)}\n`);
+        console.log(`Checking Node & Docker Versions${'.'.repeat(5)}\n`);
         const { stdout, stderr } = await exec("node -v");
 
         if (stderr) {
@@ -49,6 +49,9 @@ const main = () => {
             const db_name = prompt('DB_NAME: (db_name) ', 'db_name');
             const db_password = prompt('DB_PASSWORD: (password) ', 'password');
             const db_port = prompt('DB_PORT: (5432) ', '5432');
+            const sp_id = prompt('SP_ID: (null) ', 'null');
+            const sp_secret = prompt('SP_SECRET: (null) ', 'null');
+            const sp_uri = prompt('SP_URI: (http://localhost:3000/spotify-login-callback) ', 'http://localhost:3000/spotify-login-callback')
         
             let lines = {
                 "# Node": "",
@@ -59,7 +62,14 @@ const main = () => {
                 DB_HOST: db_host,
                 DB_NAME: db_name,
                 DB_PASSWORD: db_password,
-                DB_PORT: db_port
+                DB_PORT: db_port,
+                "# Spotify": "",
+                SP_ID: sp_id,
+                SP_SECRET: sp_secret,
+                SP_URI: sp_uri,
+                SP_TOKEN: 'null',
+                SP_REFRESH: 'null'
+
             }
 
             fs.writeFileSync(env_file, "# Environment Variables\n");
@@ -93,7 +103,9 @@ const main = () => {
             console.log(err);
         }
         
-    }) 
+    }).then(() => {
+        console.log(`${'='.repeat(5)} Project Configuration Finished ${'='.repeat(5)}\n`);
+    })
     
 };
 

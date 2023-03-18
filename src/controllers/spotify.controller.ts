@@ -1,7 +1,9 @@
 var querystring = require("querystring");
 var cookieParser = require("cookie-parser");
 var request = require("request"); // "Request" library
+var fs = require('fs');
 require("dotenv").config();
+// const env_file = require('../../.env');
 
 var client_id = process.env.SP_ID; // Your client id
 var client_secret = process.env.SP_SECRET; // Your secret
@@ -119,15 +121,15 @@ exports.SpotifyLoginToken = (req: any, res: any, next: any) => {
 
     if (err == null) {
         res.json({
-        success: true,
-        access_token: access_token,
-        refresh_token: refresh_token,
-        home: root
+            success: true,
+            access_token: access_token,
+            refresh_token: refresh_token,
+            home: root
         });
     } else {
         res.json({
-        success: false,
-        message: err,
+            success: false,
+            message: err,
         });
     }
 };

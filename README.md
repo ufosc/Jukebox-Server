@@ -24,6 +24,10 @@ Description coming soon ...
     - [2. Setting up the project](#2-setting-up-the-project)
     - [3. Getting The Spotify Auth Code](#3-getting-the-spotify-auth-code)
 - [Developing](#developing)
+    - [Environment Setup](#environment-setup)
+    - [Running the server](#running-the-server)
+    - [Running Tests](#running-tests)
+    - [Playground](#playground)
 - [Tutorial](#tutorial)
     - [Using Docker](#using-docker)
     - [Using Swagger and API auto documentation](#using-swagger-and-api-auto-documentation)
@@ -127,7 +131,7 @@ There are a host of commands built in to this project to make certain tasks easi
 ### Environment Setup
 An example .env file can be seen in the utils file.
 
-### *Running the server*
+### Running the server
 
 You can use the following command to run the Node.js server with Nodemon:
 ```sh
@@ -135,7 +139,7 @@ docker-compose up
 ```
 The containers defined in `docker-compose.yml` run automatically with docker-compose, which includes starting up the database and running the `npm run dev` command which compiles the TypeScript code into JS code inside the `/dist` directory (using `npm build`), then it runs the server with Nodemon.
 
-### *Running Tests*
+### Running Tests
 In order to run tests with the docker-compose containers, the containers need to be running. In order to access the shell of the running container, you must use Docker's `exec [option] [container] [command]` commmand. Once the shell is opened, you can go ahead and run the test script defined in `package.json`.
 <br>
 **Open Container Shell**
@@ -152,7 +156,7 @@ You can also use this docker-compose command to run tests in a running container
 docker-compose exec api sh -c "npm test"
 ```
 
-### *Playground*
+### Playground
 Sometimes you may want to test a bit of code or a feature without effecting the main project, you can do so inside the `/playground` directory created during configuration. This directory is hidden from git, so anything added to this folder will be excluded from commits, version control, and GitHub.
 
 This directory contains a simple `server.js` file that can be run using a script defined in `package.json`. You can either run this server inside or outside of docker.

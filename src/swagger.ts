@@ -45,7 +45,7 @@ const doc = {
     }],
     definitions: {
         SpotifyTokenExpired: {
-            status: 401,
+            success: false,
             message: "Spotify access token expired",
             login: "http://localhost:3000/login"
         },
@@ -54,6 +54,11 @@ const doc = {
             access_token: '[access_token]',
             refresh_token: '[refresh_token]',
             home: 'root'
+        },
+        SpotifySearchResult: {
+            name: "Dancing Queen",
+            uri: "spotify:track:0GjEhVFGZW8afUYGChu3Rr",
+            link: "https://open.spotify.com/track/0GjEhVFGZW8afUYGChu3Rr"
         },
         SpotifyTestResponse: {
             external_urls : {

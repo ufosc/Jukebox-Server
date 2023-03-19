@@ -16,6 +16,7 @@ router.get('/spotify-token', authController.SpotifyLoginToken);
 
 /** Spotify Communication **/
 router.get('/spotify', spotifyController.SpotifyTest);
+router.get('/spotify/search', spotifyController.SpotifySearch);
 
 
 module.exports = router;

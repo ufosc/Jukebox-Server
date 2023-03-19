@@ -2,16 +2,17 @@ var assert        = require('assert');
 var { describe }  = require('mocha');
 var chai          = require('chai');
 var chaiHTTP      = require('chai-http');
-var expect          = require("chai").expect;
+var expect        = require("chai").expect;
 
-var request         = require("request");
+var request       = require("request");
+var querystring   = require("querystring");
 
 var should        = chai.should();
 chai.use(chaiHTTP);
 require('dotenv').config();
 
 
-// var url = `http://${process.env.HOST}:${process.env.PORT}`
+var base = `http://${process.env.HOST}:${process.env.PORT}`
 
 const testOptions = {
     url: "https://api.spotify.com/v1/artists/0TnOYISbd1XYRBk9myaseg",
@@ -56,7 +57,28 @@ describe('Spotify Tests', () => {
             })
         })
     });
+
+    describe('Spotify search works', () => {
+        it('returns Dancing Queen by ABBA', (done: () => void) => {
+            var item = "dancing queen";
+            var type = "track";
+            var query = querystring.stringify({
+                q: item,
+                type: type,
+            });
+            var url = base + '/spotify/search?' + query;
+            request(url, (err: any, res: any, body: string) => {
+                let json = JSON.parse(body);
+                expect(res.statusCode).to.equal(200);
+                expect(json["name"]).to.equal("Dancing Queen");
+                expect(json["link"]).to.equal("https://open.spotify.com/track/0GjEhVFGZW8afUYGChu3Rr");
+                expect(json["uri"]).to.equal("spotify:track:0GjEhVFGZW8afUYGChu3Rr")
+                done();
+            })
+        })
+    });
 });
+
 
 
 export {}

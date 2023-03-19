@@ -5,10 +5,10 @@
   "main": "server.js",
   "scripts": {
     "test": "npm run build && mocha --reporter spec --recursive",
-    "start": "node ./dist/server.js",
-    "dev": "nodemon --delay 3 -L -e ts --exec \"npm run build && node ./dist/swagger.js && npm start\"",
+    "start": "node ./dist/src/server.js",
+    "dev": "nodemon -L -e ts --exec \"npm run build && node ./dist/src/swagger.js && npm start\"",
     "build": "tsc",
-    "swagger-autogen": "npm run build && node ./dist/swagger.js",
+    "swagger-autogen": "npm run build && node ./dist/src/swagger.js",
     "config": "node utils/config.js",
     "playground": "nodemon playground/server.js",
     "docker-cli": "docker exec -it api sh"
@@ -23,6 +23,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "pg": "^8.10.0",
+    "querystring": "^0.2.1",
     "request": "^2.88.2",
     "swagger-autogen": "^2.23.1",
     "swagger-jsdoc": "^6.2.8",

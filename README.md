@@ -254,8 +254,13 @@ Swagger and AutoGen:<br>
 https://www.npmjs.com/package/swagger-autogen?activeTab=readme#responses
 
 ### Spotify Resources
-API guide:<br>
+API guides:<br>
 https://developer.spotify.com/documentation/general/guides/authorization/scopes/<br>
+
+https://developer.spotify.com/documentation/web-api/reference/#/<br>
+
+Spotify Test Console:<br>
+https://developer.spotify.com/console/get-search-item/<br>
 
 Setting up their Access Token code:<br>
 https://github.com/spotify/web-api-examples/blob/master/authentication/authorization_code/app.js

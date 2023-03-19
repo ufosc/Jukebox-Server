@@ -1,10 +1,10 @@
 /*====== Primary Spotify Routes =======*/
-var request         = require("request");
+var request             = require("request");
+
+var spotifyTokenExpired = require('./responses/status_codes').SpotifyTokenExpired;
 
 
 exports.SpotifyTest = (req: any, res: any, next: any) => {
-
-
     /**
      * #swagger.tags = ['Spotify']
      * #swagger.summary = "Test spotify connection"
@@ -28,9 +28,22 @@ exports.SpotifyTest = (req: any, res: any, next: any) => {
         #swagger.responses[200] = {
               description: "Static response",
               schema: { $ref: '#/definitions/SpotifyTestResponse' }
-         }
+        }
+
         */
+       console.log(json["error"])
+       if(json["error"]) {
+        /**
+        #swagger.responses[401] = {
+            description: "Invalic token",
+            schema: { $ref: '#/definitions/SpotifyTokenExpired' }
+        }
+         */
+        res.status(401).json(spotifyTokenExpired);
+       } else {
         res.json(json);
+       }
+
     })
 }
 

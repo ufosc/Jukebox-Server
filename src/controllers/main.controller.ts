@@ -26,8 +26,9 @@ exports.getIndex = (req: any, res: any, next: any) => {
       }
     }
   */
+    // console.log("works");
   res.json({
-    success: true,
+    success: false,
     login_route: "http://localhost:3000/login",
     documenation: "http://localhost:3000/doc",
     client_id: client_id,

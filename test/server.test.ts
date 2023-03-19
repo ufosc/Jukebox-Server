@@ -1,12 +1,12 @@
-const assert        = require('assert');
-const { describe }  = require('mocha');
-const chai          = require('chai');
-const chaiHTTP      = require('chai-http');
+var assert        = require('assert');
+var { describe }  = require('mocha');
+var chai          = require('chai');
+var chaiHTTP      = require('chai-http');
 var expect          = require("chai").expect;
 
 var request         = require("request");
 
-const should        = chai.should();
+var should        = chai.should();
 chai.use(chaiHTTP);
 require('dotenv').config();
 
@@ -23,8 +23,8 @@ after(() => {
 describe('App Initialization', () => {
     describe(`Server running on ${url}`, () => {
         // Tests if server is running without errors
-        it('returns status 200', (done) => {
-            request(url, (err, res, body) => {
+        it('returns status 200', (done: any) => {
+            request(url, (err: any, res: any, body: any) => {
                 expect(res.statusCode).to.equal(200);
                 done();
             });
@@ -32,5 +32,5 @@ describe('App Initialization', () => {
     });
 });
 
-
+export {}
 

@@ -1,12 +1,12 @@
-const assert        = require('assert');
-const { describe }  = require('mocha');
-const chai          = require('chai');
-const chaiHTTP      = require('chai-http');
-const expect          = require("chai").expect;
+var assert        = require('assert');
+var { describe }  = require('mocha');
+var chai          = require('chai');
+var chaiHTTP      = require('chai-http');
+var expect          = require("chai").expect;
 
-const request         = require("request");
+var request         = require("request");
 
-const should        = chai.should();
+var should        = chai.should();
 chai.use(chaiHTTP);
 require('dotenv').config();
 
@@ -25,14 +25,14 @@ const testOptions = {
 
 describe('Spotify Tests', () => {
     describe(`Spotify external connection works`, () => {
-        it('returns status 200', (done) => {
-            request(testOptions, (err, res, body) => {
+        it('returns status 200', (done: () => void) => {
+            request(testOptions, (err: any, res: { statusCode: any; }, body: any) => {
                 expect(res.statusCode).to.equal(200);
                 done();
             });
         });
-        it('returns correct json value', (done) => {
-            request(testOptions, (err, res, body) => {
+        it('returns correct json value', (done: () => void) => {
+            request(testOptions, (err: any, res: any, body: string) => {
                 let json = JSON.parse(body);
                 expect(json["name"]).to.equal("Pitbull")
                 done();
@@ -42,14 +42,14 @@ describe('Spotify Tests', () => {
 
     const testRoute1 = 'http://localhost:3000/spotify';
     describe('API spotify routes work', () => {
-        it('returns status 200', (done) => {
-            request(testRoute1, (err, res, body) => {
+        it('returns status 200', (done: () => void) => {
+            request(testRoute1, (err: any, res: { statusCode: any; }, body: any) => {
                 expect(res.statusCode).to.equal(200);
                 done();
             })
         })
-        it('returns correct json value', (done) => {
-            request(testRoute1, (err, res, body) => {
+        it('returns correct json value', (done: () => void) => {
+            request(testRoute1, (err: any, res: any, body: string) => {
                 let json = JSON.parse(body);
                 expect(json["name"]).to.equal("Pitbull")
                 done();
@@ -59,5 +59,5 @@ describe('Spotify Tests', () => {
 });
 
 
-
+export {}
 

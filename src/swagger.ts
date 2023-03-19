@@ -44,6 +44,11 @@ const doc = {
         Bearer: []
     }],
     definitions: {
+        SpotifyTokenExpired: {
+            status: 401,
+            message: "Spotify access token expired",
+            login: "http://localhost:3000/login"
+        },
         SpotifyAuthSuccess: {
             success: true,
             access_token: '[access_token]',
@@ -78,7 +83,8 @@ const doc = {
             popularity : 85,
             type : "artist",
             uri : "spotify:artist:0TnOYISbd1XYRBk9myaseg"
-        }
+        },
+
     }
 }
 

@@ -11,17 +11,34 @@ Description coming soon ...
 | Backend Framework | [Express.js](https://expressjs.com/en/4x/api.html#express) |
 | SQL Database | [Postgres](https://node-postgres.com/) |
 | Unit Tests | [Mocha](https://semaphoreci.com/community/tutorials/getting-started-with-node-js-and-mocha) |
+| Auto Documentation | [Swagger](https://swagger.io/docs/specification/about/)
 
+<br>
 
+## Contents
+
+- [Project Prerequisites](#project-prerequisites)
+- [Project Quick Setup](#project-quick-setup)
+- [Project Setup Verbose](#project-setup-verbose)
+    - [1. Create spotify app](#1-create-spotify-app)
+    - [2. Setting up the project](#2-setting-up-the-project)
+    - [3. Getting The Spotify Auth Code](#3-getting-the-spotify-auth-code)
+- [Developing](#developing)
+- [Tutorial](#tutorial)
+    - [Using Docker](#using-docker)
+    - [Using Swagger and API auto documentation](#using-swagger-and-api-auto-documentation)
+- [Resources](#resources)
+
+<hr>
 
 ## Project Prerequisites
 
 In order to properly set up this project on your computer it is recommended that you have both Docker and Node.js installed on your computer, but technically you only need Docker. Here are the links to both installation packages:
-> Download Docker: [Docker.com](https://www.docker.com/products/docker-desktop/)
-> Docker Tutorial: [FreeCodeCamp.org](https://www.freecodecamp.org/news/a-beginners-guide-to-docker-how-to-create-your-first-docker-application-cc03de9b639f/  )
+> Download Docker: [Docker.com](https://www.docker.com/products/docker-desktop/)<br>
+> Docker Tutorial: [FreeCodeCamp.org](https://www.freecodecamp.org/news/a-beginners-guide-to-docker-how-to-create-your-first-docker-application-cc03de9b639f/  )<br>
 
-> Download Node.js: [Nodejs.org](https://nodejs.org/en/)
-> Node.js Tutorial: [PluralSight.com](https://www.pluralsight.com/guides/getting-started-with-nodejs)
+> Download Node.js: [Nodejs.org](https://nodejs.org/en/)<br>
+> Node.js Tutorial: [PluralSight.com](https://www.pluralsight.com/guides/getting-started-with-nodejs)<br>
 
 <br>
 
@@ -45,7 +62,7 @@ docker-compose up  # runs project on port 3000
 
 <br>
 
-## Project Setup `--verbose`
+## Project Setup Verbose
 
 Below is a more in-depth explanation of the setup instructions provided in the quick setup, and is recommended if you are a beginner, encountering errors, would like to learn more about setting up Spotify, or are just plain confused (which is understandable). The guide below will take you through the 3 steps of setting up the project:
 1. Creating the Spotify App
@@ -108,7 +125,7 @@ In the project, `/login` has implemented Spotify's access token authorization co
 ## Developing
 There are a host of commands built in to this project to make certain tasks easier and more streamlined. Since this project is contained within Docker, running the Node server and Test suite may not be the most intuitive, however. That and more is explained below.
 ### Environment Setup
-The .env file must contain the following v
+An example .env file can be seen in the utils file.
 
 ### *Running the server*
 
@@ -183,25 +200,58 @@ Flags and Commands:
     - "`npm install ; npm run test`": this runs the test suite inside a fresh container. This will fail since the server is not running
     - "`npx mocha ; npm run build ; mocha --grep 'returns status 200'`": this runs three commands separated by colons to install mocha, build the dist files, and run a specific mocha test using the --grep flag to select which test (defined using it())
 
-## Spotify Resources
-API guide:
-https://developer.spotify.com/documentation/general/guides/authorization/scopes/
+### Using Swagger and API auto documentation
+This project uses a tool called Swagger to auto document the API. You can view the auto created api at http://localhost:3000/doc
 
-Setting up their Access Token code:
-https://github.com/spotify/web-api-examples/blob/master/authentication/authorization_code/app.js
+To develop with the Swagger tool, you need to be relatively familiar with the `swagger.ts` file, as well as how to properly write comments that Swagger will use to document the API endpoints.
+
+To properly document an endpoint you can use the following syntax:
+
+```javascript
+/*
+Only comments that start with #swagger will be recognized
+
+#swagger.tags = ['category-of-endpoint']
+#swagger.summary="Summary of endpoint shown on tab"
+#swagger.description="Description of endpoint shown when tab is expanded
+
+#swagger.responses[200] = {
+    description: "description of status 200",
+    schema: {
+        description: "any json can go here",
+    }
+}
+#swagger.responses[401] = {
+    description: "also describe error status codes",
+    schema: { $ref: '#/definitions/DefNameInSwaggerFile'}
+}
+*/
+```
+
+You can reference definitions created in the `swagger.ts` file by writing `$ref: '#/definitions/[name]`. This is commonly used for schemas.
 
 ## Resources
 Helpful websites:
 
-setup docker, node, postgres, typescript:
-https://dev.to/chandrapantachhetri/docker-postgres-node-typescript-setup-47db
-another getting started article: https://www.docker.com/blog/getting-started-with-docker-using-node-jspart-i/
-docker best practices with node: https://snyk.io/blog/10-best-practices-to-containerize-nodejs-web-applications-with-docker/
+setup docker, node, postgres, typescript:<br>
+https://dev.to/chandrapantachhetri/docker-postgres-node-typescript-setup-47db<br>
+another getting started article: <br>https://www.docker.com/blog/getting-started-with-docker-using-node-jspart-i/<br>
+docker best practices with node: <br>https://snyk.io/blog/10-best-practices-to-containerize-nodejs-web-applications-with-docker/<br>
 
-start with mocha: https://semaphoreci.com/community/tutorials/getting-started-with-node-js-and-mocha
-Test node api: https://www.digitalocean.com/community/tutorials/test-a-node-restful-api-with-mocha-and-chai
+start with mocha:<br> https://semaphoreci.com/community/tutorials/getting-started-with-node-js-and-mocha<br>
+Test node api: <br>https://www.digitalocean.com/community/tutorials/test-a-node-restful-api-with-mocha-and-chai<br>
 
-Beginner Resources:
-Start node server: https://levelup.gitconnected.com/set-up-and-run-a-simple-node-server-project-38b403a3dc09
+Start node server: <br>https://levelup.gitconnected.com/set-up-and-run-a-simple-node-server-project-38b403a3dc09<br>
 
-environment variables: https://itnext.io/how-to-use-environment-variables-in-node-js-cb2ef0e9574a
+environment variables:<br>
+https://itnext.io/how-to-use-environment-variables-in-node-js-cb2ef0e9574a<br>
+
+Swagger and AutoGen:<br>
+https://www.npmjs.com/package/swagger-autogen?activeTab=readme#responses
+
+### Spotify Resources
+API guide:<br>
+https://developer.spotify.com/documentation/general/guides/authorization/scopes/<br>
+
+Setting up their Access Token code:<br>
+https://github.com/spotify/web-api-examples/blob/master/authentication/authorization_code/app.js

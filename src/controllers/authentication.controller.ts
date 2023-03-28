@@ -1,8 +1,9 @@
 /*====== Authentication into Spotify =======*/
-var querystring = require("querystring");
-var cookieParser = require("cookie-parser");
-var request = require("request"); // "Request" library
-var fs = require('fs');
+var querystring =     require("querystring");
+var cookieParser =    require("cookie-parser");
+var request =         require("request"); // "Request" library
+var fs =              require('fs');
+
 require("dotenv").config();
 
 var client_id = process.env.SP_ID; // Your client id
@@ -109,6 +110,8 @@ exports.SpotifyLoginCallback = (req: any, res: any, next: any) => {
         });
 
         // we can also pass the token to the browser to make requests from there
+        // res.cookie('access_token', access_token);
+        // console.log(res.cookie())
         res.redirect(
           "/spotify-token?access_token=" +
             access_token +
@@ -128,23 +131,31 @@ exports.SpotifyLoginCallback = (req: any, res: any, next: any) => {
 };
 
 exports.SpotifyLoginToken = (req: any, res: any, next: any) => {
-    // #swagger.ignore = true
-    var access_token = req.query.access_token || null;
-    var refresh_token = req.query.access_token || null;
-    var err = req.query.err || null;
-    var root = `http://${(process.env.HOST=='127.0.0.1') ? 'localhost' : process.env.HOST}:${process.env.PORT}`
+  // #swagger.ignore = true
+  var access_token = req.query.access_token || null;
+  var refresh_token = req.query.access_token || null;
+  var err = req.query.err || null;
+  var root = `http://${(process.env.HOST=='127.0.0.1') ? 'localhost' : process.env.HOST}:${process.env.PORT}`
 
-    if (err == null) {
-        res.json({
-            success: true,
-            access_token: access_token,
-            refresh_token: refresh_token,
-            home: root
-        });
-    } else {
-        res.json({
-            success: false,
-            message: err,
-        });
-    }
+  if (err == null) {
+    res.cookie(`access_token`, access_token, {});
+    res.json({
+        success: true,
+        access_token: access_token,
+        refresh_token: refresh_token,
+        message: "Cookie 'access_token' has been created successfully",
+        home: root
+    });
+  } else {
+
+      res.json({
+          success: false,
+          message: err,
+      });
+  }
 };
+
+exports.SpotifyLogout = (req: any, res: any, next: any) => {
+  res.clearCookie("access_token");
+  res.redirect('/');
+}

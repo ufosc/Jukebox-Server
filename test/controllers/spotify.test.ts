@@ -11,6 +11,9 @@ var should        = chai.should();
 chai.use(chaiHTTP);
 require('dotenv').config();
 
+/* In order to pass spotify tests, place access token value here */
+var TOKEN = "";
+
 
 var base = `http://${process.env.HOST}:${process.env.PORT}`
 
@@ -20,7 +23,7 @@ const testOptions = {
     headers: {
         'Accept': 'application/json',
         'Accept-Charset': 'utf-8',
-        'Authorization': 'Bearer ' + process.env.SP_TOKEN
+        'Authorization': 'Bearer ' + TOKEN
     }
 };
 

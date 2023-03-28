@@ -13,6 +13,7 @@ require("dotenv").config();
 let baseResponse = {
     success: true,
     login_route: "http://localhost:3000/login",
+    logout_route: "http://localhost:3000/logout",
     documenation: "http://localhost:3000/doc",
 }
 
@@ -27,6 +28,7 @@ exports.getIndex = (req: any, res: any, next: any) => {
       schema: {
             success: true,
             login_route: "http://localhost:3000/login",
+            logout_route: "http://localhost:3000/logout",
             documentation: "http://localhost:3000/doc",
       }
     }

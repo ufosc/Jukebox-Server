@@ -140,6 +140,8 @@ docker-compose up
 The containers defined in `docker-compose.yml` run automatically with docker-compose, which includes starting up the database and running the `npm run dev` command which compiles the TypeScript code into JS code inside the `/dist` directory (using `npm build`), then it runs the server with Nodemon.
 
 ### Running Tests
+> Note: In order to pass Spotify tests you must set TOKEN variable in `spotify.test.ts`
+
 In order to run tests with the docker-compose containers, the containers need to be running. In order to access the shell of the running container, you must use Docker's `exec [option] [container] [command]` commmand. Once the shell is opened, you can go ahead and run the test script defined in `package.json`.
 <br>
 **Open Container Shell**

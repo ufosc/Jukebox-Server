@@ -32,9 +32,10 @@ connectDB();
 
 const app = express();
 
-app.use(mainRoutes);
 app.use(cookieParser());
-app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile))
+
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
+app.use(mainRoutes);
 
 app.listen(port, () => {
     console.log(`Listening on http://${(host=='127.0.0.1') ? 'localhost' : host}:${port}`);

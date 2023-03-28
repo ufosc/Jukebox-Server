@@ -11,7 +11,7 @@ console.log(`${'='.repeat(5)} Running Project Configuration ${'='.repeat(5)}\n`)
 
 
 const main = () => {
-    
+
     return new Promise(async (resolve) => {
         console.log(`Checking Node & Docker Versions${'.'.repeat(5)}\n`);
         const { stdout, stderr } = await exec("node -v");
@@ -30,7 +30,7 @@ const main = () => {
 
         if (stderr) {
             console.log("\tError with Docker:");
-            console.log(`\tOutput: ${stderr}`); 
+            console.log(`\tOutput: ${stderr}`);
             // return;
         } else {
             console.log(`\tDocker Version: \t${stdout}`);
@@ -41,7 +41,7 @@ const main = () => {
         const exists = fs.existsSync(env_file);
         if (!exists) {
             console.log("File .env needs to be configured");
-        
+
             const port = prompt('PORT: (3000) ', '3000');
             const host = prompt('HOST: (127.0.0.1) ', '127.0.0.1');
             const db_user = prompt('DB_USER: (postgres) ', 'postgres');
@@ -52,7 +52,7 @@ const main = () => {
             const sp_id = prompt('SP_ID: (null) ', 'null');
             const sp_secret = prompt('SP_SECRET: (null) ', 'null');
             const sp_uri = prompt('SP_URI: (http://localhost:3000/spotify-login-callback) ', 'http://localhost:3000/spotify-login-callback')
-        
+
             let lines = {
                 "# Node": "",
                 PORT: port,
@@ -67,9 +67,6 @@ const main = () => {
                 SP_ID: sp_id,
                 SP_SECRET: sp_secret,
                 SP_URI: sp_uri,
-                SP_TOKEN: 'null',
-                SP_REFRESH: 'null'
-
             }
 
             fs.writeFileSync(env_file, "# Environment Variables\n");
@@ -80,7 +77,7 @@ const main = () => {
                     fs.appendFileSync(env_file,`\n${key}\n`);
                 }
             }
-        
+
         } else {
             console.log('\tFile .env exists');
         }
@@ -102,11 +99,11 @@ const main = () => {
             console.log("\tError when creating playground in config.js: ");
             console.log(err);
         }
-        
+
     }).then(() => {
         console.log(`${'='.repeat(5)} Project Configuration Finished ${'='.repeat(5)}\n`);
     })
-    
+
 };
 
 module.exports = main();

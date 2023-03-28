@@ -1,22 +1,23 @@
 /*====== Primary Spotify Routes =======*/
 var request         = require("request");
 var querystring     = require("querystring");
+var cookieParser    = require("cookie-parser");
 
 /* Json Responses */
-let spotifyTokenExpired = {
+var spotifyTokenExpired = {
     success: false,
     message: "Spotify access token expired",
     login: "http://localhost:3000/login"
 }
 
-let spotifyOptions = (url: string, query: string) => {
+let spotifyOptions = (url: string, query: string, req: any) => {
     var options = {
         url: 'https://api.spotify.com/v1' + url + '?' + query,
         method: 'GET',
         headers: {
             'Accept': 'application/json',
             'Accept-Charset': 'utf-8',
-            'Authorization': 'Bearer ' + process.env.SP_TOKEN
+            'Authorization': 'Bearer ' + req.cookies.access_token
         }
     };
     return options;
@@ -36,7 +37,7 @@ exports.SpotifyTest = (req: any, res: any, next: any) => {
         headers: {
             'Accept': 'application/json',
             'Accept-Charset': 'utf-8',
-            'Authorization': 'Bearer ' + process.env.SP_TOKEN
+            'Authorization': 'Bearer ' + req.cookies.access_token
         }
     };
     request(options, (err: any, response: any, body: any) => {
@@ -71,7 +72,7 @@ exports.SpotifySearch = (req: any, res: any, next: any) => {
         q: req.query.q,
         type: req.query.type,
     });
-    var options = spotifyOptions('/search', query);
+    var options = spotifyOptions('/search', query, req);
 
     request(options, (err: any, response: any, body: string) => {
         let json = JSON.parse(body);

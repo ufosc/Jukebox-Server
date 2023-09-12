@@ -13,12 +13,14 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
+      - SP_ID=${SP_ID}
+      - SP_SECRET=${SP_SECRET}
     ports:
       - ${PORT}:3000
     depends_on:
       - db
     volumes:
-      - .:/usr/src/app
+      - .:/app
     command: npm run dev
 
   db:

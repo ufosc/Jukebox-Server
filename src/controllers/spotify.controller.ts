@@ -1,17 +1,17 @@
 /*====== Primary Spotify Routes =======*/
-var request = require("request");
-var querystring = require("querystring");
-var cookieParser = require("cookie-parser");
+import querystring from "querystring";
+import cookieParser from "cookie-parser";
+import request from "request";
 
 /* Json Responses */
-var spotifyTokenExpired = {
+let spotifyTokenExpired = {
     success: false,
     message: "Spotify access token expired",
     login: "http://localhost:3000/login",
 };
 
 let spotifyOptions = (url: string, query: string, req: any) => {
-    var options = {
+    let options = {
         url: "https://api.spotify.com/v1" + url + (query ? "?" + query : ""),
         method: "GET",
         headers: {
@@ -23,11 +23,11 @@ let spotifyOptions = (url: string, query: string, req: any) => {
     return options;
 };
 const spotifyResultsJson = (count: number, body: any) => {
-    var results = [];
+    let results = [];
 
     // try {
-    for (var i = 0; i < count; i++) {
-        var result = {
+    for (let i = 0; i < count; i++) {
+        let result = {
             name: body["tracks"]["items"][i]["name"] || "",
             uri: body["tracks"]["items"][i]["uri"] || "",
             // id: body["tracks"]["items"][i]["id"] || "",
@@ -36,23 +36,16 @@ const spotifyResultsJson = (count: number, body: any) => {
         results.push(result);
     }
     return results;
-    // } catch(err) {
-    // return {
-    //     success: false,
-    //     message: err,
-    //     request: body
-    // };
-    // }
 };
 
 /* Route methods */
 exports.SpotifyTest = (req: any, res: any, next: any) => {
-    /**
-        #swagger.tags = ['Spotify']
-        #swagger.summary = "Test spotify connection"
-        #swagger.description = "This endpoint is meant to test the spotify connection and provide an example of how to make a request to spotify.
-            This is also included in the testing suite to ensure proper connection."
-     */
+    /*
+    #swagger.tags = ['Spotify']
+    #swagger.summary = "Test spotify connection"
+    #swagger.description = "This endpoint is meant to test the spotify connection and provide an example of how to make a request to spotify.
+        This is also included in the testing suite to ensure proper connection."
+    */
     const options = {
         url: "https://api.spotify.com/v1/artists/0TnOYISbd1XYRBk9myaseg",
         method: "GET",
@@ -66,10 +59,9 @@ exports.SpotifyTest = (req: any, res: any, next: any) => {
         let json = JSON.parse(body);
         /*
         #swagger.responses[200] = {
-              description: "Static response",
-              schema: { $ref: '#/definitions/SpotifyTestResponse' }
+            description: 'This is an example return value if spotify successfully redirects to /spotify-login-callback, which redirects to /spotify-token',
+            schema: { $ref: '#/definitions/SpotifyAuthSuccess' }
         }
-
         */
         if (response.statusCode == 400) {
             res.status(400).json(json);
@@ -80,30 +72,29 @@ exports.SpotifyTest = (req: any, res: any, next: any) => {
 };
 
 exports.SpotifySearch = (req: any, res: any, next: any) => {
-    /**
-        #swagger.tags = ['Spotify']
-        #swagger.summary = "Search Spotify with query params"
-        #swagger.description = "Use this endpoint to use Spotify's search feature, it returns the first song in the result."
-     */
-    var query = querystring.stringify({
+    /*
+    #swagger.tags = ['Spotify']
+    #swagger.summary = "Search Spotify with query params"
+    #swagger.description = "Use this endpoint to more easily search for a song on Spotify."
+    */
+    let query = querystring.stringify({
         q: req.query.q,
         type: req.query.type,
     });
-    var options = spotifyOptions("/search", query, req);
+    let options = spotifyOptions("/search", query, req);
 
     request(options, (err: any, response: any, body: string) => {
         let json = JSON.parse(body);
-
-        /**
+        /*
         #swagger.responses[200] = {
             description: "Success",
-            schema: { $ref: '#/definitions/SpotifySearchResult' }
+            schema: { $ref: '#/definitions/SpotifyAuthResult' }
         }
         */
         if (response.statusCode == 400) {
             res.status(400).json(json);
         } else {
-            var searchResult = {
+            let searchResult = {
                 name: json["tracks"]["items"][0]["name"] || "",
                 uri: json["tracks"]["items"][0]["uri"] || "",
                 id: json["tracks"]["items"][0]["id"] || "",
@@ -117,35 +108,33 @@ exports.SpotifySearch = (req: any, res: any, next: any) => {
 
 exports.SpotifySearchTracks = (req: any, res: any, next: any) => {
     // Available params: album, artist, track, year, upc, tag:hipster, tag:new, isrc, and genre
-    /**
-        #swagger.tags = ['Spotify']
-        #swagger.summary = "Search Spotify with query params"
-        #swagger.description = "Use this endpoint to more easily search for a song on Spotify."
-     */
-    // var q_string = `artist:${req.query.artist} album:${req.query.album} track:${req.query.track}`;
-
-    var query = querystring.stringify({
+    /*
+    #swagger.tags = ['Spotify']
+    #swagger.summary = "Search Spotify with query params"
+    #swagger.description = "Use this endpoint to more easily search for a song on Spotify."
+    */
+    let query = querystring.stringify({
         q:
             (req.query.artist ? "artist:" + req.query.artist : "") +
             (req.query.album ? " album:" + req.query.album : "") +
             (req.query.track ? " track:" + req.query.track : ""),
         type: "track",
     });
-    var options = spotifyOptions("/search", query, req);
+    let options = spotifyOptions("/search", query, req);
 
     request(options, (err: any, response: any, body: string) => {
-        let json = JSON.parse(body);
-
-        /**
+        /*
         #swagger.responses[200] = {
             description: "Success",
-            schema: { $ref: '#/definitions/SpotifySearchResult' }
+            schema: { $ref: '#/definitions/SpotifyAuthResult' }
         }
         */
+        let json = JSON.parse(body);
+
         if (response.statusCode == 400) {
             res.status(400).json(json);
         } else {
-            var searchResult = spotifyResultsJson(req.query.limit, json);
+            let searchResult = spotifyResultsJson(req.query.limit, json);
 
             res.json(searchResult);
         }
@@ -153,29 +142,28 @@ exports.SpotifySearchTracks = (req: any, res: any, next: any) => {
 };
 
 exports.SpotifySearchId = (req: any, res: any, next: any) => {
-    /**
-        #swagger.tags = ['Spotify']
-        #swagger.summary = "Search for song by ID"
-        #swagger.description = "Use this endpoint to search for a song on Spotify by ID."
+    /*
+    #swagger.tags = ['Spotify']
+    #swagger.summary = "Search for song by ID"
+    #swagger.description = "Use this endpoint to search for a song on Spotify by ID."
      */
-    var query = "";
-    var options = spotifyOptions("/tracks/" + req.query.id, query, req);
+    let query = "";
+    let options = spotifyOptions("/tracks/" + req.query.id, query, req);
 
     request(options, (err: any, response: any, body: string) => {
         let json = JSON.parse(body);
-
-        /**
+        /*
         #swagger.responses[200] = {
             description: "Success",
             schema: { $ref: '#/definitions/SpotifySearchResult' }
         }
-        */
+         */
         if (response.statusCode == 400) {
             res.status(400).json(json);
         } else {
             console.log(json);
-            // var searchResult = spotifyResultsJson(1, json);
-            var searchResult = {
+            // let searchResult = spotifyResultsJson(1, json);
+            let searchResult = {
                 name: json["name"] || "",
                 uri: json["uri"] || "",
                 id: json["id"] || "",

@@ -1,9 +1,13 @@
-# Git
-.git
-.gitignore
+# # Git
+# .git
+# .gitignore
 
-# Docker
-.docker
+# # Docker
+# .docker
 
-# Node
-node_modules/
+# # Node
+# node_modules/
+*
+!src/
+!package.json
+!tsconfig.json

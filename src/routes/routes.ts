@@ -1,17 +1,17 @@
 const path = require("path");
 const express = require("express");
 const router = express.Router();
-var cookieParser = require("cookie-parser");
+let cookieParser = require("cookie-parser");
 
 router.use(cookieParser());
 
 // Middleware
-var spotifyMiddleware = require("../middleware/spotify.middleware");
+let spotifyMiddleware = require("../middleware/spotify.middleware");
 
 // Controllers
-var mainController = require("../controllers/main.controller");
-var authController = require("../controllers/authentication.controller");
-var spotifyController = require("../controllers/spotify.controller");
+let mainController = require("../controllers/main.controller");
+let authController = require("../controllers/authentication.controller");
+let spotifyController = require("../controllers/spotify.controller");
 
 /** Base Routes **/
 router.get("/", mainController.getIndex);

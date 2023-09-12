@@ -1,51 +1,50 @@
 /*====== Authentication into Spotify =======*/
-var querystring = require("querystring");
-var cookieParser = require("cookie-parser");
-var request = require("request"); // "Request" library
-var fs = require("fs");
+import querystring from "querystring";
+import cookieParser from "cookie-parser";
+import request from "request";
+import fs from "fs";
 
 require("dotenv").config();
 
-var client_id = process.env.SP_ID; // Your client id
-var client_secret = process.env.SP_SECRET; // Your secret
-var redirect_uri = process.env.SP_URI; // Your redirect uri
-// var redirect_uri = 'http://localhost:3000/callback/'
-var stateKey = "spotify_auth_state";
+let client_id = process.env.SP_ID; // Your client id
+let client_secret = process.env.SP_SECRET; // Your secret
+let redirect_uri = process.env.SP_URI || "http://localhost:3000/spotify-login-callback"; // Your redirect uri
+let stateKey = "spotify_auth_state";
 
 /**
  * Generates a random string containing numbers and letters
  * @param  {number} length The length of the string
  * @return {string} The generated string
  */
-var generateRandomString = function (length: number) {
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+let generateRandomString = function (length: number) {
+    let text = "";
+    let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    for (var i = 0; i < length; i++) {
+    for (let i = 0; i < length; i++) {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
 };
 
 exports.getSpotifyCreds = (req: any, res: any, next: any) => {
-    /**
-     * #swagger.tags = ['Authentication']
-     * #swagger.summary = "Log into spotify"
-     * #swagger.description = "This endpoint redirects to spotify to authenticate and return access token. Must use link directly: http://localhost:3000/login"
+    /*
+    #swagger.tags = ['Authentication']
+    #swagger.summary = "Log into spotify"
+    #swagger.description = "This endpoint redirects to spotify to authenticate and return access token. Must use link directly: http://localhost:3000/login"
      */
 
-    var state = generateRandomString(16);
+    let state = generateRandomString(16);
     res.cookie(stateKey, state);
 
     // your application requests authorization
-    var scope = "user-read-private user-read-email";
+    let scope = "user-read-private user-read-email";
     console.log("pre state: " + state);
-    /**
+    /*
     #swagger.responses[301] = {
-      description: 'This is an example return value if spotify successfully redirects to /spotify-login-callback, which redirects to /spotify-token',
-      schema: { $ref: '#/definitions/SpotifyAuthSuccess' }
+        description: 'This is an example return value if spotify successfully redirects to /spotify-login-callback, which redirects to /spotify-token',
+        schema: { $ref: '#/definitions/SpotifyAuthSuccess' }
     }
-  */
+     */
     res.redirect(
         "https://accounts.spotify.com/authorize?" +
             querystring.stringify({
@@ -61,9 +60,9 @@ exports.SpotifyLoginCallback = (req: any, res: any, next: any) => {
     // your application requests refresh and access tokens
     // after checking the state parameter
 
-    var code = req.query.code || null;
-    var state = req.query.state || null;
-    //   var storedState = req.cookies ? req.cookies[stateKey] : null;
+    let code = req.query.code || null;
+    let state = req.query.state || null;
+    //   let storedState = req.cookies ? req.cookies[stateKey] : null;
 
     if (state === null) {
         res.redirect(
@@ -74,7 +73,7 @@ exports.SpotifyLoginCallback = (req: any, res: any, next: any) => {
         );
     } else {
         // res.clearCookie(stateKey);
-        var authOptions = {
+        let authOptions = {
             url: "https://accounts.spotify.com/api/token",
             form: {
                 code: code,
@@ -91,10 +90,10 @@ exports.SpotifyLoginCallback = (req: any, res: any, next: any) => {
         request.post(authOptions, (error: any, response: any, body: any) => {
             // #swagger.ignore = true
             if (!error && response.statusCode === 200) {
-                var access_token = body.access_token,
+                let access_token = body.access_token,
                     refresh_token = body.refresh_token;
 
-                var options = {
+                let options = {
                     url: "https://api.spotify.com/v1/me",
                     headers: { Authorization: "Bearer " + access_token },
                     json: true,
@@ -129,10 +128,10 @@ exports.SpotifyLoginCallback = (req: any, res: any, next: any) => {
 
 exports.SpotifyLoginToken = (req: any, res: any, next: any) => {
     // #swagger.ignore = true
-    var access_token = req.query.access_token || null;
-    var refresh_token = req.query.access_token || null;
-    var err = req.query.err || null;
-    var root = `http://${process.env.HOST == "127.0.0.1" ? "localhost" : process.env.HOST}:${
+    let access_token = req.query.access_token || null;
+    let refresh_token = req.query.access_token || null;
+    let err = req.query.err || null;
+    let root = `http://${process.env.HOST == "127.0.0.1" ? "localhost" : process.env.HOST}:${
         process.env.PORT
     }`;
 
@@ -154,10 +153,10 @@ exports.SpotifyLoginToken = (req: any, res: any, next: any) => {
 };
 
 exports.SpotifyLogout = (req: any, res: any, next: any) => {
-    /**
-     * #swagger.tags = ['Authentication']
-     * #swagger.summary = "Log out of spotify"
-     * #swagger.description = "This endpoint deletes the access_token cookie and redirects to the home page"
+    /*
+    #swagger.tags = ['Authentication']
+    #swagger.summary = "Log out of spotify"
+    #swagger.description = "This endpoint deletes the access_token cookie and redirects to the home page"
      */
     res.clearCookie("access_token");
     res.redirect("/");

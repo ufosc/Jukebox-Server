@@ -5,23 +5,31 @@ services:
     container_name: api
     restart: always
     build: .
+    environment:
+      - DEV=true
+      - PORT=${PORT}
+      - HOST=${HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
     ports:
-      - ${PORT}:${PORT}
+      - ${PORT}:3000
     depends_on:
       - db
     volumes:
       - .:/usr/src/app
+    command: npm run dev
 
   db:
     container_name: postgres
-    image: postgres
-    ports:
-      - '5433:${DB_PORT}'
+    image: postgres:13-alpine
     volumes:
-      - data:/data/db
+      - data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
 
 volumes:
-  data: {}
+  data:

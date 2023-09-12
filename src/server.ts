@@ -1,7 +1,12 @@
-const express = require("express");
-var cookieParser = require("cookie-parser");
-const swaggerUi = require("swagger-ui-express");
+// const express = require("express");
+import express from "express";
+import cookieParser from "cookie-parser";
+import swaggerUi from "swagger-ui-express";
+
 const swaggerFile = require("./swagger_output.json");
+// var cookieParser = require("cookie-parser");
+// const swaggerUi = require("swagger-ui-express");
+// const swaggerFile = require("./swagger_output.json");
 
 const mainRoutes = require("./routes/routes");
 require("dotenv").config();
@@ -10,24 +15,31 @@ const env = process.env;
 const port = env.PORT;
 const host = env.HOST;
 
-import { Pool } from "pg";
-const pool = new Pool({
-    host: env.DB_HOST,
-    user: env.DB_USER,
-    database: env.DB_NAME,
-    password: env.DB_PASSWORD,
-    port: parseInt(process.env.DB_PORT || "5432"),
-});
+// import { Pool } from "pg";
+// const pool = new Pool({
+//     host: env.DB_HOST,
+//     user: env.DB_USER,
+//     database: env.DB_NAME,
+//     password: env.DB_PASSWORD,
+//     port: parseInt(process.env.DB_PORT || "5432"),
+// });
 
-const connectDB = async () => {
-    try {
-        await pool.connect();
-    } catch (err) {
-        console.log("Error connecting to database in index.js:");
-        console.log(err);
-    }
-};
-connectDB();
+// const connectDB = async () => {
+//     let connected = false;
+//     while (!connected) {
+//         setTimeout(() => {
+//             try {
+//                 pool.connect();
+//                 connected = true;
+//             } catch (err) {
+//                 console.log("Error connecting to database:");
+//                 console.log(err);
+//                 console.log("Retrying in 1 second...")
+//             }
+//         }, 1000);
+//     }
+// };
+// connectDB();
 
 const app = express();
 

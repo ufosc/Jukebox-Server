@@ -5,13 +5,14 @@
   "main": "server.js",
   "scripts": {
     "test": "npm run build && mocha --reporter spec --recursive",
-    "start": "node ./dist/src/server.js",
+    "start": "node ./dist/swagger.js && node ./dist/src/server.js",
     "dev": "nodemon -L -e ts --exec \"npm run build && node ./dist/src/swagger.js && npm start\"",
     "build": "tsc",
     "swagger-autogen": "npm run build && node ./dist/src/swagger.js",
     "config": "node utils/config.js",
     "playground": "nodemon playground/server.js",
-    "docker-cli": "docker exec -it api sh"
+    "docker-cli": "docker exec -it api sh",
+    "prod": "node dist/swagger.js && node dist/server.js"
   },
   "author": "",
   "license": "ISC",

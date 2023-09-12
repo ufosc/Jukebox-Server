@@ -10,9 +10,11 @@ Use the following commands to download the project locally and get it running wi
 git clone <git url>
 cd Jukebox
 
-npm install
-npm run dev
+docker-compose build
+docker-compose up
 ```
+
+We use docker compose to easily connect to databases and other container images. It could alternatively be run using `npm run dev`; however, this is not guaranteed to always work.
 
 Once the server is running, visit https://localhost:3000/login to authenticate with Spotify.
 

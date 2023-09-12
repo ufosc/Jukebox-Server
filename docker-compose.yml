@@ -16,7 +16,7 @@ services:
       - SP_ID=${SP_ID}
       - SP_SECRET=${SP_SECRET}
     ports:
-      - ${PORT}:3000
+      - ${PORT}:8000
     depends_on:
       - db
     volumes:

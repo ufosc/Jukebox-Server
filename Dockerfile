@@ -27,6 +27,6 @@ COPY --from=base /app/package.json .
 COPY --from=base /app/dist ./dist/
 COPY --from=base /app/node_modules ./node_modules/
 
-EXPOSE 3000
+EXPOSE 8000
 
 CMD ["npm", "run", "prod"]

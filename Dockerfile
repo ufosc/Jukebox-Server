@@ -12,6 +12,8 @@ COPY ./src ./src
 
 ARG DEV=false
 
+RUN npm install -g nodemon
+
 RUN npm run build && npm prune --production && \
     if [ "$DEV" = "true" ]; \
         then npm install -g nodemon; \

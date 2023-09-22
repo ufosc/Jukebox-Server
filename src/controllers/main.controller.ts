@@ -7,9 +7,9 @@ require("dotenv").config();
 
 let baseResponse = {
     success: true,
-    login_route: "http://localhost:3000/login",
-    logout_route: "http://localhost:3000/logout",
-    documenation: "http://localhost:3000/doc",
+    login_route: "http://localhost:8000/login",
+    logout_route: "http://localhost:8000/logout",
+    documenation: "http://localhost:8000/doc",
 };
 
 /** Base route for api **/
@@ -21,9 +21,9 @@ exports.getIndex = (req: any, res: any, next: any) => {
         description: 'Example data with redactions',
         schema: {
             success: true,
-            login_route: "http://localhost:3000/login",
-            logout_route: "http://localhost:3000/logout",
-            documentation: "http://localhost:3000/doc",
+            login_route: "http://localhost:8000/login",
+            logout_route: "http://localhost:8000/logout",
+            documentation: "http://localhost:8000/doc",
         }
     }
      */

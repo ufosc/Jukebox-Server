@@ -3,7 +3,7 @@
 let spotifyTokenExpired = {
     success: false,
     message: "Access token not set, please log in",
-    login: "http://localhost:3000/login",
+    login: "http://localhost:8000/login",
 };
 
 exports.AccessTokenExists = (req: any, res: any, next: any) => {

@@ -7,7 +7,7 @@ import request from "request";
 let spotifyTokenExpired = {
     success: false,
     message: "Spotify access token expired",
-    login: "http://localhost:3000/login",
+    login: "http://localhost:8000/login",
 };
 
 let spotifyOptions = (url: string, query: string, req: any) => {

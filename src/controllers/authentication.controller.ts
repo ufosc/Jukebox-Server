@@ -8,7 +8,7 @@ require("dotenv").config();
 
 let client_id = process.env.SP_ID; // Your client id
 let client_secret = process.env.SP_SECRET; // Your secret
-let redirect_uri = process.env.SP_URI || "http://localhost:3000/spotify-login-callback"; // Your redirect uri
+let redirect_uri = process.env.SP_URI || "http://localhost:8000/spotify-login-callback"; // Your redirect uri
 let stateKey = "spotify_auth_state";
 
 /**
@@ -30,7 +30,7 @@ exports.getSpotifyCreds = (req: any, res: any, next: any) => {
     /*
     #swagger.tags = ['Authentication']
     #swagger.summary = "Log into spotify"
-    #swagger.description = "This endpoint redirects to spotify to authenticate and return access token. Must use link directly: http://localhost:3000/login"
+    #swagger.description = "This endpoint redirects to spotify to authenticate and return access token. Must use link directly: http://localhost:8000/login"
      */
 
     let state = generateRandomString(16);

@@ -43,7 +43,7 @@ describe("Spotify Tests", () => {
         });
     });
 
-    const testRoute1 = "http://localhost:3000/spotify";
+    const testRoute1 = "http://localhost:8000/spotify";
     describe("API spotify routes work", () => {
         it("returns status 200", (done: () => void) => {
             request(testRoute1, (err: any, res: { statusCode: any }, body: any) => {

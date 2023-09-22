@@ -2,7 +2,6 @@ version: '3.9'
 
 services:
   api:
-    container_name: api
     restart: always
     build:
       context: .
@@ -12,29 +11,32 @@ services:
       - DEV=true
       - PORT=8000
       - HOST=localhost
-      - DB_PORT=5432
-      - DB_NAME=db_name
-      - DB_USER=postgres
-      - DB_PASSWORD=password
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+      - MONGO_DB=db
+      - MONGO_USER=root
+      - MONGO_PASSWORD=password
       - SP_ID=${SP_ID}
       - SP_SECRET=${SP_SECRET}
     ports:
       - 8000:8000
     depends_on:
-      - db
+      - mongo
     volumes:
       - ./src:/app/src
     command: npm run dev
-
-  db:
-    container_name: postgres
-    image: postgres:13-alpine
+  
+  mongo:
+    image: mongo:6.0.10
+    ports:
+      - 27017:27017
     volumes:
-      - data:/var/lib/postgresql/data
+      - data:/data/db
     environment:
-      - POSTGRES_DB=db_name
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=db
+    command: mongod --quiet --logpath=/dev/null
 
 volumes:
   data:

@@ -8,11 +8,12 @@
     "start": "node ./dist/swagger.js && node ./dist/src/server.js",
     "dev": "nodemon -L -e ts --exec \"npm run build && node ./dist/src/swagger.js && npm start\"",
     "build": "tsc",
+    "build:docker": "tsc --outDir /app/dist/src",
     "swagger-autogen": "npm run build && node ./dist/src/swagger.js",
     "config": "node utils/config.js",
     "playground": "nodemon playground/server.js",
     "docker-cli": "docker exec -it api sh",
-    "prod": "node dist/swagger.js && node dist/server.js"
+    "prod": "node dist/src/swagger.js && node dist/src/server.js"
   },
   "author": "",
   "license": "ISC",

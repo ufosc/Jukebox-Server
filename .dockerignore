@@ -1,13 +1,8 @@
-# # Git
-# .git
-# .gitignore
-
-# # Docker
-# .docker
-
-# # Node
-# node_modules/
+# Hide all files from docker
 *
+
+# Show only the files we need
 !src/
 !package.json
+!package-lock.json
 !tsconfig.json

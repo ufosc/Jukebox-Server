@@ -1,33 +1,36 @@
 # STAGE 1: Building the base image.
 ################################################
-FROM node:16.13.1-alpine3.14 as base
+FROM node:18-alpine3.18 as base
 
 WORKDIR /app
 COPY ./package.json .
 COPY ./tsconfig.json .
 
-RUN npm install
-
 COPY ./src ./src
 
 ARG DEV=false
 
-RUN npm install -g nodemon
+RUN mkdir -p ./dist/src && \
+    npm install && \
+    npm run build:docker
 
-RUN npm run build && npm prune --production && \
-    if [ "$DEV" = "true" ]; \
-        then npm install -g nodemon; \
-    fi
+WORKDIR /app
 
-# STAGE 2: Building the production image.
+# STAGE 2: Building the final image.
 ################################################
-FROM base as prod
+FROM base as final
 
 WORKDIR /app
 
 COPY --from=base /app/package.json .
-COPY --from=base /app/dist ./dist/
-COPY --from=base /app/node_modules ./node_modules/
+COPY --from=base /app/dist/ /app/dist/
+
+RUN npm install --production && \
+    if [ "$DEV" = "true" ]; \
+        then npm install; \
+        else npm prune --production; \
+    fi
+    
 
 EXPOSE 8000
 

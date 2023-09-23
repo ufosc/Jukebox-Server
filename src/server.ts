@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
+import mongoose from "mongoose";
 
 const swaggerFile = require("./swagger_output.json");
 const mainRoutes = require("./routes/routes");
@@ -35,6 +36,16 @@ const host = env.HOST;
 //     }
 // };
 // connectDB();
+
+mongoose
+    .connect(`mongodb://${env.MONGO_HOST}:${env.MONGO_PORT}/${env.MONGO_DB}`)
+    .then(() => {
+        console.log("Successfully connected to MongoDB");
+    })
+    .catch((err) => {
+        console.log("Error connecting to MongoDB:");
+        console.log(err);
+    });
 
 const app = express();
 

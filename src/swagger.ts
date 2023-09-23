@@ -54,7 +54,7 @@ const doc = {
         SpotifyTokenExpired: {
             success: false,
             message: "Access token not set, please log in",
-            login: "http://localhost:3000/login",
+            login: "http://localhost:8000/login",
         },
         SpotifyAuthSuccess: {
             success: true,

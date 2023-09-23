@@ -2,36 +2,44 @@
 
 Welcome to the Jukebox Server! To get the server running, you only need Node.js installed on your computer. If you want to contribute to the DevOps portion, you will also need docker and docker-compose installed.
 
+## Project Install One-Liner
+
+Copy this command to quickly get started. Must have docker, docker-compose, and git installed.
+
+```sh
+git clone git@github.com:ufosc/Jukebox-Server.git && cd Jukebox-Server && cp sample.env .env && docker-compose up --build
+```
+
 ## Getting started
 
 Use the following commands to download the project locally and get it running with nodemon.
 
 ```sh
 git clone <git url>
-cd Jukebox
+cd Jukebox-Server
 
+cp sample.env .env
 docker-compose build
 docker-compose up
 ```
 
 We use docker compose to easily connect to databases and other container images. It could alternatively be run using `npm run dev`; however, this is not guaranteed to always work.
 
-Once the server is running, visit https://localhost:3000/login to authenticate with Spotify.
+Once the server is running, visit https://localhost:8000/login to authenticate with Spotify.
 
 ## Technology Stack (with documentation link):
 
-| Use | Tech |
-| ----------- | ----------- |
-| Language | [TypeScript](https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html) |
-| Backend Runtime | [Node.js](https://nodejs.dev/en/learn/) |
-| Backend Framework | [Express.js](https://expressjs.com/en/4x/api.html#express) |
-| SQL Database | [Postgres](https://node-postgres.com/) |
-| Unit Tests | [Mocha](https://semaphoreci.com/community/tutorials/getting-started-with-node-js-and-mocha) |
-| Auto Documentation | [Swagger](https://swagger.io/docs/specification/about/)
-| Infrastructure as Code | [Terraform](#)
-| Hosting | [AWS](#)
-| Containerization | [Docker](https://docs.docker.com/get-started/)
-
+| Use                    | Tech                                                                                        |
+| ---------------------- | ------------------------------------------------------------------------------------------- |
+| Language               | [TypeScript](https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html)     |
+| Backend Runtime        | [Node.js](https://nodejs.dev/en/learn/)                                                     |
+| Backend Framework      | [Express.js](https://expressjs.com/en/4x/api.html#express)                                  |
+| SQL Database           | [Postgres](https://node-postgres.com/)                                                      |
+| Unit Tests             | [Mocha](https://semaphoreci.com/community/tutorials/getting-started-with-node-js-and-mocha) |
+| Auto Documentation     | [Swagger](https://swagger.io/docs/specification/about/)                                     |
+| Infrastructure as Code | [Terraform](#)                                                                              |
+| Hosting                | [AWS](#)                                                                                    |
+| Containerization       | [Docker](https://docs.docker.com/get-started/)                                              |
 
 ## Workflow
 
@@ -58,14 +66,15 @@ The pull request will then be tested by a maintainer, and merged into the main b
 A Spotify app is essentially a spotify developer account where you can access their api and other developer services. After you get access to the dashboard you can create additional apps in the future for other personal projects.
 
 To create an app refer to their guide: [Developer.Spotify.com](https://developer.spotify.com/documentation/general/guides/authorization/app-settings/). During setup, here are the recommended settings:
-- The name can be anything, I chose OSC Jukebox
-- For Website, enter `http://localhost:3000` as this is what they will test for when you access their api
-- For Redirect URI enter `http://localhost:3000/spotify-login-callback`, this is the redirect url that spotify will send you to once you are authenticated. This is also the url will give you your spotify auth token.
-- Ignore Bundle IDs and Android Packages
+
+-   The name can be anything, I chose OSC Jukebox
+-   For Website, enter `http://localhost:8000` as this is what they will test for when you access their api
+-   For Redirect URI enter `http://localhost:8000/spotify-login-callback`, this is the redirect url that spotify will send you to once you are authenticated. This is also the url will give you your spotify auth token.
+-   Ignore Bundle IDs and Android Packages
 
 ### 2. Getting The Spotify Auth Code
 
-Once you have the Spotify App and the project set up, the last step is to authenticate your account directly with Spotify. To do so, you must visit http://localhost:3000/login. This will redirect you to the `/spotify-token` route which will display your new **access token** in JSON format.
+Once you have the Spotify App and the project set up, the last step is to authenticate your account directly with Spotify. To do so, you must visit http://localhost:8000/login. This will redirect you to the `/spotify-token` route which will display your new **access token** in JSON format.
 
 Take the Access Token and enter it into the `.env` file at the root of the project in the variable named `SP_ACCESS`. This will allow you to access all of Spotify's API routes.
 

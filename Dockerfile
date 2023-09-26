@@ -7,12 +7,12 @@ COPY ./package.json .
 COPY ./tsconfig.json .
 
 COPY ./src ./src
+COPY ./test ./test
 
 ARG DEV=false
 
-RUN mkdir -p ./dist/src && \
-    npm install && \
-    npm run build:docker
+RUN npm install && \
+    npm run build
 
 WORKDIR /app
 

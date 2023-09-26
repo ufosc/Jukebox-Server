@@ -85,7 +85,7 @@ In the project, `/login` has implemented Spotify's access token authorization co
 Running the following command will run Mocha, which will look for files inside the `/test` directory.
 
 ```sh
-npm test
+docker-compose run --rm api sh -c "npm test"
 ```
 
 When writing new tests, write them inside this `/test` directory.

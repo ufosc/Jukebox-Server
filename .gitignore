@@ -6,6 +6,7 @@ node_modules/
 .env
 dist/
 playground/
+.DS_Store
 
 # Misc
 notes.md

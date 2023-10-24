@@ -1,35 +1,33 @@
 # STAGE 1: Building the base image.
 ################################################
-FROM node:18-alpine3.18 as base
+FROM node:20-bookworm AS setup
 
 WORKDIR /app
-COPY ./package.json .
-COPY ./tsconfig.json .
 
-COPY ./src ./src
-COPY ./test ./test
+COPY ./package.json ./package.json
+COPY ./package-lock.json ./package-lock.json
+COPY ./tsconfig.json ./tsconfig.json
+COPY ./jest.config.ts ./jest.config.ts
+
 
 ARG DEV=false
 
-RUN npm install && \
-    npm run build
+USER root
 
-WORKDIR /app
+RUN npm install -g npm@10.2.1 && \
+    npm install -g typescript && \
+    npm install -g rimraf && \
+    npm install 
 
-# STAGE 2: Building the final image.
+
+# STAGE 2: Building the project.
 ################################################
-FROM base as final
+FROM setup as build
 
-WORKDIR /app
+COPY ./src ./src
 
-COPY --from=base /app/package.json .
-COPY --from=base /app/dist/ /app/dist/
-
-RUN npm install --production && \
-    if [ "$DEV" = "true" ]; \
-        then npm install; \
-        else npm prune --production; \
-    fi
+RUN npm run build && \
+    npm run swagger-autogen
     
 
 EXPOSE 8000

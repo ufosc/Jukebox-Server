@@ -12,6 +12,7 @@ playground/
 notes.md
 README-old.md
 utils-old/
+coverage/
 
 ### Terraform ###
 # Local .terraform directories

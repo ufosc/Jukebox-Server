@@ -2,6 +2,8 @@ const path = require("path");
 const express = require("express");
 const router = express.Router();
 let cookieParser = require("cookie-parser");
+import swaggerUi from "swagger-ui-express";
+// import swaggerDocument from "../swagger/swagger_output.json";
 
 router.use(cookieParser());
 
@@ -15,6 +17,7 @@ let spotifyController = require("../controllers/spotify.controller");
 
 /** Base Routes **/
 router.get("/", mainController.getIndex);
+// router.get("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 /** Spotify Authentication **/
 router.get("/login", authController.getSpotifyCreds);
@@ -36,4 +39,4 @@ router.get(
     spotifyController.SpotifySearchId
 );
 
-module.exports = router;
+export default router;

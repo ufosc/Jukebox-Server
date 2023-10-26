@@ -1,23 +1,16 @@
-const path = require("path");
-const express = require("express");
+/**
+ * @fileoverview Routes for the application.
+ */
+import express from "express";
+import * as spotifyMiddleware from "./middleware/spotify.middleware";
+import * as mainController from "./controllers/main.controller";
+import * as authController from "./controllers/authentication.controller";
+import * as spotifyController from "./controllers/spotify.controller";
+
 const router = express.Router();
-let cookieParser = require("cookie-parser");
-import swaggerUi from "swagger-ui-express";
-// import swaggerDocument from "../swagger/swagger_output.json";
-
-router.use(cookieParser());
-
-// Middleware
-let spotifyMiddleware = require("../middleware/spotify.middleware");
-
-// Controllers
-let mainController = require("../controllers/main.controller");
-let authController = require("../controllers/authentication.controller");
-let spotifyController = require("../controllers/spotify.controller");
 
 /** Base Routes **/
 router.get("/", mainController.getIndex);
-// router.get("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 /** Spotify Authentication **/
 router.get("/login", authController.getSpotifyCreds);
@@ -29,14 +22,14 @@ router.get("/spotify-token", authController.SpotifyLoginToken);
 router.get("/spotify", spotifyMiddleware.AccessTokenExists, spotifyController.SpotifyTest);
 router.get("/spotify/search", spotifyMiddleware.AccessTokenExists, spotifyController.SpotifySearch);
 router.get(
-    "/spotify/search-tracks",
-    spotifyMiddleware.AccessTokenExists,
-    spotifyController.SpotifySearchTracks
+  "/spotify/search-tracks",
+  spotifyMiddleware.AccessTokenExists,
+  spotifyController.SpotifySearchTracks
 );
 router.get(
-    "/spotify/search-id",
-    spotifyMiddleware.AccessTokenExists,
-    spotifyController.SpotifySearchId
+  "/spotify/search-id/:id",
+  spotifyMiddleware.AccessTokenExists,
+  spotifyController.SpotifySearchId
 );
 
 export default router;

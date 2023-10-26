@@ -2,13 +2,13 @@
 const swaggerAutogen = require("swagger-autogen")({ openapi: "3.0.0" });
 
 // const outputFile = "./swagger_output.json";
-const outputFile = "./swagger_output.json";
+const outputFile = "./docs/swagger_output.json";
 // const endpointsFiles = ['./controllers/main.controller.js', './controllers/spotify.controller.js']
 const endpointsFiles = [
-    "../routes/routes.ts",
-    "../controllers/main.controller.ts",
-    "../controllers/authentication.controller.ts",
-    "../controllers/spotify.controller.ts",
+    "./routes.ts",
+    "./controllers/main.controller.ts",
+    "./controllers/authentication.controller.ts",
+    "./controllers/spotify.controller.ts",
 ];
 
 const doc = {
@@ -105,7 +105,11 @@ const doc = {
     },
 };
 
-swaggerAutogen(outputFile, endpointsFiles, doc)
+// swaggerAutogen(outputFile, endpointsFiles, doc)
 // .then(() => {
 //     require("./server.js");
 // });
+export const initializeSwagger = async () => {
+  await swaggerAutogen(outputFile, endpointsFiles, doc);
+};
+

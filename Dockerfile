@@ -26,8 +26,7 @@ FROM setup as build
 
 COPY ./src ./src
 
-RUN npm run build && \
-    npm run swagger-autogen
+RUN npm run build
     
 
 EXPOSE 8000

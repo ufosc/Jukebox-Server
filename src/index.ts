@@ -18,7 +18,6 @@ mongoose
     console.log(err);
   });
 
-
 server.listen(port, () => {
   console.log(`Listening on http://${host == "127.0.0.1" ? "localhost" : host}:${port}`);
 });

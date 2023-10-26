@@ -7,10 +7,10 @@
   },
   "servers": [
     {
-      "url": "http://localhost:undefined/"
+      "url": "http://localhost:8000/"
     },
     {
-      "url": "https://localhost:undefined/"
+      "url": "https://localhost:8000/"
     }
   ],
   "tags": [
@@ -33,6 +33,7 @@
         "tags": [
           "Base"
         ],
+        "summary": "Base route",
         "description": "Base starting point of the project, displays important data",
         "responses": {
           "200": {
@@ -48,15 +49,15 @@
                     },
                     "login_route": {
                       "type": "string",
-                      "example": "http://localhost:8000/login"
+                      "example": "http://localhost:8000/login/"
                     },
                     "logout_route": {
                       "type": "string",
-                      "example": "http://localhost:8000/logout"
+                      "example": "http://localhost:8000/logout/"
                     },
                     "documentation": {
                       "type": "string",
-                      "example": "http://localhost:8000/doc"
+                      "example": "http://localhost:8000/docs/"
                     }
                   },
                   "xml": {
@@ -74,15 +75,15 @@
                     },
                     "login_route": {
                       "type": "string",
-                      "example": "http://localhost:8000/login"
+                      "example": "http://localhost:8000/login/"
                     },
                     "logout_route": {
                       "type": "string",
-                      "example": "http://localhost:8000/logout"
+                      "example": "http://localhost:8000/logout/"
                     },
                     "documentation": {
                       "type": "string",
-                      "example": "http://localhost:8000/doc"
+                      "example": "http://localhost:8000/docs/"
                     }
                   },
                   "xml": {
@@ -129,8 +130,8 @@
         "summary": "Log out of spotify",
         "description": "This endpoint deletes the access_token cookie and redirects to the home page",
         "responses": {
-          "default": {
-            "description": ""
+          "301": {
+            "description": "Redirects to home page"
           }
         }
       }
@@ -148,12 +149,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SpotifyAuthSuccess"
+                  "$ref": "#/components/schemas/SpotifySearchResult"
                 }
               },
               "application/xml": {
                 "schema": {
-                  "$ref": "#/components/schemas/SpotifyAuthSuccess"
+                  "$ref": "#/components/schemas/SpotifySearchResult"
                 }
               }
             }
@@ -208,12 +209,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SpotifyAuthResult"
+                  "$ref": "#/components/schemas/SpotifySearchResult"
                 }
               },
               "application/xml": {
                 "schema": {
-                  "$ref": "#/components/schemas/SpotifyAuthResult"
+                  "$ref": "#/components/schemas/SpotifySearchResult"
                 }
               }
             }
@@ -249,6 +250,7 @@
         "parameters": [
           {
             "name": "artist",
+            "description": "Artist name",
             "in": "query",
             "schema": {
               "type": "string"
@@ -256,6 +258,7 @@
           },
           {
             "name": "album",
+            "description": "Album name",
             "in": "query",
             "schema": {
               "type": "string"
@@ -263,6 +266,7 @@
           },
           {
             "name": "track",
+            "description": "Track name",
             "in": "query",
             "schema": {
               "type": "string"
@@ -270,6 +274,7 @@
           },
           {
             "name": "limit",
+            "description": "Number of results to return",
             "in": "query",
             "schema": {
               "type": "string"
@@ -313,7 +318,7 @@
         }
       }
     },
-    "/spotify/search-id": {
+    "/spotify/search-id/{id}": {
       "get": {
         "tags": [
           "Spotify"
@@ -321,6 +326,14 @@
         "summary": "Search for song by ID",
         "description": "Use this endpoint to search for a song on Spotify by ID.",
         "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "id",
             "in": "query",

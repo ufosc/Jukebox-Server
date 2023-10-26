@@ -1,4 +1,6 @@
-/*====== Authentication into Spotify =======*/
+/**
+ * @fileoverview Authentication controller for the application.
+ */
 import querystring from "querystring";
 import cookieParser from "cookie-parser";
 import request from "request";
@@ -17,147 +19,150 @@ let stateKey = "spotify_auth_state";
  * @return {string} The generated string
  */
 let generateRandomString = function (length: number) {
-    let text = "";
-    let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let text = "";
+  let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    for (let i = 0; i < length; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
+  for (let i = 0; i < length; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
 };
 
-exports.getSpotifyCreds = (req: any, res: any, next: any) => {
-    /*
+export const getSpotifyCreds = (req: any, res: any, next: any) => {
+  /**=================================*
     #swagger.tags = ['Authentication']
     #swagger.summary = "Log into spotify"
     #swagger.description = "This endpoint redirects to spotify to authenticate and return access token. Must use link directly: http://localhost:8000/login"
-     */
-
-    let state = generateRandomString(16);
-    res.cookie(stateKey, state);
-
-    // your application requests authorization
-    let scope = "user-read-private user-read-email";
-    console.log("pre state: " + state);
-    /*
     #swagger.responses[301] = {
-        description: 'This is an example return value if spotify successfully redirects to /spotify-login-callback, which redirects to /spotify-token',
-        schema: { $ref: '#/definitions/SpotifyAuthSuccess' }
+      description: 'This is an example return value if spotify successfully redirects to /spotify-login-callback, which redirects to /spotify-token',
+      schema: { $ref: '#/definitions/SpotifyAuthSuccess' }
     }
-     */
-    res.redirect(
-        "https://accounts.spotify.com/authorize?" +
-            querystring.stringify({
-                response_type: "code",
-                client_id: client_id,
-                scope: scope,
-                redirect_uri: redirect_uri,
-                state: state,
-            })
-    );
+    *=================================*/
+  let state = generateRandomString(16);
+  res.cookie(stateKey, state);
+
+  let scope = "user-read-private user-read-email";
+  console.log("pre state: " + state);
+  res.redirect(
+    "https://accounts.spotify.com/authorize?" +
+      querystring.stringify({
+        response_type: "code",
+        client_id: client_id,
+        scope: scope,
+        redirect_uri: redirect_uri,
+        state: state,
+      })
+  );
 };
-exports.SpotifyLoginCallback = (req: any, res: any, next: any) => {
-    // your application requests refresh and access tokens
-    // after checking the state parameter
 
-    let code = req.query.code || null;
-    let state = req.query.state || null;
-    //   let storedState = req.cookies ? req.cookies[stateKey] : null;
+/** @api {get} /spotify-login-callback Callback for Spotify Auth */
+export const SpotifyLoginCallback = (req: any, res: any, next: any) => {
+  /**=================================*
+   * This route is called by spotify after the user logs in,
+   * and redirects to /spotify-token. It is private by default.
+   * #swagger.ignore = true
+   *==================================*/
+  /** An authorization code that can be exchanged for an access token. */
+  let code = req.query.code || null;
+  /** The value of the state parameter supplied in the request. */
+  let state = req.query.state || null;
 
-    if (state === null) {
-        res.redirect(
-            "/#" +
-                querystring.stringify({
-                    error: "state_mismatch",
-                })
-        );
-    } else {
-        // res.clearCookie(stateKey);
-        let authOptions = {
-            url: "https://accounts.spotify.com/api/token",
-            form: {
-                code: code,
-                redirect_uri: redirect_uri,
-                grant_type: "authorization_code",
-            },
-            headers: {
-                Authorization:
-                    "Basic " + new Buffer(client_id + ":" + client_secret).toString("base64"),
-            },
-            json: true,
+  if (state === null) {
+    res.redirect(
+      "/#" +
+        querystring.stringify({
+          error: "state_mismatch",
+        })
+    );
+  } else {
+    let authOptions = {
+      url: "https://accounts.spotify.com/api/token",
+      form: {
+        code: code,
+        redirect_uri: redirect_uri,
+        grant_type: "authorization_code",
+      },
+      headers: {
+        Authorization: "Basic " + new Buffer(client_id + ":" + client_secret).toString("base64"),
+      },
+      json: true,
+    };
+
+    /** Make request to spotify API. */
+    request.post(authOptions, (error: any, response: any, body: any) => {
+      if (!error && response.statusCode === 200) {
+        let access_token = body.access_token,
+          refresh_token = body.refresh_token;
+
+        let options = {
+          url: "https://api.spotify.com/v1/me",
+          headers: { Authorization: "Bearer " + access_token },
+          json: true,
         };
 
-        request.post(authOptions, (error: any, response: any, body: any) => {
-            // #swagger.ignore = true
-            if (!error && response.statusCode === 200) {
-                let access_token = body.access_token,
-                    refresh_token = body.refresh_token;
-
-                let options = {
-                    url: "https://api.spotify.com/v1/me",
-                    headers: { Authorization: "Bearer " + access_token },
-                    json: true,
-                };
-
-                // use the access token to access the Spotify Web API
-                request.get(options, (error: any, response: any, body: any) => {
-                    console.log("===== Spotify API Test =====");
-                    console.log(body);
-                });
-
-                // we can also pass the token to the browser to make requests from there
-                // res.cookie('access_token', access_token);
-                // console.log(res.cookie())
-                res.redirect(
-                    "/spotify-token?access_token=" +
-                        access_token +
-                        "&refresh_token=" +
-                        refresh_token
-                );
-            } else {
-                res.redirect(
-                    "/#" +
-                        querystring.stringify({
-                            error: "invalid_token",
-                        })
-                );
-            }
+        /** Use the access token to access the Spotify API */
+        request.get(options, (error: any, response: any, body: any) => {
+          console.log("===== Spotify API Test =====");
+          console.log(body);
         });
-    }
+
+        res.redirect(
+          "/spotify-token?access_token=" + access_token + "&refresh_token=" + refresh_token
+        );
+      } else {
+        res.redirect(
+          "/#" +
+            querystring.stringify({
+              error: "invalid_token",
+            })
+        );
+      }
+    });
+  }
 };
 
-exports.SpotifyLoginToken = (req: any, res: any, next: any) => {
-    // #swagger.ignore = true
-    let access_token = req.query.access_token || null;
-    let refresh_token = req.query.access_token || null;
-    let err = req.query.err || null;
-    let root = `http://${process.env.HOST == "127.0.0.1" ? "localhost" : process.env.HOST}:${
-        process.env.PORT
-    }`;
+/** @api {get} /spotify-token Handle Spotify access token. */
+export const SpotifyLoginToken = (req: any, res: any, next: any) => {
+  /**
+   * This route is called by spotify after the user logs in,
+   * and redirects to /spotify-token. It is private by default.
+   *
+   * #swagger.ignore = true
+   */
+  let access_token = req.query.access_token || null;
+  let refresh_token = req.query.access_token || null;
+  let err = req.query.err || null;
+  let root = `http://${process.env.HOST == "127.0.0.1" ? "localhost" : process.env.HOST}:${
+    process.env.PORT
+  }`;
 
-    if (err == null) {
-        res.cookie(`access_token`, access_token, {});
-        res.json({
-            success: true,
-            access_token: access_token,
-            refresh_token: refresh_token,
-            message: "Cookie 'access_token' has been created successfully",
-            home: root,
-        });
-    } else {
-        res.json({
-            success: false,
-            message: err,
-        });
-    }
+  if (err == null) {
+    res.cookie(`access_token`, access_token, {});
+    res.json({
+      success: true,
+      access_token: access_token,
+      refresh_token: refresh_token,
+      message: "Cookie 'access_token' has been created successfully",
+      home: root,
+    });
+  } else {
+    res.json({
+      success: false,
+      message: err,
+    });
+  }
 };
 
-exports.SpotifyLogout = (req: any, res: any, next: any) => {
-    /*
+/** @api {get} /logout Log out of Spotify */
+export const SpotifyLogout = (req: any, res: any, next: any) => {
+  /**=================================*
     #swagger.tags = ['Authentication']
     #swagger.summary = "Log out of spotify"
     #swagger.description = "This endpoint deletes the access_token cookie and redirects to the home page"
-     */
-    res.clearCookie("access_token");
-    res.redirect("/");
+    #swagger.responses[301] = {
+      description: 'Redirects to home page',
+    }
+   *==================================*/
+  res.clearCookie("access_token");
+  res.redirect("/");
 };

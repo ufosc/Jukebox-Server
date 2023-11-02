@@ -2,7 +2,7 @@
   "name": "spotify_app",
   "version": "1.0.0",
   "description": "App that connects to spotify API to do enable OSC members access to music",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
     "test": "npm run build && jest --testTimeout=5000 --detectOpenHandles --forceExit",
     "test:watch": "npm run build && jest --watch --testTimeout=5000 --detectOpenHandles --forceExit --verbose",
@@ -16,9 +16,6 @@
   },
   "author": "",
   "license": "ISC",
-  "mocha": {
-    "spec": "./dist/test"
-  },
   "dependencies": {
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
@@ -44,6 +41,7 @@
     "fs": "^0.0.1-security",
     "jest": "^29.7.0",
     "mocha": "^10.2.0",
+    "mongodb-memory-server": "^9.0.1",
     "nodemon": "^2.0.21",
     "prompt-sync": "^4.2.0",
     "supertest": "^6.3.3",

@@ -15,28 +15,30 @@ services:
       - MONGO_PORT=27017
       - MONGO_DB=db
       - MONGO_USER=root
-      - MONGO_PASSWORD=password
+      - MONGO_PASSWORD=changeme
+      - MONGO_URI=mongodb://root:changeme@mongo-jukebox:27017
       - SP_ID=${SP_ID}
       - SP_SECRET=${SP_SECRET}
     ports:
       - 8000:8000
     depends_on:
-      - mongo
+      - mongo-jukebox
     volumes:
       - ./src:/app/src
     command: npm run dev
   
-  mongo:
-    image: mongo:6.0.10
+  mongo-jukebox:
+    image: mongo:6.0.9
+    restart: always
+    container_name: mongo-jukebox
     ports:
       - 27017:27017
     volumes:
       - data:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=password
-      - MONGO_INITDB_DATABASE=db
-    command: mongod --quiet --logpath=/dev/null
+      - MONGO_INITDB_ROOT_PASSWORD=changeme
+    command: mongod --quiet --logpath /dev/null --bind_ip_all
 
 volumes:
   data:

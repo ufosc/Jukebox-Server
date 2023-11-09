@@ -11,3 +11,4 @@ export type UserType = Document & {
 };
 
 export type UserOrNull = UserType | null;
+export type UserPromiseOrNull = Promise<UserOrNull>;

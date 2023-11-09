@@ -2,7 +2,7 @@
  * @fileoverview Manager for the user model.
  */
 import User from "./user.model";
-import { UserType } from "./user.types";
+import { UserPromiseOrNull, UserType, UserOrNull } from "./user.types";
 
 export default class UserManager {
   private static instance: UserManager = new UserManager();
@@ -216,5 +216,22 @@ export default class UserManager {
       });
 
     return user;
+  }
+
+  /**
+   * Get a user by their username.
+   *
+   * @param username The username of the user.
+   * @return The user.
+   */
+  static async getUserByUsername(username: string): UserPromiseOrNull {
+    if (!username || username === "") throw new Error("No username provided");
+
+    const user: UserOrNull = await User.findOne({ username: username })
+      .catch((err) => {
+        throw err;
+      });
+      
+      return user;
   }
 }

@@ -19,7 +19,7 @@ mongoose
     console.log("Error connecting to MongoDB:");
     console.log(err);
   });
-
+  
 initializeSwagger().then(() => {
   const swaggerDocument = require("./docs/swagger_output.json");
   server.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));

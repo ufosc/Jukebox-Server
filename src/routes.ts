@@ -10,6 +10,7 @@ import * as spotifyAuthController from "./spotify/authentication";
 // import * as spotifyController from "./controllers/spotify.controller";
 import * as spotifyController from "./spotify/controller";
 import * as userController from "./controllers/user.controller";
+import * as authMiddleware from "./middleware/auth.middleware";
 
 const router = express.Router();
 
@@ -39,6 +40,6 @@ router.get(
 /** User Routes */
 router.post("/api/user/register", userController.register);
 router.post("/api/user/login", userController.logIn);
-router.get("/api/user/me", userController.getUser);
+router.get("/api/user/me", authMiddleware.checkToken, userController.getUser);
 
 export default router;

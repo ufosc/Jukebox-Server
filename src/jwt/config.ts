@@ -12,5 +12,9 @@ export const config = {
 }
 
 export interface CustomRequest extends Request {
-  token: JwtPayload;
+  token: TokenPayload;
+}
+
+export interface TokenPayload extends JwtPayload {
+  userId: string;
 }

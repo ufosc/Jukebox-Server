@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
  */
 import User from "./user.model";
 import { UserPromiseOrNull, UserType, UserOrNull } from "./user.types";
+import { TokenPayload } from "jwt/config";
 
 export default class UserManager {
   private static instance: UserManager = new UserManager();
@@ -262,6 +263,16 @@ export default class UserManager {
       throw err;
     });
 
+    return user;
+  }
+
+  static async getUserByToken(token: TokenPayload) {
+    const userId = token.userId;
+    const user = await UserManager.getUser(userId).catch((err) => {
+      console.log("Error getting user by token: ", err);
+      throw err;
+    });
+    
     return user;
   }
 }

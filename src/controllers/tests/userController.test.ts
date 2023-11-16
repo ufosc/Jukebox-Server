@@ -30,7 +30,7 @@ describe("userController", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty("_id");
   });
-  
+
   it("Should log in a user", async () => {
     const response = await request(server).post("/api/user/login").send({
       username: username,
@@ -38,22 +38,22 @@ describe("userController", () => {
     });
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty("token");
-    
   });
-  
+
   it("Should get current logged in user", async () => {
-    const token = await request(server).post("/api/user/login").send({
-      username: username,
-      password: password,
-    }).then((response) => {
-      return response.body.token;
-    });
+    const token = await request(server)
+      .post("/api/user/login")
+      .send({
+        username: username,
+        password: password,
+      })
+      .then((response) => {
+        return response.body.token;
+      });
     const headers = {
-      Authorization: `Bearer ${token}`
-    }
-    
-    console.log("headers: ", headers)
-    
+      Authorization: `Bearer ${token}`,
+    };
+
     const response = await request(server).get("/api/user/me").set(headers);
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty("_id");

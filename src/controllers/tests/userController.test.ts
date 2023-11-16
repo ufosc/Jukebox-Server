@@ -15,19 +15,20 @@ describe("userController", () => {
   let user: UserType;
 
   beforeEach(async () => {
-    username = username + generateRandomString(5);
+    username = username + generateRandomString(4);
     user = await UserManager.createUser(username, password, {
       accessToken: accessToken,
     });
   });
 
-  it("Should sign up a user", async () => {
-    let newUsername = generateRandomString(10);
-    const response = await request(server).post("/api/user/signup").send({
+  it("Should register a user", async () => {
+    let newUsername = username + generateRandomString(4);
+    const response = await request(server).post("/api/user/register").send({
       username: newUsername,
       password: password,
     });
     expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("_id");
   });
   
   it("Should log in a user", async () => {
@@ -36,12 +37,25 @@ describe("userController", () => {
       password: password,
     });
     expect(response.statusCode).toBe(200);
-    expect(response.body).toHaveProperty("accessToken");
-    expect(response.body.accessToken).toEqual(accessToken);
+    expect(response.body).toHaveProperty("token");
+    
   });
   
   it("Should get current logged in user", async () => {
-    const response = await request(server).get("/api/user/me");
+    const token = await request(server).post("/api/user/login").send({
+      username: username,
+      password: password,
+    }).then((response) => {
+      return response.body.token;
+    });
+    const headers = {
+      Authorization: `Bearer ${token}`
+    }
+    
+    console.log("headers: ", headers)
+    
+    const response = await request(server).get("/api/user/me").set(headers);
     expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("_id");
   });
 });

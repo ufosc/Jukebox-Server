@@ -11,6 +11,8 @@ services:
       - DEV=true
       - PORT=8000
       - HOST=localhost
+      - JWT_SECRET_KEY=changeme
+      - TOKEN_HEADER_KEY=Authorization
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
       - MONGO_DB=db
@@ -25,6 +27,7 @@ services:
       - mongo-jukebox
     volumes:
       - ./src:/app/src
+      - ./package.json:/app/package.json
     command: npm run dev
   
   mongo-jukebox:

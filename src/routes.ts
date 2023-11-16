@@ -37,8 +37,8 @@ router.get(
 );
 
 /** User Routes */
-router.post("/api/user/signup", userController.signUp);
+router.post("/api/user/register", userController.register);
 router.post("/api/user/login", userController.logIn);
-router.get("/api/user/me", userController.me);
+router.get("/api/user/me", userController.getUser);
 
 export default router;

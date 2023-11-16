@@ -15,11 +15,11 @@ export const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  accessToken: {
+  spotifyAccessToken: {
     type: String,
     required: false,
   },
-  refreshToken: {
+  spotifyRefreshToken: {
     type: String,
     required: false,
   },

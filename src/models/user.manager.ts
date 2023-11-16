@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 /**
  * @fileoverview Manager for the user model.
  */
@@ -14,12 +15,20 @@ export default class UserManager {
    * @return The parsed data.
    */
   private parseData(data: any) {
-    let parsedData = {};
+    let parsedData: any = {
+      username: "",
+      password: "",
+      spotifyAccessToken: "",
+      spotifyRefreshToken: "",
+      // id: "",
+    };
 
     if (data.username) parsedData = { ...parsedData, username: data.username };
     if (data.password) parsedData = { ...parsedData, password: data.password };
-    if (data.accessToken) parsedData = { ...parsedData, accessToken: data.accessToken };
-    if (data.refreshToken) parsedData = { ...parsedData, refreshToken: data.refreshToken };
+    if (data.spotifyAccessToken)
+      parsedData = { ...parsedData, spotifyAccessToken: data.spotifyAccessToken };
+    if (data.spotifyRefreshToken)
+      parsedData = { ...parsedData, spotifyRefreshToken: data.spotifyRefreshToken };
     if (data.id || data._id) parsedData = { ...parsedData, _id: data.id || data._id };
 
     return parsedData;
@@ -37,7 +46,7 @@ export default class UserManager {
     let payload = {
       ...parsedData,
       username: username,
-      password: password,
+      password: await this.hashPassword(password),
     };
 
     let user = User.create(payload)
@@ -53,6 +62,8 @@ export default class UserManager {
 
   static async createUserFromObject(data: any) {
     let payload = this.instance.parseData(data);
+
+    payload.password = await this.hashPassword(payload.password);
 
     let user = User.create(payload)
       .then((user) => {
@@ -154,7 +165,7 @@ export default class UserManager {
         throw err;
       });
 
-    return user.accessToken;
+    return user.spotifyAccessToken;
   }
 
   /**
@@ -173,7 +184,7 @@ export default class UserManager {
         throw err;
       });
 
-    return user.refreshToken;
+    return user.spotifyRefreshToken;
   }
 
   /**
@@ -185,7 +196,7 @@ export default class UserManager {
   static async getUserByAccessToken(token?: string) {
     if (!token || token === "") throw new Error("No token provided");
 
-    const user: UserType = await User.findOne({ accessToken: token })
+    const user: UserType = await User.findOne({ spotifyAccessToken: token })
       .then((user) => {
         if (!user) throw new Error("User not found");
         return user;
@@ -206,7 +217,7 @@ export default class UserManager {
   static async getUserByRefreshToken(token?: string): Promise<UserType> {
     if (!token || token === "") throw new Error("No token provided");
 
-    const user: UserType = await User.findOne({ refreshToken: token })
+    const user: UserType = await User.findOne({ spotifyRefreshToken: token })
       .then((user) => {
         if (!user) throw new Error("User not found");
         return user;
@@ -227,11 +238,30 @@ export default class UserManager {
   static async getUserByUsername(username: string): UserPromiseOrNull {
     if (!username || username === "") throw new Error("No username provided");
 
-    const user: UserOrNull = await User.findOne({ username: username })
-      .catch((err) => {
-        throw err;
-      });
-      
-      return user;
+    const user: UserOrNull = await User.findOne({ username: username }).catch((err) => {
+      throw err;
+    });
+
+    return user;
+  }
+
+  static async hashPassword(password: string) {
+    if (!password || password === "") throw new Error("No password provided");
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    return hashedPassword;
+  }
+
+  static async setUserPassword(id: string, password: string) {
+    password = await this.hashPassword(password);
+
+    const user = await UserManager.updateUser(id, { password: password }).catch((err) => {
+      console.log("Error setting user password: ", err);
+      throw err;
+    });
+
+    return user;
   }
 }

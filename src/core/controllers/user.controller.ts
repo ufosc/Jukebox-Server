@@ -13,7 +13,7 @@ export const register = async (req: Request, res: Response) => {
    * Create new user in db
    */
   const { username, password } = req.body;
-  
+
   if (!username || !password) return res.status(400).send("Missing username or password");
   // console.log('request: ', req)
 
@@ -24,23 +24,22 @@ export const register = async (req: Request, res: Response) => {
 
   res.send(user);
 };
- 
+
 /** @api {get} /api/user/login */
 export const logIn = async (req: Request, res: Response) => {
   /**
    * generate token for user
    */
   const { username, password } = req.body;
-  
+
   if (!username || !password) return res.status(400).send("Missing username or password");
 
   let user = await UserManager.getUserByUsername(username);
   if (!user) return res.status(404).send("User not found");
-  
+
   const validPassword = await bcrypt.compare(password, user.password!);
 
   if (!validPassword) return res.status(400).send("Invalid password");
-    
 
   const token = jwt.sign({ userId: user._id }, config.jwt.secret!, {
     expiresIn: config.jwt.expiresIn,

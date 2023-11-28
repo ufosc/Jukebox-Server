@@ -1,8 +1,8 @@
-import querystring from 'querystring';
-import UserManager from "models/user.manager";
-import { UserType } from "models/user.types";
+import querystring from "querystring";
+import UserManager from "core/models/user.manager";
+import { UserType } from "core/models/user.types";
 import request from "request";
-import { SpotifyResponse } from "./spotify.types";
+import { SpotifyResponse } from "./types";
 import "dotenv/config";
 
 const client_id = process.env.SP_ID; // Your client id
@@ -14,7 +14,6 @@ export default class SpotifyManager {
   static async redirectToSpotifyLogin(token: string, req: any, res: any) {
     let state = token;
     res.cookie(stateKey, state);
-    
 
     let scope = "user-read-private user-read-email";
     console.log("pre state: " + state);
@@ -33,7 +32,7 @@ export default class SpotifyManager {
   static async getSpotifyTokens(
     code: string,
     state: string,
-    userId: string,
+    userId: string
   ): Promise<SpotifyResponse> {
     if (state === null) throw new Error("Spotify state is null");
     let accessToken;

@@ -3,10 +3,10 @@
  */
 import { Request, Response } from "express";
 import request from "supertest";
-import server from "../../server";
+import server from "../../../server";
 import UserManager from "../../models/user.manager";
-import { UserType } from "models/user.model";
-import { generateRandomString } from "../../utils/generator";
+import { UserType } from "core/models/user.model";
+import { generateRandomString } from "../../../utils/generator";
 
 describe("userController", () => {
   let username = "test";

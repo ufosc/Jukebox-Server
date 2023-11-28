@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { CustomRequest } from "jwt/config";
-import JwtManager from "jwt/jwt.manager";
-import UserManager from "models/user.manager";
-import SpotifyManager from "spotify/spotify.manager";
+import { CustomRequest } from "core/jwt/config";
+import JwtManager from "core/jwt/jwt.manager";
+import UserManager from "core/models/user.manager";
+import SpotifyManager from "spotify/spotify";
 
 // TODO: implement this in react
 export const loginWithSpotify = async (req: Request, res: Response) => {
@@ -28,7 +28,6 @@ export const getSpotifyToken = async (req: Request, res: Response) => {
     return res.status(401).send("Error getting token: " + error);
   });
   const userId = token.userId;
-  
 
   if (error) {
     console.log("Spotify Error: ", error);

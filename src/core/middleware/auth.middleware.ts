@@ -11,7 +11,6 @@ import { NextFunction, Request, Response } from "express";
 export const checkToken = async (req: Request, res: Response, next: NextFunction) => {
   const token = <string>req.headers["authorization"];
   let jwtPayload;
-  
 
   try {
     jwtPayload = <any>jwt.verify(token?.split(" ")[1], config.jwt.secret!, {
@@ -22,7 +21,7 @@ export const checkToken = async (req: Request, res: Response, next: NextFunction
       ignoreExpiration: false,
       ignoreNotBefore: false,
     });
-    
+
     jwtPayload.payload.originalToken = token;
 
     (req as CustomRequest).token = jwtPayload.payload as TokenPayload;

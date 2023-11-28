@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
  */
 import User from "./user.model";
 import { UserPromiseOrNull, UserType, UserOrNull } from "./user.types";
-import { TokenPayload } from "jwt/config";
+import { TokenPayload } from "core/jwt/config";
 
 export default class UserManager {
   private static instance: UserManager = new UserManager();
@@ -248,7 +248,7 @@ export default class UserManager {
 
   /**
    * Hash a password using bycrypt.
-   * 
+   *
    * @param password The password to hash.
    * @return The hashed password.
    */
@@ -263,7 +263,7 @@ export default class UserManager {
 
   /**
    * Get a user by their JWT token.
-   * 
+   *
    * @param token The JWT token of the user.
    * @return The user.
    */
@@ -273,7 +273,7 @@ export default class UserManager {
       console.log("Error getting user by token: ", err);
       throw err;
     });
-    
+
     return user;
   }
 }

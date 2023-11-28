@@ -246,6 +246,12 @@ export default class UserManager {
     return user;
   }
 
+  /**
+   * Hash a password using bycrypt.
+   * 
+   * @param password The password to hash.
+   * @return The hashed password.
+   */
   static async hashPassword(password: string) {
     if (!password || password === "") throw new Error("No password provided");
 
@@ -255,17 +261,12 @@ export default class UserManager {
     return hashedPassword;
   }
 
-  static async setUserPassword(id: string, password: string) {
-    password = await this.hashPassword(password);
-
-    const user = await UserManager.updateUser(id, { password: password }).catch((err) => {
-      console.log("Error setting user password: ", err);
-      throw err;
-    });
-
-    return user;
-  }
-
+  /**
+   * Get a user by their JWT token.
+   * 
+   * @param token The JWT token of the user.
+   * @return The user.
+   */
   static async getUserByToken(token: TokenPayload) {
     const userId = token.userId;
     const user = await UserManager.getUser(userId).catch((err) => {

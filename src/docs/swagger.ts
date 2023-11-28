@@ -7,8 +7,9 @@ const outputFile = "./docs/swagger_output.json";
 const endpointsFiles = [
     "./routes.ts",
     "./controllers/main.controller.ts",
-    "./controllers/authentication.controller.ts",
-    "./controllers/spotify.controller.ts",
+    "./controllers/user.controller.ts",
+    // "./controllers/spotify.controller.ts",
+    "./spotify/controller.ts",
 ];
 
 const doc = {

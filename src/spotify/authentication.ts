@@ -5,6 +5,7 @@ import querystring from "querystring";
 import cookieParser from "cookie-parser";
 import request from "request";
 import fs from "fs";
+import UserManager from "../models/user.manager";
 
 require("dotenv").config();
 
@@ -40,6 +41,7 @@ export const getSpotifyCreds = (req: any, res: any, next: any) => {
     *=================================*/
   let state = generateRandomString(16);
   res.cookie(stateKey, state);
+  redirect_uri = redirect_uri
 
   let scope = "user-read-private user-read-email";
   console.log("pre state: " + state);
@@ -56,7 +58,7 @@ export const getSpotifyCreds = (req: any, res: any, next: any) => {
 };
 
 /** @api {get} /spotify-login-callback Callback for Spotify Auth */
-export const SpotifyLoginCallback = (req: any, res: any, next: any) => {
+export const SpotifyLoginCallback = async (req: any, res: any, next: any) => {
   /**=================================*
    * This route is called by spotify after the user logs in,
    * and redirects to /spotify-token. It is private by default.
@@ -66,6 +68,12 @@ export const SpotifyLoginCallback = (req: any, res: any, next: any) => {
   let code = req.query.code || null;
   /** The value of the state parameter supplied in the request. */
   let state = req.query.state || null;
+  
+  let token = req.cookies.token;
+  const user = await UserManager.getUserByToken(token).catch((err) => {
+    console.log(err);
+    return res.status(400).send("Error authorizing user: " + err);
+  });
 
   if (state === null) {
     res.redirect(
@@ -105,10 +113,17 @@ export const SpotifyLoginCallback = (req: any, res: any, next: any) => {
           console.log("===== Spotify API Test =====");
           console.log(body);
         });
+        
+        UserManager.updateUser(user._id, { spotifyAccessToken: access_token, spotifyRefreshToken: refresh_token });
 
-        res.redirect(
-          "/spotify-token?access_token=" + access_token + "&refresh_token=" + refresh_token
-        );
+        // res.redirect(
+        //   "/spotify-token?access_token=" + access_token + "&refresh_token=" + refresh_token
+        // );
+        res.json({
+          success: true,
+          access_token: access_token,
+          refresh_token: refresh_token
+        })
       } else {
         res.redirect(
           "/#" +

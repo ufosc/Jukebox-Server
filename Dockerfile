@@ -14,7 +14,7 @@ ARG DEV=false
 
 USER root
 
-RUN npm install -g npm@10.2.1 && \
+RUN npm install -g npm && \
     npm install -g typescript && \
     npm install -g rimraf && \
     npm install 

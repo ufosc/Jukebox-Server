@@ -13,18 +13,26 @@ export const register = async (req: Request, res: Response) => {
    * Create new user in db
    */
   const { username, password } = req.body;
+  
+  if (!username || !password) return res.status(400).send("Missing username or password");
+  // console.log('request: ', req)
 
-  const user = await UserManager.createUser(username, password, {});
+  const user = await UserManager.createUser(username, password, {}).catch((err) => {
+    console.log(err);
+    return res.status(400).send("Error creating user: " + err);
+  });
 
   res.send(user);
 };
-
+ 
 /** @api {get} /api/user/login */
 export const logIn = async (req: Request, res: Response) => {
   /**
    * generate token for user
    */
   const { username, password } = req.body;
+  
+  if (!username || !password) return res.status(400).send("Missing username or password");
 
   let user = await UserManager.getUserByUsername(username);
   if (!user) return res.status(404).send("User not found");

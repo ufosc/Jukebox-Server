@@ -9,9 +9,11 @@ import swaggerUi from "swagger-ui-express";
 const env = process.env;
 const port = env.PORT;
 const host = env.HOST;
+const MONGO_URI = process.env.MONGO_URI;
 
 mongoose
-  .connect(`mongodb://${env.MONGO_HOST}:${env.MONGO_PORT}/${env.MONGO_DB}`)
+  // .connect(`mongodb://${env.MONGO_HOST}:${env.MONGO_PORT}/${env.MONGO_DB}`)
+  .connect(MONGO_URI || "")
   .then(() => {
     console.log("Successfully connected to MongoDB");
   })

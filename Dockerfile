@@ -10,7 +10,8 @@ COPY ./tsconfig.json ./tsconfig.json
 COPY ./jest.config.ts ./jest.config.ts
 
 
-ARG DEV=false
+ARG NODE_ENV=production
+ENV NODE_ENV=NODE_ENV
 
 USER root
 

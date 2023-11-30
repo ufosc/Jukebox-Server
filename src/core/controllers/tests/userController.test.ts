@@ -7,6 +7,9 @@ import server from "../../../server";
 import UserManager from "../../models/user.manager";
 import { UserType } from "core/models/user.model";
 import { generateRandomString } from "../../../utils/generator";
+import config from "config";
+
+const BASE_ROUTE = config.BASE_ROUTE;
 
 describe("userController", () => {
   let username = "test";
@@ -23,7 +26,7 @@ describe("userController", () => {
 
   it("Should register a user", async () => {
     let newUsername = username + generateRandomString(4);
-    const response = await request(server).post("/api/user/register").send({
+    const response = await request(server).post(BASE_ROUTE + "/user/register").send({
       username: newUsername,
       password: password,
     });
@@ -32,7 +35,7 @@ describe("userController", () => {
   });
 
   it("Should log in a user", async () => {
-    const response = await request(server).post("/api/user/login").send({
+    const response = await request(server).post(BASE_ROUTE + "/user/login").send({
       username: username,
       password: password,
     });
@@ -54,7 +57,7 @@ describe("userController", () => {
       Authorization: `Bearer ${token}`,
     };
 
-    const response = await request(server).get("/api/user/me").set(headers);
+    const response = await request(server).get(BASE_ROUTE + "/user/me").set(headers);
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty("_id");
   });

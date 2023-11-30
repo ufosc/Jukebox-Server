@@ -5,9 +5,8 @@ services:
     restart: always
     build:
       context: .
-      args:
-        - NODE_ENV=development
     environment:
+      - NODE_ENV=production
       - PORT=8000
       - HOST=localhost
       - JWT_SECRET_KEY=changeme
@@ -26,21 +25,29 @@ services:
       - mongo-jukebox
     volumes:
       - ./src:/app/src
-      - ./package.json:/app/package.json
-    command: npm run dev
+  
+  proxy:
+    build:
+      context: ./proxy/
+    ports:
+      - 8080:8080
+    depends_on:
+      - api
+    volumes:
+      - client-build:/vol/client
   
   mongo-jukebox:
     image: mongo:6.0.9
     restart: always
-    container_name: mongo-jukebox
     ports:
       - 27017:27017
     volumes:
-      - data:/data/db
+      - mongo-data:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=changeme
     command: mongod --quiet --logpath /dev/null --bind_ip_all
-
+  
 volumes:
-  data:
+  client-build:
+  mongo-data:

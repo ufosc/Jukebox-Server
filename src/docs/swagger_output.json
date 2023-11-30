@@ -7,10 +7,10 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8000/"
+      "url": "http://localhost:8000/api"
     },
     {
-      "url": "https://localhost:8000/"
+      "url": "https://localhost:8000/api"
     }
   ],
   "tags": [
@@ -96,7 +96,7 @@
         }
       }
     },
-    "/login": {
+    "/spotify/login": {
       "get": {
         "tags": [
           "Authentication"
@@ -122,7 +122,7 @@
         }
       }
     },
-    "/logout": {
+    "/spotify/logout": {
       "get": {
         "tags": [
           "Authentication"
@@ -379,7 +379,7 @@
         }
       }
     },
-    "/api/user/register": {
+    "/user/register": {
       "post": {
         "description": "",
         "responses": {
@@ -409,7 +409,7 @@
         }
       }
     },
-    "/api/user/login": {
+    "/user/login": {
       "post": {
         "description": "",
         "responses": {
@@ -442,7 +442,7 @@
         }
       }
     },
-    "/api/user/me": {
+    "/user/me": {
       "get": {
         "description": "",
         "responses": {

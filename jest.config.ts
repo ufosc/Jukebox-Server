@@ -25,10 +25,10 @@ const config: JestConfigWithTsJest = {
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
   collectCoverageFrom: [
-    // "src/**/*.ts"
-    "src/controllers/*.ts",
-    "src/models/*.ts",
-    "src/logic/*.ts"
+    "src/**/*.ts"
+    // "src/controllers/*.ts",
+    // "src/models/*.ts",
+    // "src/logic/*.ts"
   ],
 
   // The directory where Jest should output its coverage files
@@ -37,7 +37,8 @@ const config: JestConfigWithTsJest = {
   // An array of regexp pattern strings used to skip coverage collection
   coveragePathIgnorePatterns: [
     "/node_modules/",
-    "/build/"
+    "/build/",
+    "docs/"
   ],
 
   // Indicates which provider should be used to instrument code for coverage

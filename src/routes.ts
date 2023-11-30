@@ -2,12 +2,9 @@
  * @fileoverview Routes for the application.
  */
 import express from "express";
-// import * as spotifyMiddleware from "./middleware/spotify.middleware";
 import * as spotifyMiddleware from "./spotify/middleware";
 import * as mainController from "./core/controllers/main.controller";
-// import * as authController from "./controllers/authentication.controller";
 import * as spotifyAuthController from "./spotify/authentication";
-// import * as spotifyController from "./controllers/spotify.controller";
 import * as spotifyController from "./spotify/controller";
 import * as userController from "./core/controllers/user.controller";
 import * as authMiddleware from "./core/middleware/auth.middleware";

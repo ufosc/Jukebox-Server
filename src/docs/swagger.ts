@@ -1,15 +1,9 @@
 // const swaggerAutogen = require('swagger-autogen')()
 const swaggerAutogen = require("swagger-autogen")({ openapi: "3.0.0" });
 
-// const outputFile = "./swagger_output.json";
 const outputFile = "./docs/swagger_output.json";
-// const endpointsFiles = ['./controllers/main.controller.js', './controllers/spotify.controller.js']
 const endpointsFiles = [
     "./routes.ts",
-    "./controllers/main.controller.ts",
-    "./controllers/user.controller.ts",
-    // "./controllers/spotify.controller.ts",
-    "./spotify/controller.ts",
 ];
 
 const doc = {

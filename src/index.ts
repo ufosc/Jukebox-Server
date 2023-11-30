@@ -5,13 +5,17 @@ import mongoose from "mongoose";
 import server from "./server";
 import { initializeSwagger } from "./docs/swagger";
 import swaggerUi from "swagger-ui-express";
+import "dotenv/config";
+import config from "./config";
 
-const env = process.env;
-const port = env.PORT;
-const host = env.HOST;
+// const env = process.env;
+const port = config.PORT
+const host = config.HOST
+const MONGO_URI = config.MONGO_URI
+const BASE_ROUTE = config.BASE_ROUTE
 
 mongoose
-  .connect(`mongodb://${env.MONGO_HOST}:${env.MONGO_PORT}/${env.MONGO_DB}`)
+  .connect(MONGO_URI || "")
   .then(() => {
     console.log("Successfully connected to MongoDB");
   })
@@ -22,7 +26,7 @@ mongoose
   
 initializeSwagger().then(() => {
   const swaggerDocument = require("./docs/swagger_output.json");
-  server.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
+  server.use(BASE_ROUTE + "/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
 });
 
 server.listen(port, () => {

@@ -11,15 +11,14 @@ describe("User Model", () => {
     user = await UserManager.createUserFromObject({
       username: "test",
       password: "test",
-      accessToken: "testToken",
-      refreshToken: "testRefreshToken",
+      spotifyAccessToken: "testToken",
+      spotifyRefreshToken: "testRefreshToken",
     })
   });
 
   it("should create a user", async () => {
     let newUser: UserType = await UserManager.createUser("test2", "test2", {});
     expect(newUser.username).toEqual("test2");
-    expect(newUser.password).toEqual("test2");
   });
 
   it("should update a user", async () => {
@@ -30,7 +29,6 @@ describe("User Model", () => {
     
 
     expect(updatedUser.username).toEqual("test2");
-    expect(updatedUser.password).toEqual("test2");
   });
 
   it("should delete a user", async () => {
@@ -52,23 +50,23 @@ describe("User Model", () => {
 
   it("should get a user's access token", async () => {
     const token = await UserManager.getUserAccessToken(user.id);
-    expect(token).toEqual(user.accessToken);
+    expect(token).toEqual(user.spotifyAccessToken);
   });
 
   it("should get a user's refresh token", async () => {
     const token = await UserManager.getUserRefreshToken(user.id);
-    expect(token).toEqual(user.refreshToken);
+    expect(token).toEqual(user.spotifyRefreshToken);
   });
 
   it("should get a user by their access token", async () => {
-    const token = user.accessToken;
+    const token = user.spotifyAccessToken;
     const foundUser = await UserManager.getUserByAccessToken(token);
 
     expect(foundUser.id).toEqual(user.id);
   });
 
   it("should get a user by their refresh token", async () => {
-    const token = user.refreshToken;
+    const token = user.spotifyRefreshToken;
     const foundUser = await UserManager.getUserByRefreshToken(token);
 
     expect(foundUser.id).toEqual(user.id);

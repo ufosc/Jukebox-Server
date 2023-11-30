@@ -7,10 +7,10 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8000/"
+      "url": "http://localhost:8000/api"
     },
     {
-      "url": "https://localhost:8000/"
+      "url": "https://localhost:8000/api"
     }
   ],
   "tags": [
@@ -96,7 +96,7 @@
         }
       }
     },
-    "/login": {
+    "/spotify/login": {
       "get": {
         "tags": [
           "Authentication"
@@ -122,7 +122,7 @@
         }
       }
     },
-    "/logout": {
+    "/spotify/logout": {
       "get": {
         "tags": [
           "Authentication"
@@ -375,6 +375,85 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/user/register": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "example": "any"
+                  },
+                  "password": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/login": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "example": "any"
+                  },
+                  "password": {
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/me": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }

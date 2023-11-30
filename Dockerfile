@@ -10,11 +10,12 @@ COPY ./tsconfig.json ./tsconfig.json
 COPY ./jest.config.ts ./jest.config.ts
 
 
-ARG DEV=false
+ARG NODE_ENV=production
+ENV NODE_ENV=NODE_ENV
 
 USER root
 
-RUN npm install -g npm@10.2.1 && \
+RUN npm install -g npm && \
     npm install -g typescript && \
     npm install -g rimraf && \
     npm install 

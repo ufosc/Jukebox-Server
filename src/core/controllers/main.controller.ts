@@ -1,18 +1,21 @@
 /**
  * @fileoverview General routes for the project.
  */
+import "dotenv/config";
+import config from "config";
 
-let client_id = process.env.SP_ID; // Your client id
-let client_secret = process.env.SP_SECRET; // Your secret
-let redirect_uri = process.env.SP_URI; // Your redirect uri
-require("dotenv").config();
 
-let baseResponse = {
+const baseResponse = {
   success: true,
   login_route: "http://localhost:8000/login/",
   logout_route: "http://localhost:8000/logout/",
   documenation: "http://localhost:8000/docs/",
 };
+
+const healthCheck = {
+  status: 200,
+  message: "Jukebox API is online."
+}
 
 /** @api {get} / Base route */
 export const getIndex = (req: any, res: any, next: any) => {
@@ -30,5 +33,6 @@ export const getIndex = (req: any, res: any, next: any) => {
         }
     }
   *========================*/
-  res.json(baseResponse);
+  let resData = process.env.NODE_ENV === 'production' ? healthCheck : baseResponse;
+  res.json(resData);
 };

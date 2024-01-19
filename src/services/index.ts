@@ -1,0 +1,1 @@
+export { SpotifyService } from './spotify'

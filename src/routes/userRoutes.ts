@@ -3,6 +3,7 @@ import * as UserController from '../controllers/userController'
 import { isAuthenticated } from '../middleware/authMiddleware'
 
 const router = Router()
+// const controller = UserController
 
 /**== User Authentication - /api/user/ ==**/
 router.post('/register', UserController.register)

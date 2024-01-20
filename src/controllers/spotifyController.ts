@@ -41,7 +41,7 @@ export const spotifyLoginCallback = async (req: Request, res: Response) => {
 
 export const spotifyTokens = (_: Request, res: Response) => {
   // Final destination - display tokens
-  return responses.notImplemented(res);
+  return responses.notImplemented(res)
 }
 
 export const spotifyTest = (_: Request, res: Response) => {

@@ -1,1 +1,1 @@
-export * from './responses';
+export * as responses from './responses';

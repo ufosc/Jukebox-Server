@@ -2,7 +2,7 @@
  * @fileoverview General routes for the project.
  */
 import 'dotenv/config'
-import { responses } from 'src/utils'
+import { Responses } from 'src/utils'
 
 export const healthCheck = (_: any, res: any) => {
   /**======================*
@@ -19,12 +19,10 @@ export const healthCheck = (_: any, res: any) => {
         }
     }
   *========================*/
-  responses.ok(res, {
+  Responses.ok(res, {
     success: true,
     login_route: 'http://localhost:8000/login/',
     logout_route: 'http://localhost:8000/logout/',
     documenation: 'http://localhost:8000/docs/'
   })
 }
-
-

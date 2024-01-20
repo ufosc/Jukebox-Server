@@ -5,8 +5,8 @@ import jwt, { Jwt } from 'jsonwebtoken'
 
 import { NextFunction, Request, Response } from 'express'
 import { JWT_ALGORITHM, JWT_ISSUER, JWT_SECRET_KEY, NODE_ENV } from 'src/config'
-import { responses } from 'src/utils'
 import { User } from 'src/models'
+import { responses } from '../utils'
 
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
   if (NODE_ENV === 'development') return next()
@@ -38,10 +38,10 @@ export const hasSpotifyToken = async (_: Request, res: Response, next: NextFunct
 
   // const spotifyToken: string = (req.headers['x-spotify-access-token'] as string) ?? ''
   const { userId } = res.locals
-  const user: User | null = await User.findById(userId);
+  const user: User | null = await User.findById(userId)
   if (!user) return responses.unauthorized(res, 'User not logged in.')
-  
-  const spotifyToken = user.spotifyAccessToken;
+
+  const spotifyToken = user.spotifyAccessToken
   if (spotifyToken == null) return responses.unauthorized(res, 'Spotify token required.')
 
   res.locals = { ...res.locals, spotifyAccessToken: spotifyToken }

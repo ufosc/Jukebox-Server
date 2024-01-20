@@ -96,107 +96,12 @@
         }
       }
     },
-    "/spotify/login": {
+    "/api/spotify/login": {
       "get": {
-        "tags": [
-          "Authentication"
-        ],
-        "summary": "Log into spotify",
-        "description": "This endpoint redirects to spotify to authenticate and return access token. Must use link directly: http://localhost:8000/login",
-        "responses": {
-          "301": {
-            "description": "This is an example return value if spotify successfully redirects to /spotify-login-callback, which redirects to /spotify-token",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifyAuthSuccess"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifyAuthSuccess"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/spotify/logout": {
-      "get": {
-        "tags": [
-          "Authentication"
-        ],
-        "summary": "Log out of spotify",
-        "description": "This endpoint deletes the access_token cookie and redirects to the home page",
-        "responses": {
-          "301": {
-            "description": "Redirects to home page"
-          }
-        }
-      }
-    },
-    "/spotify": {
-      "get": {
-        "tags": [
-          "Spotify"
-        ],
-        "summary": "Test spotify connection",
-        "description": "This endpoint is meant to test the spotify connection and provide an example of how to make a request to spotify.  This is also included in the testing suite to ensure proper connection.",
-        "responses": {
-          "200": {
-            "description": "This is an example return value if spotify successfully redirects to /spotify-login-callback, which redirects to /spotify-token",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifySearchResult"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifySearchResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Spotify Access Token Expired",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifyTokenExpired"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifyTokenExpired"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/spotify/search": {
-      "get": {
-        "tags": [
-          "Spotify"
-        ],
-        "summary": "Search Spotify with query params",
-        "description": "Use this endpoint to more easily search for a song on Spotify.",
+        "description": "",
         "parameters": [
           {
-            "name": "q",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "type",
+            "name": "redirectUri",
             "in": "query",
             "schema": {
               "type": "string"
@@ -204,77 +109,25 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifySearchResult"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifySearchResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Spotify Access Token Expired",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifyTokenExpired"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifyTokenExpired"
-                }
-              }
-            }
+          "default": {
+            "description": ""
           }
         }
       }
     },
-    "/spotify/search-tracks": {
+    "/api/spotify/login-callback": {
       "get": {
-        "tags": [
-          "Spotify"
-        ],
-        "summary": "Search Spotify with query params",
-        "description": "Use this endpoint to more easily search for a song on Spotify.",
+        "description": "",
         "parameters": [
           {
-            "name": "artist",
-            "description": "Artist name",
+            "name": "code",
             "in": "query",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "album",
-            "description": "Album name",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "track",
-            "description": "Track name",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "limit",
-            "description": "Number of results to return",
+            "name": "state",
             "in": "query",
             "schema": {
               "type": "string"
@@ -282,49 +135,55 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifyAuthResult"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifyAuthResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Spotify Access Token Expired",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifyTokenExpired"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifyTokenExpired"
-                }
-              }
-            }
+          "default": {
+            "description": ""
           }
         }
       }
     },
-    "/spotify/search-id/{id}": {
+    "/api/spotify/tokens": {
       "get": {
-        "tags": [
-          "Spotify"
-        ],
-        "summary": "Search for song by ID",
-        "description": "Use this endpoint to search for a song on Spotify by ID.",
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/spotify/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/spotify/search": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/spotify/tracks": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/spotify/tracks/{id}": {
+      "get": {
+        "description": "",
         "parameters": [
           {
             "name": "id",
@@ -333,127 +192,97 @@
             "schema": {
               "type": "string"
             }
-          },
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/user/register": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/user/login": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/user/user": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/user/user/{id}": {
+      "patch": {
+        "description": "",
+        "parameters": [
           {
             "name": "id",
-            "in": "query",
+            "in": "path",
+            "required": true,
             "schema": {
               "type": "string"
             }
           }
         ],
         "responses": {
-          "200": {
-            "description": "Success",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifySearchResult"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifySearchResult"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Spotify Access Token Expired",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifyTokenExpired"
-                }
-              },
-              "application/xml": {
-                "schema": {
-                  "$ref": "#/components/schemas/SpotifyTokenExpired"
-                }
-              }
-            }
+          "default": {
+            "description": ""
           }
         }
-      }
-    },
-    "/user/register": {
-      "post": {
+      },
+      "put": {
         "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "username": {
-                    "example": "any"
-                  },
-                  "password": {
-                    "example": "any"
-                  }
-                }
-              }
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
-        }
-      }
-    },
-    "/user/login": {
-      "post": {
-        "description": "",
+        ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "404": {
-            "description": "Not Found"
+          "default": {
+            "description": ""
           }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "username": {
-                    "example": "any"
-                  },
-                  "password": {
-                    "example": "any"
-                  }
-                }
-              }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
-        }
-      }
-    },
-    "/user/me": {
-      "get": {
-        "description": "",
+        ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "404": {
-            "description": "Not Found"
+          "default": {
+            "description": ""
           }
         }
       }

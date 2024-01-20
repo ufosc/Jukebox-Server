@@ -1,20 +1,21 @@
 /**
  * @fileoverview Authentication middleware.
  */
-import jwt from 'jsonwebtoken'
+import jwt, { Jwt } from 'jsonwebtoken'
 
 import { NextFunction, Request, Response } from 'express'
 import { JWT_ALGORITHM, JWT_ISSUER, JWT_SECRET_KEY, NODE_ENV } from 'src/config'
 import { responses } from 'src/utils'
+import { User } from 'src/models'
 
-export const hasAuthToken = async (req: Request, res: Response, next: NextFunction) => {
+export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
   if (NODE_ENV === 'development') return next()
 
-  const token = <string>req.headers['authorization']
-  let jwtPayload
+  const token: string = <string>req.headers['authorization'] ?? ''
+  let jwtPayload: Jwt
 
   try {
-    jwtPayload = <any>jwt.verify(token?.split(' ')[1], JWT_SECRET_KEY!, {
+    jwtPayload = jwt.verify(token.split(' ')[1], JWT_SECRET_KEY, {
       complete: true,
       issuer: JWT_ISSUER,
       algorithms: [JWT_ALGORITHM],
@@ -23,8 +24,8 @@ export const hasAuthToken = async (req: Request, res: Response, next: NextFuncti
       ignoreNotBefore: false
     })
 
-    jwtPayload.payload.originalToken = token
-    res.locals = { ...res.locals, token: jwtPayload.payload }
+    const { userId } = jwtPayload.payload as any
+    res.locals = { ...res.locals, userId }
   } catch (error) {
     return responses.unauthorized(res)
   }
@@ -32,10 +33,15 @@ export const hasAuthToken = async (req: Request, res: Response, next: NextFuncti
   return next()
 }
 
-export const hasSpotifyToken = async (req: Request, res: Response, next: NextFunction) => {
+export const hasSpotifyToken = async (_: Request, res: Response, next: NextFunction) => {
   if (NODE_ENV === 'development') return next()
 
-  const spotifyToken: string = (req.headers['x-spotify-access-token'] as string) ?? ''
+  // const spotifyToken: string = (req.headers['x-spotify-access-token'] as string) ?? ''
+  const { userId } = res.locals
+  const user: User | null = await User.findById(userId);
+  if (!user) return responses.unauthorized(res, 'User not logged in.')
+  
+  const spotifyToken = user.spotifyAccessToken;
   if (spotifyToken == null) return responses.unauthorized(res, 'Spotify token required.')
 
   res.locals = { ...res.locals, spotifyAccessToken: spotifyToken }

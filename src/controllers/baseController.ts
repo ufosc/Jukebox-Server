@@ -2,9 +2,9 @@
  * @fileoverview General routes for the project.
  */
 import 'dotenv/config'
-import { Responses } from 'src/utils'
+import { responses } from 'src/utils'
 
-export const healthCheck = (_: any, res: any) => {
+export const healthCheck = async (_: any, res: any) => {
   /**======================*
     #swagger.tags = ['Base']
     #swagger.summary = "Base route"
@@ -19,7 +19,7 @@ export const healthCheck = (_: any, res: any) => {
         }
     }
   *========================*/
-  Responses.ok(res, {
+  responses.ok(res, {
     success: true,
     login_route: 'http://localhost:8000/login/',
     logout_route: 'http://localhost:8000/logout/',

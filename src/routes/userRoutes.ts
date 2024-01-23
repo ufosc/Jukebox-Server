@@ -5,11 +5,11 @@ import { isAuthenticated } from '../middleware/authMiddleware'
 const router = Router()
 // const controller = UserController
 
-/**== User Authentication - /api/user/ ==**/
+/**== User Authentication ==**/
 router.post('/register', UserController.register)
 router.post('/login', UserController.logIn)
 
-/**== User Management - /api/user/ ==**/
+/**== User Management ==**/
 router.get('/user', isAuthenticated, UserController.getUser)
 router.patch('/user/:id', isAuthenticated, UserController.updateUser)
 router.put('/user/:id', isAuthenticated, UserController.updateUser)

@@ -15,7 +15,7 @@ export const register = async (req: Request, res: Response) => {
   }
 }
 
-export const logIn = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response) => {
   const { username, password } = req.body
   try {
     if (!username || !password) throw new Error('Missing username or password.')
@@ -28,13 +28,50 @@ export const logIn = async (req: Request, res: Response) => {
   }
 }
 
-export const getUser = async (_: Request, res: Response) => {
-  return responses.notImplemented(res)
+export const getUser = async (req: Request, res: Response) => {
+  const { id } = req.params
+
+  try {
+    if (!id) throw new Error('Missing user id')
+    const user: User | null = await User.findById(id)
+
+    if (!user) return responses.notFound(res, 'User not found.')
+    return responses.ok(res, user)
+  } catch (error: any) {
+    return responses.badRequest(res, error?.message)
+  }
 }
 
-export const updateUser = async (_: Request, res: Response) => {
-  return responses.notImplemented(res)
+export const updateUser = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { body } = req
+
+  try {
+    if (!id) throw new Error('Missing user id')
+    const user: User | null = await User.findById(id)
+
+    if (!user) return responses.notFound(res, 'User not found.')
+    await user.updateOne({ ...body }, { new: true }) // FIXME: Validate input
+    const updatedUser = await User.findById(user._id)
+
+    return responses.ok(res, updatedUser)
+  } catch (error: any) {
+    return responses.badRequest(res, error?.message)
+  }
 }
-export const deleteUser = async (_: Request, res: Response) => {
-  return responses.notImplemented(res)
+export const deleteUser = async (req: Request, res: Response) => {
+  const { id } = req.params
+
+  try {
+    if (!id) throw new Error('Missing user id')
+    const user: User | null = await User.findById(id)
+
+    if (!user) return responses.notFound(res, 'User not found.')
+
+    await user.deleteOne()
+
+    return responses.ok(res, user)
+  } catch (error: any) {
+    return responses.badRequest(res, error?.message)
+  }
 }

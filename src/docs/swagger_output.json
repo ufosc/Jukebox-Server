@@ -145,16 +145,6 @@
         }
       }
     },
-    "/api/spotify/tokens": {
-      "get": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/api/spotify/": {
       "get": {
         "description": "",

@@ -7,7 +7,7 @@ const router = Router()
 
 /**== User Authentication ==**/
 router.post('/register', UserController.register)
-router.post('/login', UserController.logIn)
+router.post('/login', UserController.login)
 
 /**== User Management ==**/
 router.get('/user', isAuthenticated, UserController.getUser)

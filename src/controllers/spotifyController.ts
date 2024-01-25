@@ -35,12 +35,13 @@ export const spotifyLoginCallback = async (req: Request, res: Response) => {
   if (redirectUri) {
     return responses.seeOther(res, redirectUri)
   } else {
-    return responses.found(res, '/api/spotify/token')
+    return responses.ok(res, { accessToken, refreshToken })
   }
 }
 
 export const spotifyTokens = (_: Request, res: Response) => {
   // Final destination - display tokens
+  // TODO: Is this needed? Can just use spotfy cb?
   return responses.notImplemented(res)
 }
 

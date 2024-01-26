@@ -8,6 +8,7 @@ services:
       args:
         - NODE_ENV=development
     environment:
+      - NODE_ENV=development
       - PORT=8000
       - HOST=localhost
       - JWT_SECRET_KEY=changeme
@@ -18,8 +19,8 @@ services:
       - MONGO_USER=root
       - MONGO_PASSWORD=changeme
       - MONGO_URI=mongodb://root:changeme@mongo-jukebox:27017
-      - SP_ID=${SP_ID}
-      - SP_SECRET=${SP_SECRET}
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
     ports:
       - 8000:8000
     depends_on:

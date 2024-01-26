@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
+import { AUTH_TOKEN_COOKIE_NAME, NODE_ENV } from 'src/config'
 import { User } from 'src/models'
-import { authorizeUser, generateToken, registerUser } from 'src/services/authService'
+import { authorizeUser, generateToken, registerUser } from 'src/services'
 import { responses } from 'src/utils'
 
 export const register = async (req: Request, res: Response) => {
@@ -21,6 +22,10 @@ export const login = async (req: Request, res: Response) => {
     if (!username || !password) throw new Error('Missing username or password.')
     const user: User = await authorizeUser(username, password)
     const token: string = await generateToken(user)
+
+    if (NODE_ENV === 'development') {
+      res.cookie(AUTH_TOKEN_COOKIE_NAME, `Bearer ${token}`)
+    }
 
     return responses.ok(res, { user, token })
   } catch (error: any) {

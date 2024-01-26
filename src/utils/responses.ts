@@ -15,7 +15,12 @@ interface ResponsePayload {
 
 const formatResponse = (status: number, defaultMessage: string, message?: any): ResponsePayload => {
   // message = String(message) ?? ''
-  message = String(message) ?? defaultMessage
+  if (!message || message === undefined) {
+    message = defaultMessage
+  } else {
+    message = String(message)
+  }
+
   return {
     status,
     message

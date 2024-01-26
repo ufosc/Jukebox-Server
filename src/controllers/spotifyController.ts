@@ -1,52 +1,57 @@
 import { Request, Response } from 'express'
 import { User } from 'src/models'
 import { SpotifyService } from 'src/services'
-import { responses } from 'src/utils'
+import { getQuery, responses } from 'src/utils'
+
+const TEST_TRACK_ID = 'todo'
 
 export const spotifyLogin = async (req: Request, res: Response) => {
-  // Start here in spotify auth
   const { userId } = res.locals
   const { redirectUri } = req.query
 
-  const state = JSON.stringify({ redirectUri, userId })
-
-  const spotifyLoginUri = SpotifyService.getSpotifyRedirectUri(state)
+  const spotifyLoginUri = SpotifyService.getSpotifyRedirectUri({
+    finalRedirect: String(redirectUri || ''),
+    userId
+  })
+  
   return responses.seeOther(res, spotifyLoginUri)
 }
 
-// TODO: How should auth be handled? Frontend or backend?
 export const spotifyLoginCallback = async (req: Request, res: Response) => {
-  // Spotify sends user back to here
-  // Ask for tokens, set them then redirect to tokens route
-  const { code, state } = req.query
-  const { userId, redirectUri } = JSON.parse(JSON.stringify(state))
-  if (!userId) return responses.badRequest(res, 'Spotify state mismatch error.')
+  const { code, state } = getQuery(req)
 
-  const user: User | null = await User.findById(userId)
-  if (!user) return responses.unauthorized(res)
+  try {
+    const parsedState = JSON.parse(JSON.parse(JSON.stringify(state))) // TODO: Fix double parse
+    const { userId, finalRedirect } = parsedState
+    if (!userId) return responses.badRequest(res, 'Spotify state mismatch error.')
 
-  const { accessToken, refreshToken } = await SpotifyService.requestSpotifyToken(
-    String(code),
-    user._id.toString()
-  )
-  await user.updateOne({ spotifyAccessToken: accessToken, spotifyRefreshToken: refreshToken })
+    const user: User | null = await User.findById(userId)
+    if (!user) return responses.unauthorized(res)
 
-  // return responses.notImplemented(res)
-  if (redirectUri) {
-    return responses.seeOther(res, redirectUri)
-  } else {
-    return responses.ok(res, { accessToken, refreshToken })
+    const { accessToken, refreshToken } = await SpotifyService.requestSpotifyToken(String(code))
+    await user.updateOne({ spotifyAccessToken: accessToken, spotifyRefreshToken: refreshToken })
+
+    if (finalRedirect && String(finalRedirect) !== 'undefined' && finalRedirect !== '') {
+      return responses.seeOther(res, finalRedirect)
+    } else {
+      return responses.ok(res, { accessToken, refreshToken })
+    }
+  } catch (error: any) {
+    return responses.badRequest(res, error?.message || error)
   }
 }
 
-export const spotifyTokens = (_: Request, res: Response) => {
-  // Final destination - display tokens
-  // TODO: Is this needed? Can just use spotfy cb?
-  return responses.notImplemented(res)
-}
+export const spotifyTest = async (_: Request, res: Response) => {
+  const { token } = res.locals
+  const spotify = new SpotifyService(token)
+  try {
+    const track: Track | null = await spotify.findTrackById(TEST_TRACK_ID)
+    if (!track) return responses.notFound(res, 'Cannot find track.')
 
-export const spotifyTest = (_: Request, res: Response) => {
-  return responses.notImplemented(res)
+    return responses.ok(res, track)
+  } catch (error: any) {
+    return responses.badRequest(res, error?.message)
+  }
 }
 
 export const spotifySearch = (_: Request, res: Response) => {

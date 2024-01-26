@@ -7,10 +7,10 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8000/api"
+      "url": "http://localhost:8000/"
     },
     {
-      "url": "https://localhost:8000/api"
+      "url": "https://localhost:8000/"
     }
   ],
   "tags": [
@@ -122,22 +122,6 @@
     "/api/spotify/login-callback": {
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "code",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "state",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "default": {
             "description": ""

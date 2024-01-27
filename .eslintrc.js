@@ -33,11 +33,11 @@ module.exports = {
     'prefer-arrow-functions/prefer-arrow-functions': [
       'warn',
       {
-        // allowNamedFunctions: false,
-        // classPropertiesAllowed: false,
-        // disallowPrototype: false,
+        allowNamedFunctions: false,
+        classPropertiesAllowed: false,
+        disallowPrototype: false,
         returnStyle: 'unchanged',
-        // singleReturnOnly: false
+        singleReturnOnly: false
       }
     ]
   }

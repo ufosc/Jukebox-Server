@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import type { Request, Response } from 'express'
 import { User } from 'src/models'
 import { SpotifyService } from 'src/services'
 import { getQuery, responses } from 'src/utils'

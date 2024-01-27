@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import type { Request, Response } from 'express'
 import { AUTH_TOKEN_COOKIE_NAME, NODE_ENV } from 'src/config'
 import { User } from 'src/models'
 import { authorizeUser, generateToken, registerUser } from 'src/services'
@@ -37,7 +37,7 @@ export const login = async (req: Request, res: Response) => {
 
     return responses.ok(res, { user, token })
   } catch (error: any) {
-    console.log("error loggin in:", error)
+    console.log('error loggin in:', error)
     return responses.badRequest(res, error?.message)
   }
 }

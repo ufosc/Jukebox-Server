@@ -1,11 +1,9 @@
-// const swaggerAutogen = require('swagger-autogen')()
-const swaggerAutogen = require('swagger-autogen')({ openapi: '3.0.0' })
+import swaggerAutogen from 'swagger-autogen'
 
 const outputFile = './docs/swagger_output.json'
-const endpointsFiles = [
-  'src/routes/index.ts',
-  './utils/responses.ts'
-]
+const endpointsFiles = ['src/routes/index.ts', './utils/responses.ts']
+
+swaggerAutogen({ openapi: '3.0.0' })
 
 const doc = {
   info: {

@@ -1,4 +1,4 @@
-import { Request } from 'express'
+import type { Request } from 'express'
 import { PORT } from 'src/config'
 
 export const getQuery = (req: Request): any => {
@@ -11,7 +11,7 @@ export const getQuery = (req: Request): any => {
   const query = new URL(fullUrl).searchParams
   let params = {}
 
-  for (let [key, value] of query.entries()) {
+  for (const [key, value] of query.entries()) {
     params = { ...params, [key]: value }
   }
 

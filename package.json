@@ -4,7 +4,7 @@
   "description": "App that connects to spotify API to do enable OSC members access to music",
   "main": "build/index.js",
   "scripts": {
-    "test": "npm run build && jest --testTimeout=5000 --detectOpenHandles --forceExit",
+    "test": "NODE_ENV=test&& npm run build && jest --testTimeout=5000 --detectOpenHandles --forceExit",
     "test:watch": "npm run build && jest --watch --testTimeout=5000 --detectOpenHandles --forceExit --verbose",
     "test:verbose": "npm run build && jest --testTimeout=5000 --detectOpenHandles --forceExit --verbose",
     "start": "node ./dist/index.js",

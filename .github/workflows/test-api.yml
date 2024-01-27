@@ -1,0 +1,24 @@
+name: Test Api with Jest
+on:
+  push:
+    branches:
+      - main
+      - production
+      - feature/**
+      
+  pull_request:
+    branches: 
+      - main
+      - production
+
+jobs:
+  jest-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build images
+        run: docker-compose build
+      - name: Run Test
+        run: docker-compose run --rm api sh -c "npm run test"
+  

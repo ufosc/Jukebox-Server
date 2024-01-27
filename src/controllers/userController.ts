@@ -37,6 +37,7 @@ export const login = async (req: Request, res: Response) => {
 
     return responses.ok(res, { user, token })
   } catch (error: any) {
+    console.log("error loggin in:", error)
     return responses.badRequest(res, error?.message)
   }
 }

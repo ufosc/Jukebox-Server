@@ -12,17 +12,13 @@ export const healthCheck = async (_: any, res: any) => {
     #swagger.responses[200] = {
         description: 'Example data with redactions',
         schema: {
-            success: true,
-            login_route: "http://localhost:8000/login/",
-            logout_route: "http://localhost:8000/logout/",
-            documentation: "http://localhost:8000/docs/",
+          spotifyLogin: 'http://localhost:8000/api/spotify/login/',
+          documentation: "http://localhost:8000/api/docs/",
         }
     }
   *========================*/
   responses.ok(res, {
-    success: true,
-    login_route: 'http://localhost:8000/login/',
-    logout_route: 'http://localhost:8000/logout/',
-    documenation: 'http://localhost:8000/docs/'
+    spotifyLogin: 'http://localhost:8000/api/spotify/login/',
+    documenation: 'http://localhost:8000/api/docs/'
   })
 }

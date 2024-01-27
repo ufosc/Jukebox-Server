@@ -3,9 +3,11 @@ import { User } from 'src/models'
 import { SpotifyService } from 'src/services'
 import { getQuery, responses } from 'src/utils'
 
-const TEST_TRACK_ID = 'todo'
-
 export const spotifyLogin = async (req: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['Spotify']
+  */
   const { userId } = res.locals
   const { redirectUri } = req.query
 
@@ -18,6 +20,10 @@ export const spotifyLogin = async (req: Request, res: Response) => {
 }
 
 export const spotifyLoginCallback = async (req: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['Spotify']
+  */
   const { code, state } = getQuery(req)
 
   try {
@@ -47,20 +53,11 @@ export const spotifyLoginCallback = async (req: Request, res: Response) => {
   }
 }
 
-export const spotifyTest = async (_: Request, res: Response) => {
-  const { token } = res.locals
-  const spotify = new SpotifyService(token)
-  try {
-    const track: Track | null = await spotify.findTrackById(TEST_TRACK_ID)
-    if (!track) return responses.notFound(res, 'Cannot find track.')
-
-    return responses.ok(res, track)
-  } catch (error: any) {
-    return responses.badRequest(res, error?.message)
-  }
-}
-
 export const getUserProfile = async (_: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['Spotify']
+  */
   const { spotifyAccessToken } = res.locals
   const spotify = new SpotifyService(spotifyAccessToken)
 
@@ -74,13 +71,25 @@ export const getUserProfile = async (_: Request, res: Response) => {
 }
 
 export const spotifySearch = (_: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['Spotify']
+  */
   return responses.notImplemented(res)
 }
 
 export const spotifySearchTracks = (_: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['Spotify']
+  */
   return responses.notImplemented(res)
 }
 
 export const spotifySearchTrackId = (_: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['Spotify']
+  */
   return responses.notImplemented(res)
 }

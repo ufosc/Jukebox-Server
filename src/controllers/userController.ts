@@ -5,6 +5,10 @@ import { authorizeUser, generateToken, registerUser } from 'src/services'
 import { responses } from 'src/utils'
 
 export const register = async (req: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['User']
+  */
   const { username, password } = req.body
   try {
     if (!username || !password) throw new Error('Missing username or password.')
@@ -17,6 +21,10 @@ export const register = async (req: Request, res: Response) => {
 }
 
 export const login = async (req: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['User']
+  */
   const { username, password } = req.body
   try {
     if (!username || !password) throw new Error('Missing username or password.')
@@ -34,6 +42,10 @@ export const login = async (req: Request, res: Response) => {
 }
 
 export const getUser = async (req: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['User']
+  */
   const { id } = req.params
 
   try {
@@ -48,6 +60,10 @@ export const getUser = async (req: Request, res: Response) => {
 }
 
 export const updateUser = async (req: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['User']
+  */
   const { id } = req.params
   const { body } = req
 
@@ -65,6 +81,10 @@ export const updateUser = async (req: Request, res: Response) => {
   }
 }
 export const deleteUser = async (req: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['User']
+  */
   const { id } = req.params
 
   try {

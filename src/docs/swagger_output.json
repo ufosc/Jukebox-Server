@@ -23,10 +23,6 @@
       "description": "User management"
     },
     {
-      "name": "Authentication",
-      "description": "Used to login to Spotify"
-    },
-    {
       "name": "Spotify",
       "description": "Communicate with Spotify"
     }
@@ -47,21 +43,13 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "login_route": {
+                    "spotifyLogin": {
                       "type": "string",
-                      "example": "http://localhost:8000/login/"
-                    },
-                    "logout_route": {
-                      "type": "string",
-                      "example": "http://localhost:8000/logout/"
+                      "example": "http://localhost:8000/api/spotify/login/"
                     },
                     "documentation": {
                       "type": "string",
-                      "example": "http://localhost:8000/docs/"
+                      "example": "http://localhost:8000/api/docs/"
                     }
                   },
                   "xml": {
@@ -73,21 +61,13 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "login_route": {
+                    "spotifyLogin": {
                       "type": "string",
-                      "example": "http://localhost:8000/login/"
-                    },
-                    "logout_route": {
-                      "type": "string",
-                      "example": "http://localhost:8000/logout/"
+                      "example": "http://localhost:8000/api/spotify/login/"
                     },
                     "documentation": {
                       "type": "string",
-                      "example": "http://localhost:8000/docs/"
+                      "example": "http://localhost:8000/api/docs/"
                     }
                   },
                   "xml": {
@@ -102,6 +82,9 @@
     },
     "/api/spotify/login": {
       "get": {
+        "tags": [
+          "Spotify"
+        ],
         "description": "",
         "parameters": [
           {
@@ -121,6 +104,9 @@
     },
     "/api/spotify/login-callback": {
       "get": {
+        "tags": [
+          "Spotify"
+        ],
         "description": "",
         "responses": {
           "default": {
@@ -131,6 +117,9 @@
     },
     "/api/spotify/me": {
       "get": {
+        "tags": [
+          "Spotify"
+        ],
         "description": "",
         "responses": {
           "default": {
@@ -141,6 +130,9 @@
     },
     "/api/spotify/search": {
       "get": {
+        "tags": [
+          "Spotify"
+        ],
         "description": "",
         "responses": {
           "default": {
@@ -151,6 +143,9 @@
     },
     "/api/spotify/tracks": {
       "get": {
+        "tags": [
+          "Spotify"
+        ],
         "description": "",
         "responses": {
           "default": {
@@ -161,6 +156,9 @@
     },
     "/api/spotify/tracks/{id}": {
       "get": {
+        "tags": [
+          "Spotify"
+        ],
         "description": "",
         "parameters": [
           {
@@ -181,6 +179,9 @@
     },
     "/api/user/register": {
       "post": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "responses": {
           "default": {
@@ -208,6 +209,9 @@
     },
     "/api/user/login": {
       "post": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "responses": {
           "default": {
@@ -235,6 +239,9 @@
     },
     "/api/user/user": {
       "get": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "responses": {
           "default": {
@@ -245,6 +252,9 @@
     },
     "/api/user/user/{id}": {
       "patch": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
@@ -263,6 +273,9 @@
         }
       },
       "put": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
@@ -281,6 +294,9 @@
         }
       },
       "delete": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
@@ -307,159 +323,6 @@
         "scheme": "bearer",
         "bearerFormat": "JWT",
         "in": "header"
-      }
-    },
-    "schemas": {
-      "SpotifyTokenExpired": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "example": false
-          },
-          "message": {
-            "type": "string",
-            "example": "Access token not set, please log in"
-          },
-          "login": {
-            "type": "string",
-            "example": "http://localhost:8000/login"
-          }
-        },
-        "xml": {
-          "name": "SpotifyTokenExpired"
-        }
-      },
-      "SpotifyAuthSuccess": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "example": true
-          },
-          "access_token": {
-            "type": "string",
-            "example": "[access_token]"
-          },
-          "refresh_token": {
-            "type": "string",
-            "example": "[refresh_token]"
-          },
-          "message": {
-            "type": "string",
-            "example": "Cookie 'access_token' has been created successfully"
-          },
-          "home": {
-            "type": "string",
-            "example": "root"
-          }
-        },
-        "xml": {
-          "name": "SpotifyAuthSuccess"
-        }
-      },
-      "SpotifySearchResult": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "Dancing Queen"
-          },
-          "uri": {
-            "type": "string",
-            "example": "spotify:track:0GjEhVFGZW8afUYGChu3Rr"
-          },
-          "link": {
-            "type": "string",
-            "example": "https://open.spotify.com/track/0GjEhVFGZW8afUYGChu3Rr"
-          }
-        },
-        "xml": {
-          "name": "SpotifySearchResult"
-        }
-      },
-      "SpotifyTestResponse": {
-        "type": "object",
-        "properties": {
-          "external_urls": {
-            "type": "object",
-            "properties": {
-              "spotify": {
-                "type": "string",
-                "example": "https://open.spotify.com/artist/0TnOYISbd1XYRBk9myaseg"
-              }
-            }
-          },
-          "followers": {
-            "type": "object",
-            "properties": {
-              "href": {},
-              "total": {
-                "type": "number",
-                "example": 9888997
-              }
-            }
-          },
-          "genres": {
-            "type": "array",
-            "example": [
-              "dance pop",
-              "miami hip hop",
-              "pop",
-              "pop rap"
-            ],
-            "items": {
-              "type": "string"
-            }
-          },
-          "href": {
-            "type": "string",
-            "example": "https://api.spotify.com/v1/artists/0TnOYISbd1XYRBk9myaseg"
-          },
-          "id": {
-            "type": "string",
-            "example": "0TnOYISbd1XYRBk9myaseg"
-          },
-          "images": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "height": {
-                  "type": "number",
-                  "example": 160
-                },
-                "url": {
-                  "type": "string",
-                  "example": "https://i.scdn.co/image/ab6761610000f178fc9d2abc85b6f4bef77f80ea"
-                },
-                "width": {
-                  "type": "number",
-                  "example": 160
-                }
-              }
-            }
-          },
-          "name": {
-            "type": "string",
-            "example": "Pitbull"
-          },
-          "popularity": {
-            "type": "number",
-            "example": 85
-          },
-          "type": {
-            "type": "string",
-            "example": "artist"
-          },
-          "uri": {
-            "type": "string",
-            "example": "spotify:artist:0TnOYISbd1XYRBk9myaseg"
-          }
-        },
-        "xml": {
-          "name": "SpotifyTestResponse"
-        }
       }
     }
   },

@@ -8,10 +8,8 @@ const router = Router()
 /**== Spotify Authentication - /api/spotify/ ==**/
 router.get('/login', isAuthenticated, SpotifyController.spotifyLogin)
 router.get('/login-callback', SpotifyController.spotifyLoginCallback)
-// router.get('/tokens', isAuthenticated, hasSpotifyToken, SpotifyController.spotifyTokens)
 
 /**== Spotify Communication - /api/spotify/ ==**/
-// router.get('/', isAuthenticated, hasSpotifyToken, SpotifyController.spotifyTest)
 router.get('/me', isAuthenticated, hasSpotifyToken, SpotifyController.getUserProfile)
 router.get('/search', isAuthenticated, hasSpotifyToken, SpotifyController.spotifySearch)
 router.get('/tracks', isAuthenticated, hasSpotifyToken, SpotifyController.spotifySearchTracks)

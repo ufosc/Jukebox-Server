@@ -5,7 +5,6 @@ const outputFile = './docs/swagger_output.json'
 const endpointsFiles = [
   'src/routes/index.ts',
   './utils/responses.ts'
-  // "src/utils/responses.ts"
 ]
 
 const doc = {
@@ -28,11 +27,6 @@ const doc = {
       name: 'User',
       description: 'User management'
     },
-
-    {
-      name: 'Authentication',
-      description: 'Used to login to Spotify'
-    },
     {
       name: 'Spotify',
       description: 'Communicate with Spotify'
@@ -53,64 +47,8 @@ const doc = {
       Bearer: []
     }
   ],
-  definitions: {
-    SpotifyTokenExpired: {
-      success: false,
-      message: 'Access token not set, please log in',
-      login: 'http://localhost:8000/login'
-    },
-    SpotifyAuthSuccess: {
-      success: true,
-      access_token: '[access_token]',
-      refresh_token: '[refresh_token]',
-      message: "Cookie 'access_token' has been created successfully",
-      home: 'root'
-    },
-    SpotifySearchResult: {
-      name: 'Dancing Queen',
-      uri: 'spotify:track:0GjEhVFGZW8afUYGChu3Rr',
-      link: 'https://open.spotify.com/track/0GjEhVFGZW8afUYGChu3Rr'
-    },
-    SpotifyTestResponse: {
-      external_urls: {
-        spotify: 'https://open.spotify.com/artist/0TnOYISbd1XYRBk9myaseg'
-      },
-      followers: {
-        href: null,
-        total: 9888997
-      },
-      genres: ['dance pop', 'miami hip hop', 'pop', 'pop rap'],
-      href: 'https://api.spotify.com/v1/artists/0TnOYISbd1XYRBk9myaseg',
-      id: '0TnOYISbd1XYRBk9myaseg',
-      images: [
-        {
-          height: 640,
-          url: 'https://i.scdn.co/image/ab6761610000e5ebfc9d2abc85b6f4bef77f80ea',
-          width: 640
-        },
-        {
-          height: 320,
-          url: 'https://i.scdn.co/image/ab67616100005174fc9d2abc85b6f4bef77f80ea',
-          width: 320
-        },
-        {
-          height: 160,
-          url: 'https://i.scdn.co/image/ab6761610000f178fc9d2abc85b6f4bef77f80ea',
-          width: 160
-        }
-      ],
-      name: 'Pitbull',
-      popularity: 85,
-      type: 'artist',
-      uri: 'spotify:artist:0TnOYISbd1XYRBk9myaseg'
-    }
-  }
+  definitions: {}
 }
-
-// swaggerAutogen(outputFile, endpointsFiles, doc)
-// .then(() => {
-//     require("./server.js");
-// });
 export const initializeSwagger = async () => {
   await swaggerAutogen(outputFile, endpointsFiles, doc)
 }

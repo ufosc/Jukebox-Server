@@ -1,14 +1,18 @@
 import { Request, Response } from 'express'
 import httpMocks from 'node-mocks-http'
+
 import { User } from 'src/models'
+import { registerUser } from 'src/services'
 import { getMockResJson } from 'src/utils/testing'
+
 import * as controller from '../userController'
 
 describe('User Controller', () => {
   let req: Request
   let res: Response
+  const originalPassword: string = 'abc123'
   const createUser = async (): Promise<User> => {
-    return await User.create({ username: 'JohnDoe', password: 'abc123' })
+    return await registerUser({ username: 'JohnDoe', password: originalPassword })
   }
 
   beforeEach(() => {
@@ -42,7 +46,7 @@ describe('User Controller', () => {
       method: 'POST',
       body: {
         username: user.username,
-        password: user.password
+        password: originalPassword
       }
     })
 

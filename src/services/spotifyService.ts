@@ -1,4 +1,5 @@
-import axios, { AxiosResponse } from 'axios'
+import type { AxiosResponse } from 'axios'
+import axios from 'axios'
 import { stringify } from 'querystring'
 import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } from 'src/config'
 
@@ -45,6 +46,9 @@ export class SpotifyService {
         throw new Error(error?.response?.data?.error_description || error)
       })
 
+    if (spotifyRes.status > 299 || !spotifyRes.data)
+      throw new Error('Error authenticating with spotify.')
+
     return spotifyRes
   }
 
@@ -72,20 +76,7 @@ export class SpotifyService {
       grant_type: 'authorization_code'
     })
 
-    // const spotifyAuthBuffer: Buffer = Buffer.from(this.clientId + ':' + this.clientSecret)
-
-    // const spotifyRes = await axios
-    //   .post(this.spotifyTokenUrl, urlData, {
-    //     headers: {
-    //       'Content-Type': 'application/x-www-form-urlencoded',
-    //       Authorization: 'Basic ' + spotifyAuthBuffer.toString('base64')
-    //     }
-    //   })
-    //   .catch((error: any) => {
-    //     throw new Error(error?.response?.data?.error_description || error)
-    //   })
-
-    const { access_token, refresh_token, expires_in } = spotifyRes?.data
+    const { access_token, refresh_token, expires_in } = spotifyRes.data
     const expiresAt = this.getExpiresAt(expires_in)
 
     return { accessToken: access_token, refreshToken: refresh_token, expiresAt }
@@ -97,7 +88,7 @@ export class SpotifyService {
       refresh_token: refreshToken
     })
 
-    const { access_token, refresh_token, expires_in } = spotifyRes?.data
+    const { access_token, refresh_token, expires_in } = spotifyRes.data
     const expiresAt = this.getExpiresAt(expires_in)
 
     return { accessToken: access_token, refreshToken: refresh_token, expiresAt }
@@ -117,7 +108,4 @@ export class SpotifyService {
 
     return res.data
   }
-  search = (_: any) => ({})
-  findTracks = (_: any) => ({})
-  findTrackById = async (_: string): Promise<Track | null> => null
 }

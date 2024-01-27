@@ -117,7 +117,7 @@
     "./src",
     "./src/**/*.ts",
     "./src/**/*.json",
-    "./src/types",
+    "./src/types", "_depricated/services",
     // "./src/core/docs/swagger.ts",
     // "./src/core/docs/api/monitor.doc.ts",
   ],

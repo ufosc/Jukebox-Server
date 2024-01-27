@@ -2,7 +2,7 @@ import 'dotenv/config'
 
 type NodeEnv = 'development' | 'test' | 'production'
 
-export const NODE_ENV: NodeEnv = process.env.NODE_ENV as NodeEnv || 'development'
+export const NODE_ENV: NodeEnv = (process.env.NODE_ENV as NodeEnv) || 'development'
 export const HOST: string = process.env.HOST || 'localhost'
 export const PORT = process.env.PORT || 3000
 export const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/mongo-jukebox'

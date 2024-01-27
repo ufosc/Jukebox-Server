@@ -1,9 +1,10 @@
 /**
  * @fileoverview Authentication middleware.
  */
-import jwt, { Jwt } from 'jsonwebtoken'
+import type { Jwt } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 
-import { NextFunction, Request, Response } from 'express'
+import type { NextFunction, Request, Response } from 'express'
 import {
   AUTH_TOKEN_COOKIE_NAME,
   JWT_ALGORITHM,
@@ -62,9 +63,8 @@ export const hasSpotifyToken = async (_: Request, res: Response, next: NextFunct
 
     if (isExpired) {
       const currentRefreshToken = user.spotifyRefreshToken || ''
-      const { accessToken, expiresAt, refreshToken } = await SpotifyService.refreshUserToken(
-        currentRefreshToken
-      )
+      const { accessToken, expiresAt, refreshToken } =
+        await SpotifyService.refreshUserToken(currentRefreshToken)
       await user.updateOne({
         spotifyAccessToken: accessToken,
         spotifyRefreshToken: refreshToken,

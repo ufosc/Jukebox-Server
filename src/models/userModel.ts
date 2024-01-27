@@ -1,7 +1,7 @@
 /**
  * @fileoverview User model
  */
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 export const UserSchema = new mongoose.Schema({
   username: {
@@ -9,26 +9,26 @@ export const UserSchema = new mongoose.Schema({
     required: true,
     unique: true,
     index: true,
-    dropDups: true,
+    dropDups: true
   },
   password: {
     type: String,
-    required: true,
+    required: true
   },
   spotifyAccessToken: {
     type: String,
-    required: false,
+    required: false
   },
   spotifyRefreshToken: {
     type: String,
-    required: false,
+    required: false
   },
   spotifyTokenExpiration: {
     type: Date,
     required: false
   }
-});
+})
 
-export const User = mongoose.model("User", UserSchema);
+export const User = mongoose.model('User', UserSchema)
 
-export type User = InstanceType<typeof User>;
+export type User = InstanceType<typeof User>

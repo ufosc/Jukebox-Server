@@ -1,5 +1,6 @@
 import { compare, hash, genSalt } from 'bcrypt'
-import { Algorithm, sign } from 'jsonwebtoken'
+import type { Algorithm } from 'jsonwebtoken'
+import { sign } from 'jsonwebtoken'
 import { JWT_ALGORITHM, JWT_ISSUER, JWT_SECRET_KEY } from 'src/config'
 import { User } from 'src/models'
 
@@ -9,7 +10,7 @@ export class AuthService {
   private static jwtAlgorithm: Algorithm | undefined = JWT_ALGORITHM || 'HS256'
   private static jwtExpiresIn: string = '5h'
   private static jwtNotBefore: string | number = 0
-  
+
   /**
    * Hash a password using bycrypt.
    *
@@ -33,7 +34,7 @@ export class AuthService {
     const existingUser: User | null = await User.findOne({ username: username })
 
     if (existingUser) throw new Error('Username already exists!')
-    
+
     const hashedPassword = await this.hashPassword(password)
     const user: User = await User.create({ username, password: hashedPassword })
 
@@ -43,7 +44,7 @@ export class AuthService {
   public static authorizeUser = async (username: string, password: string): Promise<User> => {
     if (!username || !password) throw new Error('Missing username or password')
 
-    let user: User | null = await User.findOne({ username })
+    const user: User | null = await User.findOne({ username })
     if (!user) throw new Error('User not found')
 
     const validPassword = await compare(password, user.password!)

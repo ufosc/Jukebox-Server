@@ -1,13 +1,7 @@
-name: Test Api with Jest
+name: Unit Tests
 on:
-  push:
-    branches:
-      - main
-      - production
-      - feature/**
-      
   pull_request:
-    branches: 
+    branches:
       - main
       - production
 
@@ -21,4 +15,3 @@ jobs:
         run: docker-compose build
       - name: Run Test
         run: docker-compose run --rm api sh -c "npm run test"
-  

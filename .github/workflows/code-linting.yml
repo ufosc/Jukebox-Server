@@ -1,4 +1,4 @@
-name: Check Linting Status
+name: Code Linting
 
 on:
   push:

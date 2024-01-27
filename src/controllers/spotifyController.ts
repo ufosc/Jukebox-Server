@@ -13,7 +13,7 @@ export const spotifyLogin = async (req: Request, res: Response) => {
     finalRedirect: String(redirectUri || ''),
     userId
   })
-  
+
   return responses.seeOther(res, spotifyLoginUri)
 }
 
@@ -28,8 +28,14 @@ export const spotifyLoginCallback = async (req: Request, res: Response) => {
     const user: User | null = await User.findById(userId)
     if (!user) return responses.unauthorized(res)
 
-    const { accessToken, refreshToken } = await SpotifyService.requestSpotifyToken(String(code))
-    await user.updateOne({ spotifyAccessToken: accessToken, spotifyRefreshToken: refreshToken })
+    const { accessToken, refreshToken, expiresAt } = await SpotifyService.requestSpotifyToken(
+      String(code)
+    )
+    await user.updateOne({
+      spotifyAccessToken: accessToken,
+      spotifyRefreshToken: refreshToken,
+      spotifyTokenExpiration: expiresAt
+    })
 
     if (finalRedirect && String(finalRedirect) !== 'undefined' && finalRedirect !== '') {
       return responses.seeOther(res, finalRedirect)
@@ -51,6 +57,19 @@ export const spotifyTest = async (_: Request, res: Response) => {
     return responses.ok(res, track)
   } catch (error: any) {
     return responses.badRequest(res, error?.message)
+  }
+}
+
+export const getUserProfile = async (_: Request, res: Response) => {
+  const { spotifyAccessToken } = res.locals
+  const spotify = new SpotifyService(spotifyAccessToken)
+
+  try {
+    const profile = await spotify.getProfile()
+
+    return responses.ok(res, profile)
+  } catch (error: any) {
+    return responses.badRequest(res, 'Error getting user profile: ' + error?.message)
   }
 }
 

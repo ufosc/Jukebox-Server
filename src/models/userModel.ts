@@ -23,6 +23,10 @@ export const UserSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  spotifyTokenExpiration: {
+    type: Date,
+    required: false
+  }
 });
 
 export const User = mongoose.model("User", UserSchema);

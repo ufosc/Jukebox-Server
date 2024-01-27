@@ -1,4 +1,4 @@
-declare type TrackImage = {
+declare type SpotifyImage = {
   url: string
   height?: number
   width?: number
@@ -13,7 +13,7 @@ declare type Album = {
   }
   href: string
   id: string
-  images: TrackImage[]
+  images: SpotifyImage[]
   name: string
   release_date: string
   release_date_precision: 'year' | 'month' | 'day'
@@ -46,7 +46,7 @@ declare type Artist = {
   genres: string[]
   href: string
   id: string
-  images: TrackImage[]
+  images: SpotifyImage[]
   name: string
   popularity: number
   type: 'artist'
@@ -81,4 +81,22 @@ declare type Track = {
   type: 'track'
   uri: string
   is_local: boolean
+}
+
+interface SpotifyUserProfile {
+  country: string
+  display_name: string
+  email: string
+  explicit_content: {
+    filter_enabled: boolean
+    filter_locked: boolean
+  }
+  external_urls: { spotify: string }
+  followers: { href: string; total: number }
+  href: string
+  id: string
+  images: SpotifyImage[]
+  product: string
+  type: string
+  uri: string
 }

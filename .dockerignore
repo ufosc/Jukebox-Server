@@ -3,7 +3,6 @@
 
 # Show only the files we need
 !src/
-!test/
 !package.json
 !package-lock.json
 !tsconfig.json

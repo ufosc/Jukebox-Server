@@ -9,8 +9,30 @@ is the easiest resource to create in AWS, and will only need:
 ###################################################
 # SETUP SCRIPT - Configure EC2 Server for Project #
 ###################################################
-# TODO: Import setup script
-# TODO: Pass in necessary env variables
+data "aws_ami" "amzn_linux_2" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-kernel-5.10-hvm-2.*"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+}
+resource "aws_instance" "jukebox_server" {
+  ami           = data.aws_ami.amzn_linux_2.id
+  instance_type = "t3.micro"
+
+
+  tags = merge(
+    local.common_tags,
+    tomap({ Name = "${local.prefix}-server" })
+  )
+}
 
 ##########################################
 # EC2 INSTANCE - Host Server Application #

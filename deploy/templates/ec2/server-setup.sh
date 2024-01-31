@@ -14,6 +14,6 @@ sudo usermod -aG docker ec2-user # Add user to "docker" group for permissions
 sudo yum install git
 git clone https://github.com/ufosc/Jukebox-Server.git
 
-docker-compose -f Jukebox-Server/docker-compose.network.yml build
-docker-compose -f Jukebox-Server/docker-compose.network.yml up -d
+docker-compose -f ./Jukebox-Server/docker-compose.yml build
+docker-compose -f ./Jukebox-Server/docker-compose.yml up -d
 

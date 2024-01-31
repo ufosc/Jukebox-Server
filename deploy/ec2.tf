@@ -23,10 +23,11 @@ data "aws_ami" "amzn_linux_2" {
     values = ["x86_64"]
   }
 }
+
 resource "aws_instance" "jukebox_server" {
   ami           = data.aws_ami.amzn_linux_2.id
   instance_type = "t3.micro"
-
+  user_data = file("./templates/ec2/server-setup.sh")
 
   tags = merge(
     local.common_tags,

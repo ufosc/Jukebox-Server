@@ -1,6 +1,8 @@
 /**
  * @fileoverview Entry point of the application.
  */
+import 'module-alias/register'
+
 import 'dotenv/config'
 import swaggerUi from 'swagger-ui-express'
 

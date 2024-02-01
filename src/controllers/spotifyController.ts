@@ -74,6 +74,7 @@ export const spotifySearch = (_: Request, res: Response) => {
   /**
   @swagger
   #swagger.tags = ['Spotify']
+  #swagger.summary = "Not implemented"
   */
   return responses.notImplemented(res)
 }
@@ -82,6 +83,7 @@ export const spotifySearchTracks = (_: Request, res: Response) => {
   /**
   @swagger
   #swagger.tags = ['Spotify']
+  #swagger.summary = "Not implemented"
   */
   return responses.notImplemented(res)
 }
@@ -90,6 +92,16 @@ export const spotifySearchTrackId = (_: Request, res: Response) => {
   /**
   @swagger
   #swagger.tags = ['Spotify']
+  #swagger.summary = "Not implemented"
+  */
+  return responses.notImplemented(res)
+}
+
+export const getCurrentlyPlaying = (_: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['Spotify']
+  #swagger.summary = "Not implemented"
   */
   return responses.notImplemented(res)
 }

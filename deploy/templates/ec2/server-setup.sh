@@ -1,9 +1,19 @@
 #!/bin/sh
-# SETUP SCRIPT - Used to set up EC2 Server
-
 set -e
 
-# TODO: Install docker
-# TODO: Install docker-compose
-# TODO: Pull image from Docker Hub
-# TODO: Build and run project with compose
+sudo yum update -y
+
+sudo amazon-linux-extras install -y docker
+sudo systemctl enable docker.service
+sudo systemctl start docker.service
+
+sudo yum install docker-compose
+
+sudo usermod -aG docker ec2-user # Add user to "docker" group for permissions
+
+sudo yum install git
+git clone https://github.com/ufosc/Jukebox-Server.git
+
+docker-compose -f ./Jukebox-Server/docker-compose.yml build
+docker-compose -f ./Jukebox-Server/docker-compose.yml up -d
+

@@ -1,6 +1,3 @@
-import { AuthService } from './authService'
-
-export const { authorizeUser, generateToken, registerUser, changePassword } = AuthService
-export * from './authService'
-
+export { AuthService } from './authService'
+export { GroupService } from './groupService'
 export { SpotifyService } from './spotifyService'

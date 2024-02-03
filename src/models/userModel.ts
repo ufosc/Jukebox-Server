@@ -4,14 +4,23 @@
 import mongoose from 'mongoose'
 
 export const UserSchema = new mongoose.Schema({
-  username: {
+  // username: {
+  //   type: String,
+  //   required: true,
+  //   unique: true,
+  //   index: true,
+  //   dropDups: true
+  // },
+  email: {
+    // TODO: Validate
     type: String,
-    required: true,
     unique: true,
+    required: true,
     index: true,
     dropDups: true
   },
   password: {
+    // TODO: Validate
     type: String,
     required: true
   },

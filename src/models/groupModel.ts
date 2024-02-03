@@ -2,18 +2,23 @@ import mongoose, { Types } from 'mongoose'
 
 const membershipSchema = new mongoose.Schema(
   {
+    groupId: {
+      type: Types.ObjectId,
+      required: true,
+      ref: 'Group'
+    },
     userId: {
       type: Types.ObjectId,
       required: true,
       ref: 'User'
     },
     role: {
-      types: String,
+      type: String,
       enum: ['member', 'admin'],
       default: 'member'
     },
     points: {
-      types: Number,
+      type: Number,
       default: 0
     }
   },
@@ -24,7 +29,7 @@ const membershipSchema = new mongoose.Schema(
 
 const groupSchema = new mongoose.Schema(
   {
-    owner: {
+    ownerId: {
       type: Types.ObjectId,
       required: true
     },
@@ -40,12 +45,18 @@ const groupSchema = new mongoose.Schema(
       },
       required: false
     },
-    members: [membershipSchema]
+    // members: [membershipSchema]
+    memberCount: {
+      type: Number,
+      default: 0
+    }
   },
   {
     timestamps: true
   }
 )
 
-export const Group = new mongoose.Model('Group', groupSchema)
+export const Group = mongoose.model('Group', groupSchema)
 export type Group = InstanceType<typeof Group>
+export const Membership = mongoose.model('Membership', membershipSchema)
+export type Membership = InstanceType<typeof Membership>

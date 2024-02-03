@@ -21,22 +21,13 @@
       "description": "Communicate with Spotify"
     }
   ],
-  "schemes": [
-    "http",
-    "https"
-  ],
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
+  "schemes": ["http", "https"],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
   "paths": {
     "/": {
       "get": {
-        "tags": [
-          "Base"
-        ],
+        "tags": ["Base"],
         "summary": "Base route",
         "description": "Base starting point of the project, displays important data",
         "responses": {
@@ -64,9 +55,7 @@
     },
     "/api/spotify/login": {
       "get": {
-        "tags": [
-          "Spotify"
-        ],
+        "tags": ["Spotify"],
         "description": "",
         "parameters": [
           {
@@ -84,9 +73,7 @@
     },
     "/api/spotify/login-callback": {
       "get": {
-        "tags": [
-          "Spotify"
-        ],
+        "tags": ["Spotify"],
         "description": "",
         "responses": {
           "default": {
@@ -97,9 +84,7 @@
     },
     "/api/spotify/me": {
       "get": {
-        "tags": [
-          "Spotify"
-        ],
+        "tags": ["Spotify"],
         "description": "",
         "responses": {
           "default": {
@@ -110,9 +95,7 @@
     },
     "/api/spotify/search": {
       "get": {
-        "tags": [
-          "Spotify"
-        ],
+        "tags": ["Spotify"],
         "description": "",
         "responses": {
           "default": {
@@ -123,9 +106,7 @@
     },
     "/api/spotify/tracks": {
       "get": {
-        "tags": [
-          "Spotify"
-        ],
+        "tags": ["Spotify"],
         "description": "",
         "responses": {
           "default": {
@@ -136,9 +117,7 @@
     },
     "/api/spotify/tracks/{id}": {
       "get": {
-        "tags": [
-          "Spotify"
-        ],
+        "tags": ["Spotify"],
         "description": "",
         "parameters": [
           {
@@ -157,9 +136,7 @@
     },
     "/api/user/register": {
       "post": {
-        "tags": [
-          "User"
-        ],
+        "tags": ["User"],
         "description": "",
         "parameters": [
           {
@@ -168,7 +145,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "username": {
+                "email": {
                   "example": "any"
                 },
                 "password": {
@@ -187,9 +164,7 @@
     },
     "/api/user/login": {
       "post": {
-        "tags": [
-          "User"
-        ],
+        "tags": ["User"],
         "description": "",
         "parameters": [
           {
@@ -198,7 +173,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "username": {
+                "email": {
                   "example": "any"
                 },
                 "password": {
@@ -217,9 +192,7 @@
     },
     "/api/user/user": {
       "get": {
-        "tags": [
-          "User"
-        ],
+        "tags": ["User"],
         "description": "",
         "responses": {
           "default": {
@@ -230,9 +203,7 @@
     },
     "/api/user/user/{id}": {
       "patch": {
-        "tags": [
-          "User"
-        ],
+        "tags": ["User"],
         "description": "",
         "parameters": [
           {
@@ -249,9 +220,7 @@
         }
       },
       "put": {
-        "tags": [
-          "User"
-        ],
+        "tags": ["User"],
         "description": "",
         "parameters": [
           {
@@ -268,9 +237,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "User"
-        ],
+        "tags": ["User"],
         "description": "",
         "parameters": [
           {

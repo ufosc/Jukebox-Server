@@ -1,18 +1,20 @@
 import type { Request, Response } from 'express'
 import { AUTH_TOKEN_COOKIE_NAME, NODE_ENV } from 'src/config'
 import { User } from 'src/models'
-import { authorizeUser, changePassword, generateToken, registerUser } from 'src/services'
+import { AuthService } from 'src/services'
 import { responses } from 'src/utils'
+
+// TODO: Implement user from middleware
 
 export const register = async (req: Request, res: Response) => {
   /**
   @swagger
   #swagger.tags = ['User']
   */
-  const { username, password } = req.body
+  const { email, password } = req.body
   try {
-    if (!username || !password) throw new Error('Missing username or password.')
-    const user: User = await registerUser({ username, password })
+    if (!email || !password) throw new Error('Missing email or password.')
+    const user: User = await AuthService.registerUser({ email, password })
 
     return responses.created(res, user)
   } catch (error: any) {
@@ -25,11 +27,11 @@ export const login = async (req: Request, res: Response) => {
   @swagger
   #swagger.tags = ['User']
   */
-  const { username, password } = req.body
+  const { email, password } = req.body
   try {
-    if (!username || !password) throw new Error('Missing username or password.')
-    const user: User = await authorizeUser(username, password)
-    const token: string = await generateToken(user)
+    if (!email || !password) throw new Error('Missing email or password.')
+    const user: User = await AuthService.authorizeUser(email, password)
+    const token: string = await AuthService.generateToken(user)
 
     if (NODE_ENV === 'development') {
       res.cookie(AUTH_TOKEN_COOKIE_NAME, `Bearer ${token}`)
@@ -126,7 +128,7 @@ export const resetPassword = async (req: Request, res: Response) => {
   /**
   @swagger
   #swagger.tags = ['User']
-   */
+  */
   // FIXME: Insecure password reset, HIGH security risk
   const { email } = req.query
   const { password } = req.body
@@ -137,7 +139,7 @@ export const resetPassword = async (req: Request, res: Response) => {
 
     if (!user) throw new Error('User not found.')
 
-    const updatedUser: User = await changePassword(user, password)
+    const updatedUser: User = await AuthService.changePassword(user, password)
 
     return responses.ok(res, updatedUser)
   } catch (error: any) {

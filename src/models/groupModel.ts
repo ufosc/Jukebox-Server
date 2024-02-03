@@ -1,5 +1,7 @@
 import mongoose, { Types } from 'mongoose'
 
+
+
 const membershipSchema = new mongoose.Schema(
   {
     groupId: {
@@ -26,6 +28,7 @@ const membershipSchema = new mongoose.Schema(
     timestamps: true
   }
 )
+
 
 const groupSchema = new mongoose.Schema(
   {

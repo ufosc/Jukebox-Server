@@ -15,7 +15,9 @@ export const createGroup = async (req: Request, res: Response) => {
 
   try {
     // const group = await Group.create({ ...body, ownerId: user._id })
-    const group = await GroupService.createGroup(body, user)
+    const { name } = body // TODO: Validate body, explicitly define fields
+
+    const group = await GroupService.createGroup(user, name, body)
     return responses.created(res, group)
   } catch (error: any) {
     return responses.badRequest(res, error?.message)
@@ -44,7 +46,7 @@ export const createGroupMember = async (req: Request, res: Response) => {
       user = userFound
     }
 
-    const newMembership = await GroupService.createGroupMember(group, user, options)
+    const newMembership = await GroupService.registerGroupMember(group, user, options)
     return responses.created(res, newMembership)
   } catch (error: any) {
     return responses.badRequest(res, error?.message)

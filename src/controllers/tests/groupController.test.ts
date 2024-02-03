@@ -58,7 +58,7 @@ describe('Group controller', () => {
     owner = await AuthService.registerUser({ email: 'owner@example.com', password: 'abc123' })
 
     res = httpMocks.createResponse({ locals: { user: owner } })
-    group = await GroupService.createGroup({ name: 'Example Group' }, owner)
+    group = await GroupService.createGroup(owner, 'Example Group')
 
     const token = await AuthService.generateToken(owner)
     defaultReqOptions = { headers: { authorization: `Bearer ${token}` } }
@@ -123,9 +123,6 @@ describe('Group controller', () => {
     const user = await User.findById(body.userId)
     expect(user).toBeDefined()
     expect(user?.email).toEqual(userEmail)
-  })
-  it('should create guest user', async () => {
-    expect(true).toBeFalsy()
   })
   it('should get group', async () => {
     expect(true).toBeFalsy()

@@ -1,4 +1,4 @@
-import { compare, hash, genSalt } from 'bcrypt'
+import { compare, genSalt, hash } from 'bcrypt'
 import type { Algorithm } from 'jsonwebtoken'
 import { sign } from 'jsonwebtoken'
 import { JWT_ALGORITHM, JWT_ISSUER, JWT_SECRET_KEY } from 'src/config'
@@ -63,5 +63,13 @@ export class AuthService {
     })
 
     return token
+  }
+
+  // FIXME: Changing password should require validation
+  public static changePassword = async (user: User, newPassword: string): Promise<User> => {
+    const hashedPassword = await this.hashPassword(newPassword)
+    const updatedUser: User = await user.updateOne({ password: hashedPassword })
+
+    return updatedUser
   }
 }

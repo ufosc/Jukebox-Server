@@ -1,3 +1,9 @@
+// declare interface SpotifyToken {
+//   accessToken: string
+//   refreshTOken: string
+//   expirationDate: Date
+// }
+
 declare type SpotifyImage = {
   url: string
   height?: number

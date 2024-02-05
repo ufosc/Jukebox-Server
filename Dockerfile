@@ -21,11 +21,12 @@ RUN npm install -g npm && \
     npm install 
 
 
-# STAGE 2: Building the project.
-################################################
+# # STAGE 2: Building the project.
+# ################################################
 FROM setup as build
 
-COPY ./src ./src
+WORKDIR /app
+COPY ./src /app/src
 
 RUN npm run build
 

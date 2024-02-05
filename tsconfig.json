@@ -121,6 +121,6 @@
     // "./src/core/docs/swagger.ts",
     // "./src/core/docs/api/monitor.doc.ts",
   ],
-  "exclude": ["node_modules", "coverage", "logs", "_depricated", "dist"],
+  "exclude": ["node_modules", "coverage", "logs", "_depricated", "dist", "swagger_output.json"],
 
 }

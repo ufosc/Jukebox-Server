@@ -21,13 +21,22 @@
       "description": "Communicate with Spotify"
     }
   ],
-  "schemes": ["http", "https"],
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
   "paths": {
     "/": {
       "get": {
-        "tags": ["Base"],
+        "tags": [
+          "Base"
+        ],
         "summary": "Base route",
         "description": "Base starting point of the project, displays important data",
         "responses": {
@@ -55,7 +64,9 @@
     },
     "/api/spotify/login": {
       "get": {
-        "tags": ["Spotify"],
+        "tags": [
+          "Spotify"
+        ],
         "description": "",
         "parameters": [
           {
@@ -73,7 +84,9 @@
     },
     "/api/spotify/login-callback": {
       "get": {
-        "tags": ["Spotify"],
+        "tags": [
+          "Spotify"
+        ],
         "description": "",
         "responses": {
           "default": {
@@ -84,7 +97,9 @@
     },
     "/api/spotify/me": {
       "get": {
-        "tags": ["Spotify"],
+        "tags": [
+          "Spotify"
+        ],
         "description": "",
         "responses": {
           "default": {
@@ -95,7 +110,10 @@
     },
     "/api/spotify/search": {
       "get": {
-        "tags": ["Spotify"],
+        "tags": [
+          "Spotify"
+        ],
+        "summary": "Not implemented",
         "description": "",
         "responses": {
           "default": {
@@ -106,7 +124,10 @@
     },
     "/api/spotify/tracks": {
       "get": {
-        "tags": ["Spotify"],
+        "tags": [
+          "Spotify"
+        ],
+        "summary": "Not implemented",
         "description": "",
         "responses": {
           "default": {
@@ -117,7 +138,10 @@
     },
     "/api/spotify/tracks/{id}": {
       "get": {
-        "tags": ["Spotify"],
+        "tags": [
+          "Spotify"
+        ],
+        "summary": "Not implemented",
         "description": "",
         "parameters": [
           {
@@ -136,7 +160,9 @@
     },
     "/api/user/register": {
       "post": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
@@ -164,7 +190,9 @@
     },
     "/api/user/login": {
       "post": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
@@ -190,9 +218,70 @@
         }
       }
     },
+    "/api/user/request-password-reset": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/user/reset-password": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/user/user": {
       "get": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "description": "",
         "responses": {
           "default": {
@@ -203,7 +292,9 @@
     },
     "/api/user/user/{id}": {
       "patch": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
@@ -220,7 +311,9 @@
         }
       },
       "put": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
@@ -237,11 +330,212 @@
         }
       },
       "delete": {
-        "tags": ["User"],
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
             "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/group/groups": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/group/groups/{groupId}/members": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "options": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/group/groups/{groupId}/guests": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/group/groups/{groupId}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/groupg/roups/{groupId}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/group/groups/{groupId}/jam": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "groupId",
             "in": "path",
             "required": true,
             "type": "string"

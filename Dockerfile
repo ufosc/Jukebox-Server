@@ -11,7 +11,6 @@ COPY ./jest.config.ts ./jest.config.ts
 
 
 ARG NODE_ENV=production
-ENV NODE_ENV=NODE_ENV
 
 USER root
 
@@ -31,5 +30,6 @@ COPY ./src /app/src
 RUN npm run build
 
 EXPOSE 8000
+VOLUME ["/app/src", "/app/dist"]
 
 CMD ["npm", "start"]

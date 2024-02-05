@@ -52,22 +52,43 @@ export const createGroupMember = async (req: Request, res: Response) => {
     return responses.badRequest(res, error?.message)
   }
 }
-export const createSessionGuest = async (_: Request, res: Response) => {
+
+export const getGroup = async (req: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['Group']
+  */
+  const { groupId } = req.params
+
+  const group: Group | null = await Group.findById(groupId)
+  if (!group) return responses.notFound(res, 'Group not found.')
+
+  return responses.ok(res, group)
+}
+
+export const updateGroup = async (req: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['Group']
+  #swagger.summary = "Not implemented"
+  */
   return responses.notImplemented(res)
 }
 
-export const getGroup = async (_: Request, res: Response) => {
-  return responses.notImplemented(res)
-}
-
-export const updateGroup = async (_: Request, res: Response) => {
-  return responses.notImplemented(res)
-}
-
-export const deleteGroup = async (_: Request, res: Response) => {
+export const deleteGroup = async (req: Request, res: Response) => { 
+  /**
+  @swagger
+  #swagger.tags = ['Group']
+  #swagger.summary = "Not implemented"
+  */
   return responses.notImplemented(res)
 }
 
 export const getGroupMembers = async (_: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['Group']
+  #swagger.summary = "Not implemented"
+  */
   return responses.notImplemented(res)
 }

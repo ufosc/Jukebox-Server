@@ -412,24 +412,10 @@
         }
       },
       "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "groupId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
+        "tags": [
+          "Group"
         ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/group/groups/{groupId}/guests": {
-      "post": {
+        "summary": "Not implemented",
         "description": "",
         "parameters": [
           {
@@ -448,6 +434,9 @@
     },
     "/api/group/groups/{groupId}": {
       "get": {
+        "tags": [
+          "Group"
+        ],
         "description": "",
         "parameters": [
           {
@@ -464,6 +453,10 @@
         }
       },
       "put": {
+        "tags": [
+          "Group"
+        ],
+        "summary": "Not implemented",
         "description": "",
         "parameters": [
           {
@@ -480,6 +473,10 @@
         }
       },
       "patch": {
+        "tags": [
+          "Group"
+        ],
+        "summary": "Not implemented",
         "description": "",
         "parameters": [
           {
@@ -494,10 +491,12 @@
             "description": ""
           }
         }
-      }
-    },
-    "/api/groupg/roups/{groupId}": {
+      },
       "delete": {
+        "tags": [
+          "Group"
+        ],
+        "summary": "Not implemented",
         "description": "",
         "parameters": [
           {
@@ -516,6 +515,10 @@
     },
     "/api/group/groups/{groupId}/jam": {
       "post": {
+        "tags": [
+          "Group"
+        ],
+        "summary": "Not implemented",
         "description": "",
         "parameters": [
           {
@@ -532,6 +535,10 @@
         }
       },
       "delete": {
+        "tags": [
+          "Group"
+        ],
+        "summary": "Not implemented",
         "description": "",
         "parameters": [
           {

@@ -125,15 +125,93 @@ describe('Group controller', () => {
     expect(user?.email).toEqual(userEmail)
   })
   it('should get group', async () => {
-    expect(true).toBeFalsy()
+    const req = httpMocks.createRequest({
+      ...defaultReqOptions,
+      method: 'GET',
+      params: {
+        groupId: String(group._id)
+      }
+    })
+
+    const resData = await controller.getGroup(req, res)
+    expect(resData.statusCode).toBe(200)
+    const body = getMockResJson(resData)
+
+    expect(body).toHaveProperty('_id')
+    expect(body).toHaveProperty('name')
+
+    expect(String(body._id)).toEqual(String(group._id))
+    expect(body.name).toEqual(group.name)
   })
   it('should update group', async () => {
-    expect(true).toBeFalsy()
+    const newName = 'New Group Name'
+
+    req = httpMocks.createRequest({
+      ...defaultReqOptions,
+      method: 'PUT',
+      params: {
+        groupId: String(group._id)
+      },
+      body: {
+        name: newName
+      }
+    })
+
+    const resData = await controller.updateGroup(req, res)
+    expect(resData.statusCode).toBe(200)
+    const body = getMockResJson(resData)
+
+    expect(body).toHaveProperty('_id')
+    expect(body).toHaveProperty('name')
+
+    expect(String(body._id)).toEqual(String(group._id))
+    expect(body.name).toEqual(newName)
   })
   it('should delete group', async () => {
-    expect(true).toBeFalsy()
+    const pre = await Group.find({})
+    expect(pre).toHaveLength(1)
+
+    req = httpMocks.createRequest({
+      ...defaultReqOptions,
+      method: 'DELETE',
+      params: {
+        groupId: String(group._id)
+      }
+    })
+
+    const resData = await controller.deleteGroup(req, res)
+    expect(resData.statusCode).toBe(204)
+
+    const post = await Group.find({})
+    expect(post).toHaveLength(0)
   })
   it('should get group members', async () => {
-    expect(true).toBeFalsy()
+    const user = await createUser()
+    await GroupService.registerGroupMember(group, user, { role: 'member' })
+
+    req = httpMocks.createRequest({
+      ...defaultReqOptions,
+      method: 'GET',
+      params: {
+        groupId: String(group._id)
+      }
+    })
+
+    const resData = await controller.getGroupMembers(req, res)
+    expect(resData.statusCode).toBe(200)
+    const body = getMockResJson(resData)
+
+    expect(body).toHaveLength(2)
+    expect(body[0]).toHaveProperty('userId')
+    expect(body[0]).toHaveProperty('role')
+    expect(body[0]).toHaveProperty('points')
+
+    expect(String(body[0].userId)).toEqual(String(owner._id))
+    expect(body[0].role).toEqual('owner')
+    expect(body[0].points).toEqual(0)
+
+    expect(String(body[1].userId)).toEqual(String(user._id))
+    expect(body[1].role).toEqual('member')
+    expect(body[1].points).toEqual(0)
   })
 })

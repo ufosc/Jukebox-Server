@@ -29,12 +29,13 @@ export class GroupService {
     options?: { role: string }
   ): Promise<Membership> {
     try {
-      let membership = await Membership.create({
+      const membership = await Membership.create({
         groupId: group._id,
         userId: user._id
       })
       if (options?.role) {
-        membership = await membership.updateOne({ role: options.role })
+        membership.role = options.role as Membership['role']
+        await membership.save()
       }
 
       return membership

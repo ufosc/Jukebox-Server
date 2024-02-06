@@ -44,11 +44,6 @@ const groupSchema = new mongoose.Schema(
         expirationDate: Date
       },
       required: false
-    },
-    // members: [membershipSchema]
-    memberCount: {
-      type: Number,
-      default: 0
     }
   },
   {

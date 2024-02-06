@@ -15,7 +15,6 @@ describe('Group service, Group initialization', () => {
 
     expect(String(group.ownerId)).toEqual(String(owner._id))
     expect(group.name).toEqual(groupName)
-    expect(group.memberCount).toEqual(1)
 
     const members = await Membership.find({ groupId: group._id })
     expect(members).toHaveLength(1)

@@ -72,23 +72,80 @@ export const updateGroup = async (req: Request, res: Response) => {
   #swagger.tags = ['Group']
   #swagger.summary = "Not implemented"
   */
-  return responses.notImplemented(res)
+  const { groupId } = req.params
+  const { ownerId, name, spotifyToken } = req.body
+
+  const group: Group | null = await Group.findById(groupId)
+  if (!group) return responses.notFound(res, 'Group not found.')
+
+  try {
+    // TODO: Validate body
+    // const updatedGroup = await group.updateOne({ ownerId, name, spotifyToken }, { new: true })
+    const updatedGroup = await Group.findByIdAndUpdate(
+      groupId,
+      { ownerId, name, spotifyToken },
+      { new: true }
+    )
+
+    return responses.ok(res, updatedGroup)
+  } catch (error: any) {
+    return responses.badRequest(res, error?.message)
+  }
 }
 
-export const deleteGroup = async (req: Request, res: Response) => { 
+export const deleteGroup = async (req: Request, res: Response) => {
   /**
   @swagger
   #swagger.tags = ['Group']
   #swagger.summary = "Not implemented"
   */
-  return responses.notImplemented(res)
+  const { groupId } = req.params
+
+  const group: Group | null = await Group.findById(groupId)
+  if (!group) return responses.notFound(res, 'Group not found.')
+
+  try {
+    await GroupService.deleteGroup(group)
+    return responses.noContent(res)
+  } catch (error: any) {
+    return responses.badRequest(res, error?.message)
+  }
 }
 
-export const getGroupMembers = async (_: Request, res: Response) => {
+export const getGroupMembers = async (req: Request, res: Response) => {
   /**
   @swagger
   #swagger.tags = ['Group']
   #swagger.summary = "Not implemented"
   */
-  return responses.notImplemented(res)
+  const { groupId } = req.params
+
+  const group: Group | null = await Group.findById(groupId)
+  if (!group) return responses.notFound(res, 'Group not found.')
+
+  try {
+    const members = await GroupService.getGroupMembers(group)
+    return responses.ok(res, members)
+  } catch (error: any) {
+    return responses.badRequest(res, error?.message)
+  }
+}
+
+export const getGroupMemberships = async (req: Request, res: Response) => {
+  /**
+  @swagger
+  #swagger.tags = ['Group']
+  #swagger.summary = "Not implemented"
+  */
+  const { groupId } = req.params
+
+  const group: Group | null = await Group.findById(groupId)
+  if (!group) return responses.notFound(res, 'Group not found.')
+
+  try {
+    const memberships = await GroupService.getGroupMemberships(group)
+    return responses.ok(res, memberships)
+  } catch (error: any) {
+    return responses.badRequest(res, error?.message)
+  }
 }

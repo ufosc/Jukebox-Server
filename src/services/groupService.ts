@@ -5,12 +5,19 @@
  * on the group model. Instead, it is responsible for the operations that effect
  * other models and services, including memberships and users.
  */
-import { Group, Membership, type User } from 'src/models'
+import { Group, Membership, User } from 'src/models'
 
 export class GroupService {
   static async createGroup(owner: User, name: string, options?: any): Promise<Group> {
     try {
       const group = await Group.create({ ...options, ownerId: owner._id, name })
+
+      await Membership.create({
+        groupId: group._id,
+        userId: owner._id,
+        role: 'owner'
+      })
+
       return group
     } catch (error: any) {
       throw new Error(error?.message)
@@ -38,9 +45,21 @@ export class GroupService {
   // TODO: Remove group member
 
   static async deleteGroup(group: Group) {
-    throw new Error('Not implemented')
+    await Membership.deleteMany({ groupId: group._id })
+    await group.deleteOne()
+
+    return group
   }
   static async getGroupMembers(group: Group) {
-    throw new Error('Not implemented')
+    const memberships = await Membership.find({ groupId: group._id })
+    const members: User[] = await Promise.all(
+      memberships.map(async (m) => await User.findById(m.userId))
+    ).then((result) => result.filter((user) => user !== null) as User[])
+
+    return members
+  }
+
+  static async getGroupMemberships(group: Group) {
+    return await Membership.find({ groupId: group._id })
   }
 }

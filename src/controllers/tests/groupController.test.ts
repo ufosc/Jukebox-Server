@@ -202,6 +202,33 @@ describe('Group controller', () => {
     const body = getMockResJson(resData)
 
     expect(body).toHaveLength(2)
+    expect(body[0]).toHaveProperty('_id')
+    expect(body[0]).toHaveProperty('email')
+
+    expect(String(body[0]._id)).toEqual(String(owner._id))
+    expect(body[0].email).toEqual(owner.email)
+
+    expect(String(body[1]._id)).toEqual(String(user._id))
+    expect(body[1].email).toEqual(user.email)
+  })
+
+  it('should get group memberships', async () => {
+    const user = await createUser()
+    await GroupService.registerGroupMember(group, user, { role: 'member' })
+
+    req = httpMocks.createRequest({
+      ...defaultReqOptions,
+      method: 'GET',
+      params: {
+        groupId: String(group._id)
+      }
+    })
+
+    const resData = await controller.getGroupMemberships(req, res)
+    expect(resData.statusCode).toBe(200)
+    const body = getMockResJson(resData)
+
+    expect(body).toHaveLength(2)
     expect(body[0]).toHaveProperty('userId')
     expect(body[0]).toHaveProperty('role')
     expect(body[0]).toHaveProperty('points')

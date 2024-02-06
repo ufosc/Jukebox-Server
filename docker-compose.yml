@@ -27,7 +27,7 @@ services:
       - mongo-jukebox
     volumes:
       - ./src:/app/src
-      - ./dist:/app/dist
+      # - ./dist:/app/dist
     command: npm run dev
   
   mongo-jukebox:

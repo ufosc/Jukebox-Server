@@ -2,18 +2,20 @@ import type { Request, Response } from 'express'
 import { User } from 'src/models'
 import { SpotifyService } from 'src/services'
 import { getQuery, responses } from 'src/utils'
+import type { AuthenticatedLocals } from './../middleware/authMiddleware'
 
 export const spotifyLogin = async (req: Request, res: Response) => {
   /**
   @swagger
   #swagger.tags = ['Spotify']
   */
-  const { userId } = res.locals
-  const { redirectUri } = req.query
+  const { user } = <AuthenticatedLocals>res.locals
+  const { redirectUri, groupId } = req.query
 
   const spotifyLoginUri = SpotifyService.getSpotifyRedirectUri({
     finalRedirect: String(redirectUri || ''),
-    userId
+    userId: String(user._id),
+    groupId: String(groupId)
   })
 
   return responses.seeOther(res, spotifyLoginUri)

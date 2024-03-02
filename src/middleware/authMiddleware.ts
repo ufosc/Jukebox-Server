@@ -16,6 +16,10 @@ import { User } from 'src/models'
 import { SpotifyService } from 'src/services'
 import { responses } from '../utils'
 
+export interface AuthenticatedLocals {
+  user: User
+}
+
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
   // if (NODE_ENV === 'development') return next()
 
@@ -37,7 +41,10 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
     })
 
     const { userId } = jwtPayload.payload as any
-    res.locals = { ...res.locals, userId }
+    const user: User | null = await User.findById(userId)
+    if (!user) return responses.unauthorized(res)
+
+    res.locals = { ...res.locals, user } as AuthenticatedLocals
   } catch (error) {
     return responses.unauthorized(res)
   }

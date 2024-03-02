@@ -1,19 +1,27 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 sudo yum update -y
+sudo yum install -y docker
 
-sudo amazon-linux-extras install -y docker
-sudo systemctl enable docker.service
-sudo systemctl start docker.service
+sudo service docker start
+sudo chkconfig docker on # auto restart docker
 
-sudo yum install docker-compose
+# sudo systemctl enable docker.service
+# sudo systemctl start docker.service
+
+sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
 
 sudo usermod -aG docker ec2-user # Add user to "docker" group for permissions
 
-sudo yum install git
-git clone https://github.com/ufosc/Jukebox-Server.git
+cd ~
 
-docker-compose -f ./Jukebox-Server/docker-compose.yml build
-docker-compose -f ./Jukebox-Server/docker-compose.yml up -d
+# TODO: Create network docker-compose file, link to :80
+
+sudo yum install -y git
+git clone https://github.com/ufosc/Jukebox-Server.git /home/ec2-user/Jukebox-Server
+
+# sudo docker-compose -f /home/ec2-user/Jukebox-Server/docker-compose.yml build
+sudo docker-compose -f /home/ec2-user/Jukebox-Server/docker-compose.yml up -d --build
 

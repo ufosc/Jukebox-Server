@@ -5,6 +5,7 @@ services:
     restart: always
     build:
       context: .
+      dockerfile: ./Dockerfile.dev
       args:
         - NODE_ENV=development
     environment:
@@ -27,7 +28,7 @@ services:
       - mongo-jukebox
     volumes:
       - ./src:/app/src
-      - ./package.json:/app/package.json
+      # - ./dist:/app/dist
     command: npm run dev
   
   mongo-jukebox:

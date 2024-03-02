@@ -1,8 +1,8 @@
-import { Request, Response } from 'express'
+import type { Request, Response } from 'express'
 import httpMocks from 'node-mocks-http'
 
 import { User } from 'src/models'
-import { registerUser } from 'src/services'
+import { AuthService } from 'src/services'
 import { getMockResJson } from 'src/utils/testing'
 
 import * as controller from '../userController'
@@ -12,7 +12,7 @@ describe('User Controller', () => {
   let res: Response
   const originalPassword: string = 'abc123'
   const createUser = async (): Promise<User> => {
-    return await registerUser({ username: 'JohnDoe', password: originalPassword })
+    return await AuthService.registerUser({ email: 'JohnDoe', password: originalPassword })
   }
 
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe('User Controller', () => {
     req = httpMocks.createRequest({
       method: 'POST',
       body: {
-        username: 'test',
+        email: 'test',
         password: 'test'
       }
     })
@@ -35,7 +35,7 @@ describe('User Controller', () => {
     expect(resData.statusCode).toBe(201)
 
     const body = getMockResJson(resData)
-    expect(body).toHaveProperty('username')
+    expect(body).toHaveProperty('email')
     expect(body).toHaveProperty('password')
   })
 
@@ -45,7 +45,7 @@ describe('User Controller', () => {
     req = httpMocks.createRequest({
       method: 'POST',
       body: {
-        username: user.username,
+        email: user.email,
         password: originalPassword
       }
     })
@@ -79,8 +79,8 @@ describe('User Controller', () => {
 
   it('should partially update a user', async () => {
     const user = await createUser()
-    await user.updateOne({ username: 'Pre-update' })
-    const newUsername = 'Post-update-change'
+    await user.updateOne({ email: 'Pre-update' })
+    const newemail = 'Post-update-change'
 
     req = httpMocks.createRequest({
       method: 'PATCH',
@@ -88,7 +88,7 @@ describe('User Controller', () => {
         id: user._id
       },
       body: {
-        username: newUsername
+        email: newemail
       }
     })
 
@@ -96,17 +96,17 @@ describe('User Controller', () => {
     expect(resData.statusCode).toBe(200)
 
     const body = getMockResJson(resData)
-    expect(body).toHaveProperty('username')
+    expect(body).toHaveProperty('email')
     const obj = JSON.parse(JSON.stringify(body))
 
-    expect(obj.username).toEqual(newUsername)
+    expect(obj.email).toEqual(newemail)
     expect(obj.password).toEqual(user.password)
   })
 
   it('should update all fields on a user', async () => {
     const user = await createUser()
-    await user.updateOne({ username: 'Pre-update', password: 'pre-update-pass' })
-    const newUsername = 'Post-update-change'
+    await user.updateOne({ email: 'Pre-update', password: 'pre-update-pass' })
+    const newemail = 'Post-update-change'
     const newPassword = 'Post-update-pass'
 
     req = httpMocks.createRequest({
@@ -115,7 +115,7 @@ describe('User Controller', () => {
         id: user._id
       },
       body: {
-        username: newUsername,
+        email: newemail,
         password: newPassword
       }
     })
@@ -124,11 +124,11 @@ describe('User Controller', () => {
     expect(resData.statusCode).toBe(200)
 
     const body = getMockResJson(resData)
-    expect(body).toHaveProperty('username')
+    expect(body).toHaveProperty('email')
     expect(body).toHaveProperty('password')
 
     const obj = JSON.parse(JSON.stringify(body))
-    expect(obj.username).toEqual(newUsername)
+    expect(obj.email).toEqual(newemail)
     expect(obj.password).toEqual(newPassword)
   })
 

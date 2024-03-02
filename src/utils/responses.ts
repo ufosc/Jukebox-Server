@@ -91,6 +91,8 @@ export const seeOther = (res: Response, uri: string, headers?: { [field: string]
 export const badRequest = (res: Response, message?: any) => {
   const payload: ResponsePayload = formatResponse(400, 'Bad Request', message)
 
+  console.error('Bad request:', payload)
+
   return res.status(400).json(payload)
 }
 

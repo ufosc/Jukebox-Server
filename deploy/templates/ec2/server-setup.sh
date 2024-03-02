@@ -23,5 +23,5 @@ sudo yum install -y git
 git clone https://github.com/ufosc/Jukebox-Server.git /home/ec2-user/Jukebox-Server
 
 # sudo docker-compose -f /home/ec2-user/Jukebox-Server/docker-compose.yml build
-sudo docker-compose -f /home/ec2-user/Jukebox-Server/docker-compose.yml up -d --build
+sudo docker-compose -f /home/ec2-user/Jukebox-Server/docker-compose.prod.yml up -d --build
 

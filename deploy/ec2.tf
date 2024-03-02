@@ -26,11 +26,12 @@ data "aws_ami" "amzn_linux_2" {
 
 
 resource "aws_instance" "jukebox_server" {
-  ami           = data.aws_ami.amzn_linux_2.id
-  instance_type = "t3.micro"
-  user_data     = file("./templates/ec2/server-setup.sh")
-  key_name  = var.ssh_key_name
-  subnet_id = aws_subnet.public_a.id
+  ami                         = data.aws_ami.amzn_linux_2.id
+  instance_type               = "t3.micro"
+  user_data                   = file("./templates/ec2/server-setup.sh")
+  key_name                    = var.ssh_key_name
+  subnet_id                   = aws_subnet.public_a.id
+  user_data_replace_on_change = true
 
   vpc_security_group_ids = [
     aws_security_group.jukebox_server.id

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 sudo yum update -y
@@ -20,8 +20,8 @@ cd ~
 # TODO: Create network docker-compose file, link to :80
 
 sudo yum install -y git
-git clone https://github.com/ufosc/Jukebox-Server.git
+git clone https://github.com/ufosc/Jukebox-Server.git /home/ec2-user/Jukebox-Server
 
-sudo docker-compose -f ./Jukebox-Server/docker-compose.yml build
-sudo docker-compose -f ./Jukebox-Server/docker-compose.yml up -d
+# sudo docker-compose -f /home/ec2-user/Jukebox-Server/docker-compose.yml build
+sudo docker-compose -f /home/ec2-user/Jukebox-Server/docker-compose.yml up -d --build
 

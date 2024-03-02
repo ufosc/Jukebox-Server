@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  api:
+    restart: always
+    build:
+      context: .
+    networks:
+      - cluster
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+      - HOST=localhost
+      - JWT_SECRET_KEY=changeme
+      - TOKEN_HEADER_KEY=Authorization
+      - MONGO_URI=mongodb://root:changeme@mongodb:27017
+      - SP_ID=${SP_ID}
+      - SP_SECRET=${SP_SECRET}
+    ports:
+      - 80:8000
+    depends_on:
+      - mongodb
+    volumes:
+      - ./src:/app/src
+
+  proxy:
+    build:
+      context: ./proxy/
+    ports:
+      - 8080:8080
+    networks:
+      - cluster
+    depends_on:
+      - api
+    volumes:
+      - client-dist:/vol/client
+
+  mongodb:
+    image: mongo:6.0.9
+    restart: always
+    ports:
+      - 27017:27017
+    networks:
+      - cluster
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=changeme
+    command: mongod --quiet --logpath /dev/null --bind_ip_all
+
+volumes:
+  client-dist:
+    name: client-dist
+  mongo-data:
+  
+networks:
+  cluster:
+    name: jukebox_cluster
+    driver: bridge

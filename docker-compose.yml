@@ -5,6 +5,7 @@ services:
     restart: always
     build:
       context: .
+      dockerfile: ./Dockerfile.dev
       args:
         - NODE_ENV=development
     environment:

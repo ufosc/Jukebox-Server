@@ -17,7 +17,7 @@ USER root
 RUN npm install -g npm && \
     npm install -g typescript && \
     npm install -g rimraf && \
-    npm ci
+    npm install
 
 
 # # STAGE 2: Building the project.

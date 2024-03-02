@@ -15,7 +15,7 @@ RUN mkdir -p /vol/client && \
 
 USER nginx
 
-EXPOSE 8080
+EXPOSE 80
 VOLUME /vol/client
 
 CMD ["/entrypoint.sh"]

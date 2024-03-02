@@ -17,10 +17,13 @@ sudo usermod -aG docker ec2-user # Add user to "docker" group for permissions
 
 cd ~
 
-# TODO: Create network docker-compose file, link to :80
-
 sudo yum install -y git
 git clone https://github.com/ufosc/Jukebox-Server.git /home/ec2-user/Jukebox-Server
+
+
+%{ for env_key, env_value in env }
+echo "${env_key}=${env_value}" >> /home/ec2-user/Jukebox-Server/.env
+%{ endfor ~}
 
 sudo docker-compose -f /home/ec2-user/Jukebox-Server/docker-compose.prod.yml up -d --build
 

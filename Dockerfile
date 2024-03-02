@@ -29,7 +29,7 @@ COPY ./src /app/src
 
 RUN npm run build
 
-EXPOSE 80
+EXPOSE 8000
 VOLUME ["/app/src"]
 
 CMD ["npm", "start"]

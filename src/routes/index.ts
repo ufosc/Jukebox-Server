@@ -13,7 +13,7 @@ import { spotifyRouter } from './spotifyRoutes'
 import { userRouter } from './userRoutes'
 
 const router = Router()
-router.get('/', BaseController.healthCheck)
+router.get('/api', BaseController.healthCheck)
 router.use('/api/spotify', spotifyRouter)
 router.use('/api/user', userRouter)
 router.use('/api/group', groupRoutes)

@@ -47,13 +47,22 @@ variable "SERVER__JWT_SECRET_KEY" {
 variable "SERVER__TOKEN_HEADER_KEY" {
   default = "Authorization"
 }
-variable "SERVER__MONGO_URI" {
-  default = "mongodb://root:changeme@mongo-jukebox:27017"
-}
+# 
 variable "SERVER__SP_ID" {
   description = "Spotify App ID"
 }
 variable "SERVER__SP_SECRET" {
   description = "Spotify App Secret"
 }
+
+variable "DB__MONGO_USER" {
+  description = "MongoDB Username"
+}
+variable "DB__MONGO_PASSWORD" {
+  description = "MongoDB Password"
+}
+
+# variable "SERVER__MONGO_URI" {
+#   default = "mongodb://${var.DB__MONGO_USER}:${var.DB__MONGO_PASSWORD}@mongodb:27017"
+# }
 

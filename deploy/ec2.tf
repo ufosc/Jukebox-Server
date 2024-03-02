@@ -51,14 +51,16 @@ resource "aws_instance" "jukebox_server" {
     HOST             = var.SERVER__HOST
     JWT_SECRET_KEY   = var.SERVER__JWT_SECRET_KEY
     TOKEN_HEADER_KEY = var.SERVER__TOKEN_HEADER_KEY
-    MONGO_URI        = var.SERVER__MONGO_URI
+    MONGO_URI        = "mongodb://${var.DB__MONGO_USER}:${var.DB__MONGO_PASSWORD}@mongodb:27017"
     SP_ID            = var.SERVER__SP_ID
     SP_SECRET        = var.SERVER__SP_SECRET
+    MONGO_USER       = var.DB__MONGO_USER
+    MONGO_PASSWORD   = var.DB__MONGO_PASSWORD
   } })
   key_name                    = var.ssh_key_name
   user_data_replace_on_change = true
 
-  subnet_id                   = aws_subnet.public_a.id
+  subnet_id = aws_subnet.public_a.id
   vpc_security_group_ids = [
     aws_security_group.jukebox_server.id
   ]
@@ -80,6 +82,12 @@ resource "aws_security_group" "jukebox_server" {
     protocol    = "tcp"
     from_port   = 22
     to_port     = 22
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    protocol    = "tcp"
+    from_port   = 80
+    to_port     = 80
     cidr_blocks = ["0.0.0.0/0"]
   }
 

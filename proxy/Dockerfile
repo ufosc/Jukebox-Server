@@ -1,7 +1,7 @@
 FROM nginxinc/nginx-unprivileged:1-alpine
 LABEL maintainer="web@ikehunter.dev"
 
-COPY ./default.conf /etc/nginx/default.conf
+COPY ./default.conf.tpl /etc/nginx/default.conf.tpl
 COPY ./entrypoint.sh /entrypoint.sh
 
 USER root

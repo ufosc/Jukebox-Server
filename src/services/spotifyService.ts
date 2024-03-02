@@ -54,7 +54,11 @@ export class SpotifyService {
 
   private static getExpiresAt = (expiresIn: number): Date => new Date(Date.now() / 1000 + expiresIn)
 
-  static getSpotifyRedirectUri = (userState: { userId: string; finalRedirect: string }): string => {
+  static getSpotifyRedirectUri = (userState: {
+    userId: string
+    finalRedirect: string
+    groupId: string
+  }): string => {
     const state = JSON.stringify(userState)
 
     const url =

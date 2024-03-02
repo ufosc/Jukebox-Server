@@ -6,16 +6,16 @@ is the easiest resource to create in AWS, and will only need:
 - EC2 Instance
 - Script template (optional, but helps with organization)
 */
-###################################################
-# SETUP SCRIPT - Configure EC2 Server for Project #
-###################################################
+##########################################
+# EC2 INSTANCE - Host Server Application #
+##########################################
 data "aws_ami" "amzn_linux_2" {
   most_recent = true
   owners      = ["amazon"]
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-kernel-5.10-hvm-2.*"]
+    values = ["al2023-ami-2023.3.*-kernel-6.1-x86_64"]
   }
 
   filter {
@@ -24,10 +24,18 @@ data "aws_ami" "amzn_linux_2" {
   }
 }
 
+
 resource "aws_instance" "jukebox_server" {
   ami           = data.aws_ami.amzn_linux_2.id
   instance_type = "t3.micro"
-  user_data = file("./templates/ec2/server-setup.sh")
+  user_data     = file("./templates/ec2/server-setup.sh")
+  key_name  = var.ssh_key_name
+  subnet_id = aws_subnet.public_a.id
+
+  vpc_security_group_ids = [
+    aws_security_group.jukebox_server.id
+  ]
+
 
   tags = merge(
     local.common_tags,
@@ -35,8 +43,33 @@ resource "aws_instance" "jukebox_server" {
   )
 }
 
-##########################################
-# EC2 INSTANCE - Host Server Application #
-##########################################
-# TODO: Create ec2 instance with Amazon Linux 2 ami
-# TODO: connect script
+
+resource "aws_security_group" "jukebox_server" {
+  description = "Control server inbound and outbound access."
+  name        = "${local.prefix}-server"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = 22
+    to_port     = 22
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    protocol    = "tcp"
+    from_port   = 443
+    to_port     = 443
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    protocol    = "tcp"
+    from_port   = 80
+    to_port     = 80
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = local.common_tags
+}
+

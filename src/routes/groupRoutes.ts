@@ -4,7 +4,7 @@ import * as JamController from '../controllers/jamController'
 
 const router = Router()
 
-router.post('/groups', GroupController.createGroup) 
+router.post('/groups', GroupController.createGroup)
 router.post('/groups/:groupId/members', GroupController.createGroupMember)
 // router.post('/groups/:groupId/guests', GroupController.createSessionGuest)
 router.get('/groups/:groupId', GroupController.getGroup)

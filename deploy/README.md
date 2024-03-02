@@ -161,3 +161,7 @@ docker-compose -f deploy/docker-compose.yml run --rm terraform init \
     -backend-config="bucket=${S3_BUCKET}" \
     -backend-config="key=${S3_BUCKET}.tfstate"
 ```
+
+### Setup Keypair
+
+

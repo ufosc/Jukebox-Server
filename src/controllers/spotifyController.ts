@@ -10,11 +10,12 @@ export const spotifyLogin = async (req: Request, res: Response) => {
   #swagger.tags = ['Spotify']
   */
   const { user } = <AuthenticatedLocals>res.locals
-  const { redirectUri } = req.query
+  const { redirectUri, groupId } = req.query
 
   const spotifyLoginUri = SpotifyService.getSpotifyRedirectUri({
     finalRedirect: String(redirectUri || ''),
-    userId: String(user._id) 
+    userId: String(user._id),
+    groupId: String(groupId)
   })
 
   return responses.seeOther(res, spotifyLoginUri)

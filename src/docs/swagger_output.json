@@ -73,6 +73,11 @@
             "name": "redirectUri",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "groupId",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
@@ -464,6 +469,24 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ownerId": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "spotifyToken": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -484,6 +507,24 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ownerId": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "spotifyToken": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {

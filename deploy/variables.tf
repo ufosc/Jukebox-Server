@@ -48,10 +48,10 @@ variable "SERVER__TOKEN_HEADER_KEY" {
   default = "Authorization"
 }
 # 
-variable "SERVER__SP_ID" {
+variable "SERVER__SPOTIFY_CLIENT_ID" {
   description = "Spotify App ID"
 }
-variable "SERVER__SP_SECRET" {
+variable "SERVER__SPOTIFY_CLIENT_SECRET" {
   description = "Spotify App Secret"
 }
 

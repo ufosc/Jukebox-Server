@@ -52,8 +52,8 @@ resource "aws_instance" "jukebox_server" {
     JWT_SECRET_KEY   = var.SERVER__JWT_SECRET_KEY
     TOKEN_HEADER_KEY = var.SERVER__TOKEN_HEADER_KEY
     MONGO_URI        = "mongodb://${var.DB__MONGO_USER}:${var.DB__MONGO_PASSWORD}@mongodb:27017"
-    SP_ID            = var.SERVER__SP_ID
-    SP_SECRET        = var.SERVER__SP_SECRET
+    SP_ID            = var.SERVER__SPOTIFY_CLIENT_ID
+    SP_SECRET        = var.SERVER__SPOTIFY_CLIENT_SECRET
     MONGO_USER       = var.DB__MONGO_USER
     MONGO_PASSWORD   = var.DB__MONGO_PASSWORD
   } })

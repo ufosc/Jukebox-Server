@@ -16,7 +16,7 @@ import { initializeSwagger } from './docs/swagger'
 setupDatabase()
 
 initializeSwagger().then(async () => {
-  const swaggerDocument = await import('src/docs/swagger_output.json')
+  const swaggerDocument = await import('server/docs/swagger_output.json')
   server.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }))
 })
 

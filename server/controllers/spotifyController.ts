@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
-import { User } from 'src/models'
-import { SpotifyService } from 'src/services'
-import { getQuery, responses } from 'src/utils'
+import { User } from 'server/models'
+import { SpotifyService } from 'server/services'
+import { getQuery, responses } from 'server/utils'
 import type { AuthenticatedLocals } from './../middleware/authMiddleware'
 
 export const spotifyLogin = async (req: Request, res: Response) => {

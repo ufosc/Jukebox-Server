@@ -11,9 +11,9 @@ import {
   JWT_ISSUER,
   JWT_SECRET_KEY,
   NODE_ENV
-} from 'src/config'
-import { User } from 'src/models'
-import { SpotifyService } from 'src/services'
+} from 'server/config'
+import { User } from 'server/models'
+import { SpotifyService } from 'server/services'
 import { responses } from '../utils'
 
 export interface AuthenticatedLocals {

@@ -1,8 +1,8 @@
 import { compare, genSalt, hash } from 'bcrypt'
 import type { Algorithm } from 'jsonwebtoken'
 import { sign } from 'jsonwebtoken'
-import { JWT_ALGORITHM, JWT_ISSUER, JWT_SECRET_KEY } from 'src/config'
-import { User } from 'src/models'
+import { JWT_ALGORITHM, JWT_ISSUER, JWT_SECRET_KEY } from 'server/config'
+import { User } from 'server/models'
 
 export class AuthService {
   private static jwtSecret: string = JWT_SECRET_KEY

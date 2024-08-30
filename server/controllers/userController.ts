@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express'
-import { AUTH_TOKEN_COOKIE_NAME, NODE_ENV } from 'src/config'
-import { User } from 'src/models'
-import { AuthService } from 'src/services'
-import { responses } from 'src/utils'
+import { AUTH_TOKEN_COOKIE_NAME, NODE_ENV } from 'server/config'
+import { User } from 'server/models'
+import { AuthService } from 'server/services'
+import { responses } from 'server/utils'
 
 // TODO: Implement user from middleware
 

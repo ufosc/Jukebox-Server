@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express'
-import { responses } from 'src/utils'
+import { responses } from 'server/utils'
 
 export const startJam = async (req: Request, res: Response) => {
   /**

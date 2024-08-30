@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express'
-import type { AuthenticatedLocals } from 'src/middleware'
-import { Group, User } from 'src/models'
-import { AuthService, GroupService } from 'src/services'
-import { responses } from 'src/utils'
+import type { AuthenticatedLocals } from 'server/middleware'
+import { Group, User } from 'server/models'
+import { AuthService, GroupService } from 'server/services'
+import { responses } from 'server/utils'
 
 // TODO: Requires permission
 export const createGroup = async (req: Request, res: Response) => {

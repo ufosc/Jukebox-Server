@@ -1,7 +1,7 @@
 import type { AxiosResponse } from 'axios'
 import axios from 'axios'
 import { stringify } from 'querystring'
-import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } from 'src/config'
+import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } from 'server/config'
 
 type TokenResponse = {
   accessToken: string

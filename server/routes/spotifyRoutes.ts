@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { hasSpotifyToken } from 'src/middleware/authMiddleware'
+import { hasSpotifyToken } from 'server/middleware/authMiddleware'
 import * as SpotifyController from '../controllers/spotifyController'
 import { isAuthenticated } from './../middleware/authMiddleware'
 

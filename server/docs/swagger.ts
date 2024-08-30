@@ -1,7 +1,7 @@
 import swaggerAutogen from 'swagger-autogen'
 
 const outputFile = './docs/swagger_output.json'
-const endpointsFiles = ['src/routes/index.ts']
+const endpointsFiles = ['server/routes/index.ts']
 
 swaggerAutogen({ openapi: '3.0.0' })
 

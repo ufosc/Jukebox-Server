@@ -27,10 +27,10 @@ services:
     depends_on:
       - mongo-jukebox
     volumes:
-      - ./src:/app/src
+      - ./server:/app/server
       # - ./dist:/app/dist
     command: npm run dev
-  
+
   mongo-jukebox:
     image: mongo:6.0.9
     restart: always

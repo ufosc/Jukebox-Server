@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 
 services:
   api:
@@ -22,7 +22,7 @@ services:
     depends_on:
       - mongodb
     volumes:
-      - ./src:/app/src
+      - ./server:/app/server
 
   proxy:
     build:
@@ -55,7 +55,7 @@ volumes:
   client-dist:
     name: client-dist
   mongo-data:
-  
+
 networks:
   cluster:
     name: jukebox_cluster

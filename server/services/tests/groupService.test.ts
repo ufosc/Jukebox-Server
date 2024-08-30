@@ -1,4 +1,4 @@
-import { Group, Membership, type User } from 'src/models'
+import { Group, Membership, type User } from 'server/models'
 import { AuthService } from '../authService'
 import { GroupService } from '../groupService'
 

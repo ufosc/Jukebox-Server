@@ -67,7 +67,7 @@ declare type Track = {
   duration_ms: number
   explicit: boolean
   external_ids: {
-    isrc: string
+    iserver: string
     ean: string
     upc: string
   }

@@ -5,7 +5,7 @@
  * on the group model. Instead, it is responsible for the operations that effect
  * other models and services, including memberships and users.
  */
-import { Group, Membership, User } from 'src/models'
+import { Group, Membership, User } from 'server/models'
 
 export class GroupService {
   static async createGroup(owner: User, name: string, options?: any): Promise<Group> {

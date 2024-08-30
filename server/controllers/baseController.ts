@@ -2,7 +2,7 @@
  * @fileoverview General routes for the project.
  */
 import 'dotenv/config'
-import { responses } from 'src/utils'
+import { responses } from 'server/utils'
 
 export const healthCheck = async (_: any, res: any) => {
   /**======================*

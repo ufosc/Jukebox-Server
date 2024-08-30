@@ -1,4 +1,4 @@
-import type { Group } from 'src/models'
+import type { Group } from 'server/models'
 import type { CurrentTrack } from './tracks/trackPlayer'
 import type { TrackQueue } from './tracks/trackQueue'
 

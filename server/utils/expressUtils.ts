@@ -1,5 +1,5 @@
 import type { Request } from 'express'
-import { PORT } from 'src/config'
+import { PORT } from 'server/config'
 
 export const getQuery = (req: Request): any => {
   const protocol = req.protocol

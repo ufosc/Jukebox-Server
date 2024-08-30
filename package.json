@@ -7,16 +7,17 @@
     "test": "NODE_ENV=test&& npm run build && jest --testTimeout=5000 --detectOpenHandles --forceExit",
     "test:watch": "npm run build && jest --watch --testTimeout=5000 --detectOpenHandles --forceExit --verbose",
     "test:verbose": "npm run build && jest --testTimeout=5000 --detectOpenHandles --forceExit --verbose",
-    "start": "NODE_PATH=src node ./dist/src/index.js",
-    "dev": "ts-node-dev --respawn --pretty --transpile-only --ignore-watch swagger_output.json -r tsconfig-paths/register --exit-child src/index.ts",
+    "start": "NODE_PATH=server node ./dist/server/index.js",
+    "dev": "ts-node-dev --respawn --pretty --transpile-only --ignore-watch swagger_output.json -r tsconfig-paths/register --exit-child server/index.ts",
     "build": "rimraf ./dist && tsc && tsc-alias",
-    "lint": "npx eslint src/**/*.ts",
+    "lint": "npx eslint server/**/*.ts",
     "lint:fix": "npm run lint -- --fix"
   },
   "author": "",
   "license": "ISC",
   "_moduleAliases": {
-    "src": "./dist/src"
+    "src": "./dist/src",
+    "server": "./dist/server"
   },
   "dependencies": {
     "axios": "^1.6.7",

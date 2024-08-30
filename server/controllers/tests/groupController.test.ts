@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express'
 import httpMocks from 'node-mocks-http'
-import { Group, User } from 'src/models'
-import { AuthService, GroupService } from 'src/services'
+import { Group, User } from 'server/models'
+import { AuthService, GroupService } from 'server/services'
 
-import { getMockResJson } from 'src/utils/testing'
+import { getMockResJson } from 'server/utils/testing'
 import * as controller from '../groupController'
 
 const createUser = async (): Promise<User> => {

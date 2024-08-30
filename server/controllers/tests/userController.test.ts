@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express'
 import httpMocks from 'node-mocks-http'
 
-import { User } from 'src/models'
-import { AuthService } from 'src/services'
-import { getMockResJson } from 'src/utils/testing'
+import { User } from 'server/models'
+import { AuthService } from 'server/services'
+import { getMockResJson } from 'server/utils/testing'
 
 import * as controller from '../userController'
 

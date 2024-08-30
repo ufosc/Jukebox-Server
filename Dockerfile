@@ -25,11 +25,11 @@ RUN npm install -g npm && \
 FROM setup as build
 
 WORKDIR /app
-COPY ./src /app/src
+COPY ./server /app/server
 
 RUN npm run build
 
 EXPOSE 8000
-VOLUME ["/app/src"]
+VOLUME ["/app/server"]
 
 CMD ["npm", "start"]

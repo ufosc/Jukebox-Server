@@ -6,7 +6,7 @@
 // import type { JestConfigWithTsJest } from "ts-jest";
 // const { pathsToModuleNameMapper } = require("ts-jest/utils");
 
-const SRC_PATH = '<rootDir>/src'
+const SRC_PATH = '<rootDir>/server'
 
 const config = {
   preset: 'ts-jest',

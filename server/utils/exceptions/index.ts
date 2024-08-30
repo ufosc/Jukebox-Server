@@ -1,1 +1,1 @@
-export { NotImplementedError } from './generalExceptions'
+export * from './generalExceptions'

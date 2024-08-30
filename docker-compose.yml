@@ -5,26 +5,30 @@ services:
     restart: always
     build:
       context: .
+      dockerfile: ./Dockerfile.dev
       args:
-        - DEV=true
+        - NODE_ENV=development
     environment:
-      - DEV=true
+      - NODE_ENV=development
       - PORT=8000
       - HOST=localhost
+      - JWT_SECRET_KEY=changeme
+      - TOKEN_HEADER_KEY=Authorization
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
       - MONGO_DB=db
       - MONGO_USER=root
       - MONGO_PASSWORD=changeme
       - MONGO_URI=mongodb://root:changeme@mongo-jukebox:27017
-      - SP_ID=${SP_ID}
-      - SP_SECRET=${SP_SECRET}
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
     ports:
       - 8000:8000
     depends_on:
       - mongo-jukebox
     volumes:
       - ./src:/app/src
+      # - ./dist:/app/dist
     command: npm run dev
   
   mongo-jukebox:

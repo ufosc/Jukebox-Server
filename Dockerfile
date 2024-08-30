@@ -1,6 +1,6 @@
 # STAGE 1: Building the base image.
 ################################################
-FROM node:20-bookworm AS setup
+FROM node:20-alpine3.19 AS setup
 
 WORKDIR /app
 
@@ -10,25 +10,26 @@ COPY ./tsconfig.json ./tsconfig.json
 COPY ./jest.config.ts ./jest.config.ts
 
 
-ARG DEV=false
+# ARG NODE_ENV=production
 
 USER root
 
-RUN npm install -g npm@10.2.1 && \
+RUN npm install -g npm && \
     npm install -g typescript && \
     npm install -g rimraf && \
-    npm install 
+    npm install
 
 
-# STAGE 2: Building the project.
-################################################
+# # STAGE 2: Building the project.
+# ################################################
 FROM setup as build
 
-COPY ./src ./src
+WORKDIR /app
+COPY ./src /app/src
 
 RUN npm run build
-    
 
 EXPOSE 8000
+VOLUME ["/app/src"]
 
 CMD ["npm", "start"]

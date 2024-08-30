@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  api:
+    restart: always
+    container_name: api
+    build:
+      context: .
+    networks:
+      - cluster
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - PORT=${PORT}
+      - HOST=${HOST}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - TOKEN_HEADER_KEY=${TOKEN_HEADER_KEY}
+      - MONGO_URI=${MONGO_URI}
+      - SP_ID=${SP_ID}
+      - SP_SECRET=${SP_SECRET}
+    ports:
+      - 8000:8000
+    depends_on:
+      - mongodb
+    volumes:
+      - ./src:/app/src
+
+  proxy:
+    build:
+      context: ./proxy/
+    ports:
+      - 80:80
+    networks:
+      - cluster
+    depends_on:
+      - api
+    volumes:
+      - client-dist:/vol/client
+
+  mongodb:
+    image: mongo:6.0.9
+    container_name: mongodb
+    restart: always
+    ports:
+      - 27017:27017
+    networks:
+      - cluster
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    command: mongod --quiet --logpath /dev/null --bind_ip_all
+
+volumes:
+  client-dist:
+    name: client-dist
+  mongo-data:
+  
+networks:
+  cluster:
+    name: jukebox_cluster
+    driver: bridge

@@ -1,47 +1,159 @@
-/**
- * @fileoverview userController unit tests.
- */
-import { Request, Response } from "express";
-import request from "supertest";
-import server from "../../server";
-import UserManager from "../../models/user.manager";
-import { UserType } from "models/user.model";
-import { generateRandomString } from "../../utils/generator";
+import type { Request, Response } from 'express'
+import httpMocks from 'node-mocks-http'
 
-describe("userController", () => {
-  let username = "test";
-  let password = "testPass";
-  let accessToken = "testToken";
-  let user: UserType;
+import { User } from 'src/models'
+import { AuthService } from 'src/services'
+import { getMockResJson } from 'src/utils/testing'
 
-  beforeEach(async () => {
-    username = username + generateRandomString(5);
-    user = await UserManager.createUser(username, password, {
-      accessToken: accessToken,
-    });
-  });
+import * as controller from '../userController'
 
-  it("Should sign up a user", async () => {
-    let newUsername = generateRandomString(10);
-    const response = await request(server).post("/api/user/signup").send({
-      username: newUsername,
-      password: password,
-    });
-    expect(response.statusCode).toBe(200);
-  });
-  
-  it("Should log in a user", async () => {
-    const response = await request(server).post("/api/user/login").send({
-      username: username,
-      password: password,
-    });
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toHaveProperty("accessToken");
-    expect(response.body.accessToken).toEqual(accessToken);
-  });
-  
-  it("Should get current logged in user", async () => {
-    const response = await request(server).get("/api/user/me");
-    expect(response.statusCode).toBe(200);
-  });
-});
+describe('User Controller', () => {
+  let req: Request
+  let res: Response
+  const originalPassword: string = 'abc123'
+  const createUser = async (): Promise<User> => {
+    return await AuthService.registerUser({ email: 'JohnDoe', password: originalPassword })
+  }
+
+  beforeEach(() => {
+    res = httpMocks.createResponse()
+  })
+
+  it('should register a user', async () => {
+    const pre = await User.find({})
+    expect(pre).toHaveLength(0)
+
+    req = httpMocks.createRequest({
+      method: 'POST',
+      body: {
+        email: 'test',
+        password: 'test'
+      }
+    })
+
+    const resData = await controller.register(req, res)
+    expect(resData.statusCode).toBe(201)
+
+    const body = getMockResJson(resData)
+    expect(body).toHaveProperty('email')
+    expect(body).toHaveProperty('password')
+  })
+
+  it('should login a user', async () => {
+    const user = await createUser()
+
+    req = httpMocks.createRequest({
+      method: 'POST',
+      body: {
+        email: user.email,
+        password: originalPassword
+      }
+    })
+
+    const resData = await controller.login(req, res)
+    expect(resData.statusCode).toBe(200)
+
+    const body = getMockResJson(resData)
+    expect(body).toHaveProperty('token') // TODO: Test if token works
+  })
+
+  it('should get a user', async () => {
+    const user = await createUser()
+
+    req = httpMocks.createRequest({
+      method: 'GET',
+      params: {
+        id: user._id
+      }
+    })
+
+    const resData = await controller.getUser(req, res)
+    expect(resData.statusCode).toBe(200)
+
+    const body = getMockResJson(resData)
+    expect(body).toHaveProperty('_id')
+    const obj = body
+
+    expect(String(obj._id)).toEqual(String(user._id))
+  })
+
+  it('should partially update a user', async () => {
+    const user = await createUser()
+    await user.updateOne({ email: 'Pre-update' })
+    const newemail = 'Post-update-change'
+
+    req = httpMocks.createRequest({
+      method: 'PATCH',
+      params: {
+        id: user._id
+      },
+      body: {
+        email: newemail
+      }
+    })
+
+    const resData = await controller.updateUser(req, res)
+    expect(resData.statusCode).toBe(200)
+
+    const body = getMockResJson(resData)
+    expect(body).toHaveProperty('email')
+    const obj = JSON.parse(JSON.stringify(body))
+
+    expect(obj.email).toEqual(newemail)
+    expect(obj.password).toEqual(user.password)
+  })
+
+  it('should update all fields on a user', async () => {
+    const user = await createUser()
+    await user.updateOne({ email: 'Pre-update', password: 'pre-update-pass' })
+    const newemail = 'Post-update-change'
+    const newPassword = 'Post-update-pass'
+
+    req = httpMocks.createRequest({
+      method: 'PATCH',
+      params: {
+        id: user._id
+      },
+      body: {
+        email: newemail,
+        password: newPassword
+      }
+    })
+
+    const resData = await controller.updateUser(req, res)
+    expect(resData.statusCode).toBe(200)
+
+    const body = getMockResJson(resData)
+    expect(body).toHaveProperty('email')
+    expect(body).toHaveProperty('password')
+
+    const obj = JSON.parse(JSON.stringify(body))
+    expect(obj.email).toEqual(newemail)
+    expect(obj.password).toEqual(newPassword)
+  })
+
+  it('should delete a user', async () => {
+    const user = await createUser()
+
+    req = httpMocks.createRequest({
+      method: 'DELETE',
+      params: {
+        id: user._id
+      }
+    })
+
+    const resData = await controller.deleteUser(req, res)
+    expect(resData.statusCode).toBe(200)
+
+    // Check if deleted user is returned
+    const body = getMockResJson(resData)
+    expect(body).toHaveProperty('_id')
+    const obj = JSON.parse(JSON.stringify(body))
+
+    expect(String(obj._id)).toEqual(String(user._id))
+
+    // Check that user is deleted
+    const usersInDb = await User.find({})
+    expect(usersInDb).toHaveLength(0)
+  })
+})

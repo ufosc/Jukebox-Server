@@ -1,5 +1,4 @@
 # Node.js
-package-lock.json
 node_modules/
 
 # Environment
@@ -13,6 +12,7 @@ notes.md
 README-old.md
 utils-old/
 coverage/
+_depricated/
 
 ### Terraform ###
 # Local .terraform directories

@@ -2,12 +2,14 @@
  * For a detailed explanation regarding each configuration property, visit:
  * https://jestjs.io/docs/configuration
  */
-import type {Config} from 'jest';
-import type { JestConfigWithTsJest } from 'ts-jest'
+// import type {Config} from 'jest';
+// import type { JestConfigWithTsJest } from "ts-jest";
+// const { pathsToModuleNameMapper } = require("ts-jest/utils");
 
+const SRC_PATH = '<rootDir>/src';
 
-const config: JestConfigWithTsJest = {
-  preset: 'ts-jest',
+const config = {
+  preset: "ts-jest",
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -24,21 +26,13 @@ const config: JestConfigWithTsJest = {
   collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  collectCoverageFrom: [
-    // "src/**/*.ts"
-    "src/controllers/*.ts",
-    "src/models/*.ts",
-    "src/logic/*.ts"
-  ],
+  collectCoverageFrom: ["./**/*.ts", "src/controllers/**", "src/models/**", "src/middleware/**"],
 
   // The directory where Jest should output its coverage files
-  coverageDirectory: "coverage",
+  // coverageDirectory: "coverage",
 
   // An array of regexp pattern strings used to skip coverage collection
-  coveragePathIgnorePatterns: [
-    "/node_modules/",
-    "/build/"
-  ],
+  coveragePathIgnorePatterns: ["/node_modules/", "/build/", "docs/", "index.ts", "config/"],
 
   // Indicates which provider should be used to instrument code for coverage
   coverageProvider: "v8",
@@ -81,9 +75,11 @@ const config: JestConfigWithTsJest = {
   // maxWorkers: "50%",
 
   // An array of directory names to be searched recursively up from the requiring module's location
-  // moduleDirectories: [
-  //   "node_modules"
-  // ],
+  moduleDirectories: [
+    "node_modules",
+    "src",
+    // "./"
+  ],
 
   // An array of file extensions your modules use
   // moduleFileExtensions: [
@@ -98,7 +94,15 @@ const config: JestConfigWithTsJest = {
   // ],
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
-  // moduleNameMapper: {},
+  // moduleNameMapper: {
+  //   "src/(.*)": ["<rootDir>/src/$1", "node_modules/"],
+  //   // "(.*)": ["<rootDir>/node_modules/$1"]
+  // },
+  
+  // this enables us to use tsconfig-paths with jest
+  modulePaths: ["."],
+  // moduleNameMapper: compilerOptions.paths,
+  // moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
   // modulePathIgnorePatterns: [],
@@ -122,7 +126,7 @@ const config: JestConfigWithTsJest = {
   // resetMocks: false,
 
   // Reset the module registry before running each individual test
-  // resetModules: false,
+  resetModules: true,
 
   // A path to a custom resolver
   // resolver: undefined,
@@ -131,11 +135,13 @@ const config: JestConfigWithTsJest = {
   // restoreMocks: false,
 
   // The root directory that Jest should scan for tests and modules within
-  // rootDir: undefined,
+  rootDir: "./",
 
   // A list of paths to directories that Jest should use to search for files in
   roots: [
-    "./src"
+    "./src",
+    SRC_PATH
+    // "./src/*"
   ],
 
   // Allows you to use a custom runner instead of Jest's default test runner
@@ -145,7 +151,7 @@ const config: JestConfigWithTsJest = {
   // setupFiles: [],
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
-  setupFilesAfterEnv: ['./src/jest.setup.ts'],
+  setupFilesAfterEnv: ["./src/config/jest.setup.ts"],
 
   // The number of seconds after which a test is considered as slow and reported as such in the results.
   // slowTestThreshold: 5,
@@ -204,4 +210,5 @@ const config: JestConfigWithTsJest = {
   // watchman: true,
 };
 
-export default config;
+// export default config;
+module.exports = config;

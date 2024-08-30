@@ -1,30 +1,25 @@
 /**
  * @fileoverview Entry point of the application.
  */
-import mongoose from "mongoose";
-import server from "./server";
-import { initializeSwagger } from "./docs/swagger";
-import swaggerUi from "swagger-ui-express";
+// import 'module-alias/register'
+// if (process.env.NODE_ENV === 'production') {
+//   require('module-alias/register')
+// }
 
-const env = process.env;
-const port = env.PORT;
-const host = env.HOST;
+import 'dotenv/config'
+import swaggerUi from 'swagger-ui-express'
 
-mongoose
-  .connect(`mongodb://${env.MONGO_HOST}:${env.MONGO_PORT}/${env.MONGO_DB}`)
-  .then(() => {
-    console.log("Successfully connected to MongoDB");
-  })
-  .catch((err) => {
-    console.log("Error connecting to MongoDB:");
-    console.log(err);
-  });
-  
-initializeSwagger().then(() => {
-  const swaggerDocument = require("./docs/swagger_output.json");
-  server.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }));
-});
+import { HOST, PORT, setupDatabase } from './config'
+import { server } from './config/server' // Direct import, otherwise it breaks on tests
+import { initializeSwagger } from './docs/swagger'
 
-server.listen(port, () => {
-  console.log(`Listening on http://${host == "127.0.0.1" ? "localhost" : host}:${port}`);
-});
+setupDatabase()
+
+initializeSwagger().then(async () => {
+  const swaggerDocument = await import('src/docs/swagger_output.json')
+  server.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, { explorer: true }))
+})
+
+server.listen(PORT, () => {
+  console.log(`Listening on http://${HOST == '127.0.0.1' ? 'localhost' : HOST}:${PORT}`)
+})

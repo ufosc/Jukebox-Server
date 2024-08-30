@@ -15,7 +15,7 @@ sudo chmod +x /usr/local/bin/docker-compose
 sudo usermod -aG docker ec2-user # Add user to "docker" group for permissions
 
 # Install git
-sudo yum install -y git
+sudo yum install -y git 
 
 # Jukebox-Server Configuration ========================
 git clone https://github.com/ufosc/Jukebox-Server.git /home/ec2-user/Jukebox-Server

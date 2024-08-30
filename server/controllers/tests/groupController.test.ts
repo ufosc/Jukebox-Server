@@ -3,7 +3,7 @@ import httpMocks from 'node-mocks-http'
 import { Group, User } from 'server/models'
 import { AuthService, GroupService } from 'server/services'
 
-import { getMockResJson } from 'server/utils/testing'
+import { getMockResJson } from 'server/utils'
 import * as controller from '../groupController'
 
 const createUser = async (): Promise<User> => {

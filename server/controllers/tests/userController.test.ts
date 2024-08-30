@@ -3,7 +3,7 @@ import httpMocks from 'node-mocks-http'
 
 import { User } from 'server/models'
 import { AuthService } from 'server/services'
-import { getMockResJson } from 'server/utils/testing'
+import { getMockResJson } from 'server/utils'
 
 import * as controller from '../userController'
 

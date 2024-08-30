@@ -1,7 +1,13 @@
 import type { Request, Response } from 'express'
 import { User } from 'server/models'
 import { SpotifyService } from 'server/services'
-import { getQuery, responses } from 'server/utils'
+import {
+  httpBadRequest,
+  httpNotImplemented,
+  httpOk,
+  httpSeeOther,
+  httpUnauthorized
+} from 'server/utils'
 import type { AuthenticatedLocals } from './../middleware/authMiddleware'
 
 export const spotifyLogin = async (req: Request, res: Response) => {
@@ -18,7 +24,7 @@ export const spotifyLogin = async (req: Request, res: Response) => {
     groupId: String(groupId)
   })
 
-  return responses.seeOther(res, spotifyLoginUri)
+  return httpSeeOther(res, spotifyLoginUri)
 }
 
 export const spotifyLoginCallback = async (req: Request, res: Response) => {
@@ -26,15 +32,15 @@ export const spotifyLoginCallback = async (req: Request, res: Response) => {
   @swagger
   #swagger.tags = ['Spotify']
   */
-  const { code, state } = getQuery(req)
+  const { code, state } = req.query
 
   try {
     const parsedState = JSON.parse(JSON.parse(JSON.stringify(state))) // TODO: Fix double parse
     const { userId, finalRedirect } = parsedState
-    if (!userId) return responses.badRequest(res, 'Spotify state mismatch error.')
+    if (!userId) return httpBadRequest(res, 'Spotify state mismatch error.')
 
     const user: User | null = await User.findById(userId)
-    if (!user) return responses.unauthorized(res)
+    if (!user) return httpUnauthorized(res)
 
     const { accessToken, refreshToken, expiresAt } = await SpotifyService.requestSpotifyToken(
       String(code)
@@ -46,12 +52,12 @@ export const spotifyLoginCallback = async (req: Request, res: Response) => {
     })
 
     if (finalRedirect && String(finalRedirect) !== 'undefined' && finalRedirect !== '') {
-      return responses.seeOther(res, finalRedirect)
+      return httpSeeOther(res, finalRedirect)
     } else {
-      return responses.ok(res, { accessToken, refreshToken })
+      return httpOk(res, { accessToken, refreshToken })
     }
   } catch (error: any) {
-    return responses.badRequest(res, error?.message || error)
+    return httpBadRequest(res, error?.message || error)
   }
 }
 
@@ -66,9 +72,9 @@ export const getUserProfile = async (_: Request, res: Response) => {
   try {
     const profile = await spotify.getProfile()
 
-    return responses.ok(res, profile)
+    return httpOk(res, profile)
   } catch (error: any) {
-    return responses.badRequest(res, 'Error getting user profile: ' + error?.message)
+    return httpBadRequest(res, 'Error getting user profile: ' + error?.message)
   }
 }
 
@@ -78,7 +84,7 @@ export const spotifySearch = (_: Request, res: Response) => {
   #swagger.tags = ['Spotify']
   #swagger.summary = "Not implemented"
   */
-  return responses.notImplemented(res)
+  return httpNotImplemented(res)
 }
 
 export const spotifySearchTracks = (_: Request, res: Response) => {
@@ -87,7 +93,7 @@ export const spotifySearchTracks = (_: Request, res: Response) => {
   #swagger.tags = ['Spotify']
   #swagger.summary = "Not implemented"
   */
-  return responses.notImplemented(res)
+  return httpNotImplemented(res)
 }
 
 export const spotifySearchTrackId = (_: Request, res: Response) => {
@@ -96,7 +102,7 @@ export const spotifySearchTrackId = (_: Request, res: Response) => {
   #swagger.tags = ['Spotify']
   #swagger.summary = "Not implemented"
   */
-  return responses.notImplemented(res)
+  return httpNotImplemented(res)
 }
 
 export const getCurrentlyPlaying = (_: Request, res: Response) => {
@@ -105,5 +111,5 @@ export const getCurrentlyPlaying = (_: Request, res: Response) => {
   #swagger.tags = ['Spotify']
   #swagger.summary = "Not implemented"
   */
-  return responses.notImplemented(res)
+  return httpNotImplemented(res)
 }

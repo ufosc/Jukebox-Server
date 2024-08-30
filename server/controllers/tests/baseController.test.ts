@@ -1,7 +1,7 @@
 /**
  * @fileoverview Test for general api routes.
  */
-import { Request, Response } from 'express'
+import type { Request, Response } from 'express'
 import httpMocks from 'node-mocks-http'
 import * as controller from '../baseController'
 

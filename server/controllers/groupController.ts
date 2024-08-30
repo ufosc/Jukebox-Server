@@ -2,7 +2,7 @@ import type { Request, Response } from 'express'
 import type { AuthenticatedLocals } from 'server/middleware'
 import { Group, User } from 'server/models'
 import { AuthService, GroupService } from 'server/services'
-import { responses } from 'server/utils'
+import { httpBadRequest, httpCreated, httpNoContent, httpNotFound, httpOk } from 'server/utils'
 
 // TODO: Requires permission
 export const createGroup = async (req: Request, res: Response) => {
@@ -18,9 +18,9 @@ export const createGroup = async (req: Request, res: Response) => {
     const { name } = body // TODO: Validate body, explicitly define fields
 
     const group = await GroupService.createGroup(user, name, body)
-    return responses.created(res, group)
+    return httpCreated(res, group)
   } catch (error: any) {
-    return responses.badRequest(res, error?.message)
+    return httpBadRequest(res, error?.message)
   }
 }
 
@@ -34,7 +34,7 @@ export const createGroupMember = async (req: Request, res: Response) => {
   const { email, options } = req.body
 
   const group: Group | null = await Group.findById(groupId)
-  if (!group) return responses.notFound(res, 'Group not found.')
+  if (!group) return httpNotFound(res, 'Group not found.')
 
   try {
     const userFound: User | null = await User.findOne({ email: email })
@@ -47,9 +47,9 @@ export const createGroupMember = async (req: Request, res: Response) => {
     }
 
     const newMembership = await GroupService.registerGroupMember(group, user, options)
-    return responses.created(res, newMembership)
+    return httpCreated(res, newMembership)
   } catch (error: any) {
-    return responses.badRequest(res, error?.message)
+    return httpBadRequest(res, error?.message)
   }
 }
 
@@ -61,9 +61,9 @@ export const getGroup = async (req: Request, res: Response) => {
   const { groupId } = req.params
 
   const group: Group | null = await Group.findById(groupId)
-  if (!group) return responses.notFound(res, 'Group not found.')
+  if (!group) return httpNotFound(res, 'Group not found.')
 
-  return responses.ok(res, group)
+  return httpOk(res, group)
 }
 
 export const updateGroup = async (req: Request, res: Response) => {
@@ -76,7 +76,7 @@ export const updateGroup = async (req: Request, res: Response) => {
   const { ownerId, name, spotifyToken } = req.body
 
   const group: Group | null = await Group.findById(groupId)
-  if (!group) return responses.notFound(res, 'Group not found.')
+  if (!group) return httpNotFound(res, 'Group not found.')
 
   try {
     // TODO: Validate body
@@ -87,9 +87,9 @@ export const updateGroup = async (req: Request, res: Response) => {
       { new: true }
     )
 
-    return responses.ok(res, updatedGroup)
+    return httpOk(res, updatedGroup)
   } catch (error: any) {
-    return responses.badRequest(res, error?.message)
+    return httpBadRequest(res, error?.message)
   }
 }
 
@@ -102,13 +102,13 @@ export const deleteGroup = async (req: Request, res: Response) => {
   const { groupId } = req.params
 
   const group: Group | null = await Group.findById(groupId)
-  if (!group) return responses.notFound(res, 'Group not found.')
+  if (!group) return httpNotFound(res, 'Group not found.')
 
   try {
     await GroupService.deleteGroup(group)
-    return responses.noContent(res)
+    return httpNoContent(res)
   } catch (error: any) {
-    return responses.badRequest(res, error?.message)
+    return httpBadRequest(res, error?.message)
   }
 }
 
@@ -121,13 +121,13 @@ export const getGroupMembers = async (req: Request, res: Response) => {
   const { groupId } = req.params
 
   const group: Group | null = await Group.findById(groupId)
-  if (!group) return responses.notFound(res, 'Group not found.')
+  if (!group) return httpNotFound(res, 'Group not found.')
 
   try {
     const members = await GroupService.getGroupMembers(group)
-    return responses.ok(res, members)
+    return httpOk(res, members)
   } catch (error: any) {
-    return responses.badRequest(res, error?.message)
+    return httpBadRequest(res, error?.message)
   }
 }
 
@@ -140,12 +140,12 @@ export const getGroupMemberships = async (req: Request, res: Response) => {
   const { groupId } = req.params
 
   const group: Group | null = await Group.findById(groupId)
-  if (!group) return responses.notFound(res, 'Group not found.')
+  if (!group) return httpNotFound(res, 'Group not found.')
 
   try {
     const memberships = await GroupService.getGroupMemberships(group)
-    return responses.ok(res, memberships)
+    return httpOk(res, memberships)
   } catch (error: any) {
-    return responses.badRequest(res, error?.message)
+    return httpBadRequest(res, error?.message)
   }
 }

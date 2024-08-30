@@ -2,7 +2,7 @@
  * @fileoverview General routes for the project.
  */
 import 'dotenv/config'
-import { responses } from 'server/utils'
+import { httpOk } from '../utils'
 
 export const healthCheck = async (_: any, res: any) => {
   /**======================*
@@ -17,7 +17,7 @@ export const healthCheck = async (_: any, res: any) => {
         }
     }
   *========================*/
-  responses.ok(res, {
+  return httpOk(res, {
     spotifyLogin: 'http://localhost:8000/api/spotify/login/',
     documenation: 'http://localhost:8000/api/docs/'
   })

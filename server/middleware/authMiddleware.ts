@@ -5,16 +5,10 @@ import type { Jwt } from 'jsonwebtoken'
 import jwt from 'jsonwebtoken'
 
 import type { NextFunction, Request, Response } from 'express'
-import {
-  AUTH_TOKEN_COOKIE_NAME,
-  JWT_ALGORITHM,
-  JWT_ISSUER,
-  JWT_SECRET_KEY,
-  NODE_ENV
-} from 'server/config'
+import { AUTH_TOKEN_COOKIE_NAME, JWT_ALGORITHM, JWT_ISSUER, JWT_SECRET_KEY } from 'server/config'
 import { User } from 'server/models'
-import { SpotifyService } from 'server/services'
-import { httpBadRequest, httpUnauthorized } from '../utils'
+import { NODE_ENV } from 'common/config'
+import { httpUnauthorized } from '../utils'
 
 export interface AuthenticatedLocals {
   user: User

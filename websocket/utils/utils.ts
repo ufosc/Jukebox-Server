@@ -1,0 +1,1 @@
+export const getRoom = (resource: string, id: string) => `${resource}-${id}`

@@ -34,14 +34,17 @@
     "moduleResolution": "node" /* Specify how TypeScript looks up a file from a given module specifier. */,
     "baseUrl": "." /* Specify the base directory to resolve non-relative module names. */,
     "paths": {
-      "src/*": ["./src/*", "./*"],
-      "server/*": ["./server/*", "./*"],
-      "*": ["./src/*", "./*", "./server/*"]
+      // "src/*": ["web-socket/*", "./*"],
+      "server/*": ["./server/*"],
+      "websocket/*": ["./websocket/*"],
+      "common/*": ["./common/*"],
+      "*": ["./*", "./server/*", "./websocket/*", "./common/*"]
     } /* Specify a set of entries that re-map imports to additional lookup locations. */,
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     "typeRoots": [
       "./node_modules/@types",
-      "./src/types"
+      "server/types",
+      "websocket/types"
     ] /* Specify multiple folders that act like './node_modules/@types'. */,
     // "types": ["./node_modules/@types", "./src/types"],                                      /* Specify type package names to be included without being referenced in a source file. */
     // "allowUmdGlobalAccess": true,                     /* Allow accessing UMD globals from modules. */
@@ -121,9 +124,11 @@
     "./server",
     "./server/**/*.ts",
     "./server/**/*.json",
-    "./server/types"
-    // "./server/core/docs/swagger.ts",
-    // "./src/core/docs/api/monitor.doc.ts",
+    "./server/types",
+    "./websocket",
+    "./common",
+    "common/lib/kafka.ts", // "./server/core/docs/swagger.ts",
+    "common/lib/logger.ts" // "./src/core/docs/api/monitor.doc.ts",
   ],
   "exclude": ["node_modules", "coverage", "logs", "_depricated"]
 }

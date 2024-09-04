@@ -1,4 +1,4 @@
-import { createConsumer } from 'server/lib'
+import { createConsumer } from 'common/lib'
 
 export const registerConsumers = async () => {
   createConsumer('ping-pong', (data) => {

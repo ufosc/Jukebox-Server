@@ -9,11 +9,12 @@
 import 'dotenv/config'
 import swaggerUi from 'swagger-ui-express'
 
-import { HOST, NODE_ENV, PORT, setupDatabase } from './config'
+import { NODE_ENV } from 'common/config'
+import { logger } from 'common/lib'
+import { HOST, PORT, setupDatabase } from './config'
 import { server } from './config/server' // Direct import, otherwise it breaks on tests
 import { initializeSwagger } from './docs/swagger'
 import { registerConsumers } from './events'
-import { logger } from './lib'
 
 setupDatabase()
 

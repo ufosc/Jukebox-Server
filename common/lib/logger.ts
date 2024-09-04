@@ -1,5 +1,5 @@
-import { LOG_LEVEL, LOG_NS } from 'server/config'
 import { addColors, createLogger, format, transports } from 'winston'
+import { LOG_LEVEL, LOG_NS } from '../config'
 
 const consoleTransport = new transports.Console({
   format: format.combine(

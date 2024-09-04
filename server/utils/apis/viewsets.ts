@@ -4,12 +4,20 @@ import { NotFoundError } from '../exceptions'
 import { httpCreated } from '../responses'
 import { apiRequest } from './wrappers'
 
-export class Viewset<T extends Model<any> = Model<any>, S extends Serializable = any> {
+export class Viewset<
+  T extends Model<any, any, IModelMethods> = Model<any, any, IModelMethods>,
+  S extends Serializable = any
+> {
+  private model: T
+  private clean: (data: any) => S
+  
   constructor(
-    public model: T,
-    public serializer: (obj: Document | Document[] | any) => Serializable | Promise<Serializable>,
-    public clean: (data: any) => S
-  ) {}
+    model: T,
+    clean: (data: any) => S
+  ) {
+    this.model = model
+    this.clean = clean
+  }
 
   private apiWrapper = apiRequest
 
@@ -17,11 +25,13 @@ export class Viewset<T extends Model<any> = Model<any>, S extends Serializable =
     const { body } = req
     const data = this.clean(body)
     const obj = await this.model.create(data)
+    
+    return obj.serialize()
 
-    return this.serializer(obj)
   }
   private async handleList(req: Request, res: Response, next: NextFunction) {
-    return this.serializer(await this.model.find({}))
+    const query = await this.model.find({})
+    return query.map((obj: InstanceType<T>) => obj.serialize())
   }
   private async handleGet(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params
@@ -29,35 +39,35 @@ export class Viewset<T extends Model<any> = Model<any>, S extends Serializable =
 
     if (!result) throw new NotFoundError(`${this.model.name} with id ${id} not found.`)
 
-    return this.serializer(result)
+    return result.serialize()
   }
   private async handleUpdate(req: Request, res: Response, next: NextFunction) {
     const { body, params } = req
     const data = this.clean(body)
 
-    const obj = await this.model.findOneAndUpdate({ _id: params.id }, body, { new: true })
+    const obj = await this.model.findOneAndUpdate({ _id: params.id }, data, { new: true })
     if (!obj) throw new NotFoundError(`${this.model.name} with id ${params.id} not found.`)
-
-    return this.serializer(obj)
+      
+    return obj.serialize()
   }
   private async handlePartialUpdate(req: Request, res: Response, next: NextFunction) {
     const { body, params } = req
     const data = this.clean(body)
 
-    const obj = await this.model.findOneAndUpdate({ _id: params.id }, body, { new: true })
+    const obj = await this.model.findOneAndUpdate({ _id: params.id }, data, { new: true })
     if (!obj) throw new NotFoundError(`${this.model.name} with id ${params.id} not found.`)
 
-    return this.serializer(obj)
+    return obj.serialize()
   }
   private async handleDelete(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params
-    const result: Document<T> | null = await this.model.findById(id)
+    const result: InstanceType<Model<T, any, IModelMethods<T>>> | null = await this.model.findById(id)
 
     if (!result) throw new NotFoundError(`${this.model.name} with id ${id} not found.`)
 
     await result.deleteOne()
 
-    return this.serializer(result)
+    return result.serialize()
   }
 
   public create = this.apiWrapper(this.handleCreate.bind(this), { onSuccess: httpCreated })

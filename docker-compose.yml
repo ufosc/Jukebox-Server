@@ -26,6 +26,7 @@ services:
       - mongo-jukebox
     volumes:
       - ./server:/app/server
+      - ./jest.config.ts:/app/jest.config.ts
       # - ./dist:/app/dist
     command: npm run dev
 

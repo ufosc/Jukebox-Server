@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import * as baseViews from '../views/base'
+import * as baseViews from '../views/baseViews'
 import { groupRoutes } from './groupRoutes'
 import { spotifyRouter } from './spotifyRoutes'
 import { userRouter } from './userRoutes'

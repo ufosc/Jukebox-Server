@@ -58,32 +58,32 @@ export const hasSpotifyToken = async (_: Request, res: Response, next: NextFunct
   // const spotifyToken: string = (req.headers['x-spotify-access-token'] as string) ?? ''
   const { userId } = res.locals
   const user: User | null = await User.findById(userId)
-  if (!user) return httpUnauthorized(res, 'User not logged in.')
+  // if (!user) return httpUnauthorized(res, 'User not logged in.')
 
-  try {
-    const spotifyToken = user.spotifyAccessToken
-    if (!spotifyToken) return httpUnauthorized(res, 'Spotify token required.')
+  // try {
+  //   const spotifyToken = user.spotifyAccessToken
+  //   if (!spotifyToken) return httpUnauthorized(res, 'Spotify token required.')
 
-    const isExpired = user.spotifyTokenExpiration
-      ? user.spotifyTokenExpiration.getTime() < Date.now()
-      : true
+  //   const isExpired = user.spotifyTokenExpiration
+  //     ? user.spotifyTokenExpiration.getTime() < Date.now()
+  //     : true
 
-    if (isExpired) {
-      const currentRefreshToken = user.spotifyRefreshToken || ''
-      const { accessToken, expiresAt, refreshToken } =
-        await SpotifyService.refreshUserToken(currentRefreshToken)
-      await user.updateOne({
-        spotifyAccessToken: accessToken,
-        spotifyRefreshToken: refreshToken,
-        spotifyTokenExpiration: expiresAt
-      })
-      res.locals = { ...res.locals, spotifyAccessToken: accessToken }
-    } else {
-      res.locals = { ...res.locals, spotifyAccessToken: spotifyToken }
-    }
-  } catch (error: any) {
-    return httpBadRequest(res, 'Unable to verify spotify token.')
-  }
+  //   if (isExpired) {
+  //     const currentRefreshToken = user.spotifyRefreshToken || ''
+  //     const { accessToken, expiresAt, refreshToken } =
+  //       await SpotifyService.refreshUserToken(currentRefreshToken)
+  //     await user.updateOne({
+  //       spotifyAccessToken: accessToken,
+  //       spotifyRefreshToken: refreshToken,
+  //       spotifyTokenExpiration: expiresAt
+  //     })
+  //     res.locals = { ...res.locals, spotifyAccessToken: accessToken }
+  //   } else {
+  //     res.locals = { ...res.locals, spotifyAccessToken: spotifyToken }
+  //   }
+  // } catch (error: any) {
+  //   return httpBadRequest(res, 'Unable to verify spotify token.')
+  // }
 
   return next()
 }

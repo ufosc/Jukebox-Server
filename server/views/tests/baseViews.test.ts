@@ -1,16 +1,18 @@
 /**
  * @fileoverview Test for general api routes.
  */
-import type { Request, Response } from 'express'
+import type { NextFunction, Request, Response } from 'express'
 import httpMocks from 'node-mocks-http'
-import * as controller from '../baseController'
+import * as views from '../baseViews'
 
 describe('Base controller', () => {
   let req: Request
   let res: Response
+  let next: NextFunction
 
   beforeEach(() => {
     res = httpMocks.createResponse()
+    next = jest.fn()
   })
 
   it('should return ok', async () => {
@@ -18,7 +20,7 @@ describe('Base controller', () => {
       method: 'GET'
     })
 
-    await controller.healthCheck(req, res)
+    await views.healthcheck(req, res, next)
     expect(res.statusCode).toBe(200)
   })
 })

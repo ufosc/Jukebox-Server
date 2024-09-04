@@ -2,6 +2,7 @@
  * @fileoverview User model
  */
 import mongoose, { Schema, type Model } from 'mongoose'
+import { ValidationError } from '../utils'
 
 export interface IUser {
   id: string
@@ -50,6 +51,7 @@ export const UserSchema = new Schema<IUserFields, IUserModel, IUserMethods>({
     type: String,
     required: false
   }
+
   // spotifyAccessToken: {
   //   type: String,
   //   required: false
@@ -72,6 +74,34 @@ UserSchema.methods.serialize = function () {
     lastName: this.lastName,
     image: this.image
   }
+}
+
+export const cleanUser = (data: any): Partial<IUser> => {
+  const keys = Object.keys(data)
+  // if (!keys.includes('email') || !keys.includes('id')) {
+  //   throw new ValidationError('User must include email field.')
+  // }
+
+  let payload: Partial<IUser> = {}
+
+  // TODO: Create cleanModel utility
+  if ('id' in data) {
+    payload = { ...payload, id: data.id }
+  }
+  if ('email' in data) {
+    payload = { ...payload, email: data.email }
+  }
+  if ('firstName' in data) {
+    payload = { ...payload, firstName: data.firstName }
+  }
+  if ('lastName' in data) {
+    payload = { ...payload, lastName: data.lastName }
+  }
+  if ('image' in data) {
+    payload = { ...payload, image: data.image }
+  }
+
+  return payload
 }
 
 export const User = mongoose.model('User', UserSchema)

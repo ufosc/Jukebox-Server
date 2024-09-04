@@ -1,19 +1,17 @@
 import { Router } from 'express'
-import * as UserController from '../controllers/userController'
 import { isAuthenticated } from '../middleware/authMiddleware'
+import * as userViews from '../views/userViews'
+import { UserViewset } from '../views/userViews'
 
 const router = Router()
 
 /**== User Authentication ==**/
-router.post('/register', UserController.register)
-router.post('/login', UserController.login)
-router.post('/request-password-reset', UserController.requestPasswordReset)
-router.post('/reset-password', UserController.resetPassword)
+router.post('/register', userViews.registerUserView)
+router.post('/login', userViews.loginUserView)
+router.post('/request-password-reset', userViews.requestPasswordResetView)
+router.post('/reset-password', userViews.resetPasswordView)
 
 /**== User Management ==**/
-router.get('/user', isAuthenticated, UserController.getUser)
-router.patch('/user/:id', isAuthenticated, UserController.updateUser)
-router.put('/user/:id', isAuthenticated, UserController.updateUser)
-router.delete('/user/:id', isAuthenticated, UserController.deleteUser)
+router.use('/users', isAuthenticated, UserViewset.registerRouter())
 
 export const userRouter = router

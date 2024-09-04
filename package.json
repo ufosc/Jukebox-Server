@@ -2,7 +2,7 @@
   "name": "spotify_app",
   "version": "1.0.0",
   "description": "App that connects to spotify API to do enable OSC members access to music",
-  "main": "dist/src/index.js",
+  "main": "dist/server/index.js",
   "scripts": {
     "test": "NODE_ENV=test&& npm run build && jest --testTimeout=5000 --detectOpenHandles --forceExit",
     "test:watch": "npm run build && jest --watch --testTimeout=5000 --detectOpenHandles --forceExit --verbose",

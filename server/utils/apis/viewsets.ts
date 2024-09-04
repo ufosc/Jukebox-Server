@@ -4,21 +4,19 @@ import { NotFoundError } from '../exceptions'
 import { httpCreated } from '../responses'
 import { apiRequest } from './wrappers'
 
-export class ResourceViewset<T extends Model<any>, S extends Record<string, any>> {
+export class Viewset<T extends Model<any> = Model<any>, S extends Serializable = any> {
   constructor(
     public model: T,
-    public serializer: (
-      obj: Document | Document[] | any
-    ) => Record<string, any> | Promise<Record<string, any>>,
-    public validator: (data: any) => data is S
+    public serializer: (obj: Document | Document[] | any) => Serializable | Promise<Serializable>,
+    public clean: (data: any) => S
   ) {}
 
   private apiWrapper = apiRequest
 
   private async handleCreate(req: Request, res: Response, next: NextFunction) {
     const { body } = req
-    this.validator(body)
-    const obj = await this.model.create(body)
+    const data = this.clean(body)
+    const obj = await this.model.create(data)
 
     return this.serializer(obj)
   }
@@ -35,7 +33,7 @@ export class ResourceViewset<T extends Model<any>, S extends Record<string, any>
   }
   private async handleUpdate(req: Request, res: Response, next: NextFunction) {
     const { body, params } = req
-    this.validator(body)
+    const data = this.clean(body)
 
     const obj = await this.model.findOneAndUpdate({ _id: params.id }, body, { new: true })
     if (!obj) throw new NotFoundError(`${this.model.name} with id ${params.id} not found.`)
@@ -44,7 +42,7 @@ export class ResourceViewset<T extends Model<any>, S extends Record<string, any>
   }
   private async handlePartialUpdate(req: Request, res: Response, next: NextFunction) {
     const { body, params } = req
-    this.validator(body)
+    const data = this.clean(body)
 
     const obj = await this.model.findOneAndUpdate({ _id: params.id }, body, { new: true })
     if (!obj) throw new NotFoundError(`${this.model.name} with id ${params.id} not found.`)

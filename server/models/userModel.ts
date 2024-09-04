@@ -1,9 +1,23 @@
 /**
  * @fileoverview User model
  */
-import mongoose from 'mongoose'
+import mongoose, { Schema, type Model } from 'mongoose'
 
-export const UserSchema = new mongoose.Schema({
+export interface IUser {
+  id: string
+  email: string
+  firstName?: string
+  lastName?: string
+  image?: string
+}
+export interface IUserFields extends Omit<IUser, 'id'> {
+  password: string
+}
+export interface IUserMethods extends IModelMethods<IUser> {}
+
+export type IUserModel = Model<IUser, any, IUserMethods>
+
+export const UserSchema = new Schema<IUserFields, IUserModel, IUserMethods>({
   // username: {
   //   type: String,
   //   required: true,
@@ -24,19 +38,41 @@ export const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  spotifyAccessToken: {
+  firstName: {
     type: String,
     required: false
   },
-  spotifyRefreshToken: {
+  lastName: {
     type: String,
     required: false
   },
-  spotifyTokenExpiration: {
-    type: Date,
+  image: {
+    type: String,
     required: false
   }
+  // spotifyAccessToken: {
+  //   type: String,
+  //   required: false
+  // },
+  // spotifyRefreshToken: {
+  //   type: String,
+  //   required: false
+  // },
+  // spotifyTokenExpiration: {
+  //   type: Date,
+  //   required: false
+  // }
 })
+
+UserSchema.methods.serialize = function () {
+  return {
+    id: this._id.toString(),
+    email: this.email,
+    firstName: this.firstName,
+    lastName: this.lastName,
+    image: this.image
+  }
+}
 
 export const User = mongoose.model('User', UserSchema)
 

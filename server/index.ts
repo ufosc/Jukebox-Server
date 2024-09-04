@@ -9,11 +9,17 @@
 import 'dotenv/config'
 import swaggerUi from 'swagger-ui-express'
 
-import { HOST, PORT, setupDatabase } from './config'
+import { HOST, NODE_ENV, PORT, setupDatabase } from './config'
 import { server } from './config/server' // Direct import, otherwise it breaks on tests
 import { initializeSwagger } from './docs/swagger'
+import { registerConsumers } from './events'
+import { logger } from './lib'
 
-setupDatabase()
+// setupDatabase()
+
+if (NODE_ENV === 'production' || NODE_ENV === 'network') {
+  registerConsumers()
+}
 
 initializeSwagger().then(async () => {
   const swaggerDocument = await import('server/docs/swagger_output.json')
@@ -21,5 +27,5 @@ initializeSwagger().then(async () => {
 })
 
 server.listen(PORT, () => {
-  console.log(`Listening on http://${HOST == '127.0.0.1' ? 'localhost' : HOST}:${PORT}`)
+  logger.info(`Server running at http://${HOST}:${PORT}.`)
 })

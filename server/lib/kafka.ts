@@ -117,7 +117,7 @@ export const createProducer =
  */
 export const createConsumer = async (
   topic: string,
-  callback: (data: any, action?: string) => Promise<void>,
+  callback: (data: any, action?: string) => Promise<void> | void,
   options?: { fromBeginning?: boolean; manualCommit?: boolean }
 ) => {
   if (NODE_ENV === 'network' || NODE_ENV === 'production') {

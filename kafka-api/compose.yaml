@@ -1,0 +1,24 @@
+services:
+  kafka-api:
+    image: 'docker-spring-boot-postgres:latest'
+    build:
+      context: .
+    container_name: kafka-api
+#    volumes:
+#      - ./target:/target
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/$YOUR_DB_NAME
+#      - SPRING_DATASOURCE_USERNAME=$YOUR_USERNAME
+#      - SPRING_DATASOURCE_PASSWORD=$YOUR_PASSWORD
+#      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+    ports:
+      - 9090:8080
+    networks:
+      - cluster
+
+networks:
+  cluster:
+    name: cluster_network
+    external: true

@@ -1,5 +1,5 @@
 upstream api {
-  server api:8000;
+  server "server:8000";
 }
 
 server {

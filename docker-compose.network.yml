@@ -1,8 +1,9 @@
 services:
-  api:
+  server:
     restart: always
     build:
-      context: .
+      context: ./
+      dockerfile: ./server/Dockerfile
     environment:
       - NODE_ENV=network
       - PORT=8000
@@ -21,6 +22,7 @@ services:
       - kafka
     volumes:
       - ./server:/app/server
+      - ./common:/app/common
     networks:
       - cluster
     command: npm run dev
@@ -33,7 +35,7 @@ services:
     networks:
       - cluster
     depends_on:
-      - api
+      - server
     volumes:
       - client-dist:/vol/client
 

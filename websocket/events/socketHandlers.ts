@@ -1,5 +1,5 @@
-import { handleSocketSubscribe } from 'src/controllers/controller'
-import type { CustomSocket, SocketNext } from 'src/types'
+import { handleSocketSubscribe } from 'websocket/controllers'
+import type { CustomSocket, SocketNext } from 'websocket/types'
 
 export const socketHandlers = (socket: CustomSocket, next: SocketNext) => {
   socket.on('subscribe', (data) => handleSocketSubscribe(socket, data))

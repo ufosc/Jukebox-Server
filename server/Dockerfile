@@ -4,8 +4,8 @@ FROM node:20-bookworm
 
 WORKDIR /app
 
-COPY ./package.json ./package.json
-COPY ./package-lock.json ./package-lock.json
+COPY ./package.json /app/package.json
+COPY ./package-lock.json /app/package-lock.json
 
 ARG NODE_ENV=development
 
@@ -16,9 +16,10 @@ RUN npm install -g npm && \
     npm install -g rimraf && \
     npm install 
 
-COPY ./tsconfig.json ./tsconfig.json
-COPY ./jest.config.ts ./jest.config.ts
-COPY ./server /app/server
+COPY ./tsconfig.json /app/tsconfig.json
+COPY ./jest.config.ts /app/jest.config.ts
+COPY ./common/ /app/common
+COPY ./server/ /app/server
 
 RUN npm run build
 

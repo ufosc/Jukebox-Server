@@ -6,7 +6,7 @@
  */
 
 import { Kafka, Partitioners, logLevel, type Message } from 'kafkajs'
-import { KAFKA_BROKERS, KAFKA_GROUP_ID, NODE_ENV } from 'server/config'
+import { KAFKA_BROKERS, KAFKA_GROUP_ID, NODE_ENV } from '../config'
 import { logger } from './logger'
 
 const toWinstonLogLevel = (level: logLevel) => {

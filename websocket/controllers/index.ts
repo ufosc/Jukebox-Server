@@ -10,4 +10,4 @@
  * in order to provide a strucutred internal api for views, events, and
  * other services to access.
  */
-
+export * from './controller'

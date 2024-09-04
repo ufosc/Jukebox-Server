@@ -50,12 +50,12 @@ const getKafkaInstance = () => {
       brokers: KAFKA_BROKERS,
       logLevel: logLevel.INFO,
       logCreator: WinstonLogCreator,
-      connectionTimeout: 3000,
+      connectionTimeout: 10000,
 
       retry: {
         retries: 3,
-        // restartOnFailure: async () => true,
-        maxRetryTime: 5000
+        restartOnFailure: async () => true,
+        maxRetryTime: 10000
       }
     })
   } else {

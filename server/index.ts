@@ -15,7 +15,7 @@ import { initializeSwagger } from './docs/swagger'
 import { registerConsumers } from './events'
 import { logger } from './lib'
 
-// setupDatabase()
+setupDatabase()
 
 if (NODE_ENV === 'production' || NODE_ENV === 'network') {
   registerConsumers()

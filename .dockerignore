@@ -2,8 +2,11 @@
 *
 
 # Show only the files we need
-!src/
+!server/
 !package.json
 !package-lock.json
 !tsconfig.json
 !jest.config.ts
+!common/
+!websocket/
+!packages/

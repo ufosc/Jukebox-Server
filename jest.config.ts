@@ -6,10 +6,10 @@
 // import type { JestConfigWithTsJest } from "ts-jest";
 // const { pathsToModuleNameMapper } = require("ts-jest/utils");
 
-const SRC_PATH = '<rootDir>/src';
+const SRC_PATH = '<rootDir>/server'
 
 const config = {
-  preset: "ts-jest",
+  preset: 'ts-jest',
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -26,16 +26,21 @@ const config = {
   collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  collectCoverageFrom: ["./**/*.ts", "src/controllers/**", "src/models/**", "src/middleware/**"],
+  collectCoverageFrom: [
+    './**/*.ts',
+    // 'server/controllers/**',
+    // 'server/models/**',
+    // 'server/middleware/**'
+  ],
 
   // The directory where Jest should output its coverage files
   // coverageDirectory: "coverage",
 
   // An array of regexp pattern strings used to skip coverage collection
-  coveragePathIgnorePatterns: ["/node_modules/", "/build/", "docs/", "index.ts", "config/"],
+  coveragePathIgnorePatterns: ['/node_modules/', '/build/', 'docs/', 'index.ts', 'config/', 'lib/', 'types/'],
 
   // Indicates which provider should be used to instrument code for coverage
-  coverageProvider: "v8",
+  coverageProvider: 'v8',
 
   // A list of reporter names that Jest uses when writing coverage reports
   // coverageReporters: [
@@ -76,8 +81,8 @@ const config = {
 
   // An array of directory names to be searched recursively up from the requiring module's location
   moduleDirectories: [
-    "node_modules",
-    "src",
+    'node_modules',
+    'server'
     // "./"
   ],
 
@@ -98,9 +103,9 @@ const config = {
   //   "src/(.*)": ["<rootDir>/src/$1", "node_modules/"],
   //   // "(.*)": ["<rootDir>/node_modules/$1"]
   // },
-  
+
   // this enables us to use tsconfig-paths with jest
-  modulePaths: ["."],
+  modulePaths: ['.'],
   // moduleNameMapper: compilerOptions.paths,
   // moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
 
@@ -135,11 +140,11 @@ const config = {
   // restoreMocks: false,
 
   // The root directory that Jest should scan for tests and modules within
-  rootDir: "./",
+  rootDir: './',
 
   // A list of paths to directories that Jest should use to search for files in
   roots: [
-    "./src",
+    './server',
     SRC_PATH
     // "./src/*"
   ],
@@ -151,7 +156,7 @@ const config = {
   // setupFiles: [],
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
-  setupFilesAfterEnv: ["./src/config/jest.setup.ts"],
+  setupFilesAfterEnv: ['./server/config/jest.setup.ts']
 
   // The number of seconds after which a test is considered as slow and reported as such in the results.
   // slowTestThreshold: 5,
@@ -208,7 +213,7 @@ const config = {
 
   // Whether to use watchman for file crawling
   // watchman: true,
-};
+}
 
 // export default config;
-module.exports = config;
+module.exports = config

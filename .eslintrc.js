@@ -24,7 +24,7 @@ module.exports = {
   plugins: ['@typescript-eslint', 'prefer-arrow-functions', 'prettier'],
   rules: {
     '@typescript-eslint/consistent-type-imports': 'warn',
-    '@typescript-eslint/no-unused-vars': 'warn',
+    '@typescript-eslint/no-unused-vars': 'off',
     '@typescript-eslint/no-redeclare': 'off',
     '@typescript-eslint/space-before-function-paren': 'off',
     '@typescript-eslint/no-explicit-any': 'off',

@@ -6,6 +6,7 @@ type nodenv = 'development' | 'production' | 'test' | 'network'
 export const HOST: string = process.env.HOST || 'localhost'
 export const PORT = process.env.PORT || 3000
 export const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/mongo-jukebox'
+export const BASE_URL = process.env.BASE_URL || `http://${HOST}:${PORT}`
 
 export const JWT_SECRET_KEY: string = process.env.JWT_SECRET_KEY || 'secret'
 export const JWT_ISSUER = process.env.JWT_ISSUER || 'jukebox'

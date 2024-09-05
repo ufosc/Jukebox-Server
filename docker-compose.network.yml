@@ -22,10 +22,10 @@ services:
       - kafka
     volumes:
       - ./server:/app/server
-      - ./common:/app/common
+      - ./packages:/app/packages
     networks:
       - cluster
-    command: npm run dev
+    command: npm run dev:server
 
   proxy:
     build:
@@ -89,14 +89,6 @@ services:
     networks:
       - cluster
     attach: false
-
-  # init-kafka:
-  #   image: confluentinc/cp-kafka:latest
-  #   depends_on:
-  #     - kafka
-  #   entrypoint: ['/bin/sh', '-c']
-  #   networks:
-  #     - cluster
       
   kafka-api:
     image: 'docker-spring-boot-postgres:latest'
@@ -109,6 +101,33 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       - kafka
+  
+  ####################################
+  # Web Socket Config
+  ####################################
+  websocket:
+    build:
+      context: ./
+      dockerfile: ./websocket/Dockerfile
+    restart: always
+    ports:
+      - 9100:9100
+    container_name: websocket-jbx
+    volumes:
+      - ./websocket:/app/websocket
+      - ./packages:/app/packages
+      - ./package.json:/app/package.json
+    environment:
+      - HOST=0.0.0.0
+      - PORT=9100
+      - NODE_ENV=network
+      - LOG_LEVEL=debug
+      - KAFKA_BROKERS=kafka-jbx:9092
+      - KAFKA_GROUP_ID=websocket-jbx
+      - LOG_NS=websocket
+    command: npm run dev:websocket
+    networks:
+      - cluster
 
 volumes:
   client-dist:

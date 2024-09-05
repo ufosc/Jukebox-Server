@@ -20,11 +20,11 @@ RUN npm install -g npm && \
 COPY ./tsconfig.json /app/tsconfig.json
 COPY ./jest.config.ts /app/jest.config.ts
 COPY ./common/ /app/common
-COPY ./server/ /app/server
+COPY ./websocket/ /app/websocket
 
 RUN npm run build
 
 EXPOSE 8000
-VOLUME ["/app/server"]
+VOLUME ["/app/websocket"]
 
 CMD ["npm", "start"]

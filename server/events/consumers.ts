@@ -1,4 +1,4 @@
-import { createConsumer } from 'common/lib'
+import { createConsumer } from '@jukebox/lib'
 
 export const registerConsumers = async () => {
   createConsumer('ping-pong', (data) => {

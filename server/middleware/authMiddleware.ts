@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken'
 import type { NextFunction, Request, Response } from 'express'
 import { AUTH_TOKEN_COOKIE_NAME, JWT_ALGORITHM, JWT_ISSUER, JWT_SECRET_KEY } from 'server/config'
 import { User } from 'server/models'
-import { NODE_ENV } from 'common/config'
+import { NODE_ENV } from '@jukebox/config'
 import { httpUnauthorized } from '../utils'
 
 export interface AuthenticatedLocals {

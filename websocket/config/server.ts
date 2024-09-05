@@ -1,6 +1,6 @@
 import express from 'express'
 import http from 'http'
-import { logger } from 'common/lib'
+import { logger } from '@jukebox/lib'
 import { socketHandlers } from 'websocket/events/socketHandlers'
 import { startSocket } from 'websocket/lib'
 

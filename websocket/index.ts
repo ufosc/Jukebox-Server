@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'production') {
 
 import { HOST, NODE_ENV, PORT, io, server } from 'websocket/config'
 import { registerKafkaConsumers } from 'websocket/events'
-import { logger } from 'common/lib'
+import { logger } from '@jukebox/lib'
 
 // const PORT = process.env.PORT || '8333'
 

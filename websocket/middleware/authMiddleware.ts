@@ -1,5 +1,5 @@
 import { BYPASS_AUTH } from 'websocket/config'
-import { logger } from 'common/lib'
+import { logger } from '@jukebox/lib'
 import type { CustomSocket, SocketNext } from 'websocket/types'
 
 export const authMiddleware = (socket: CustomSocket, next: SocketNext) => {

@@ -8,7 +8,9 @@
     "test:watch": "npm run build && jest --watch --testTimeout=5000 --detectOpenHandles --forceExit --verbose",
     "test:verbose": "npm run build && jest --testTimeout=5000 --detectOpenHandles --forceExit --verbose",
     "start": "NODE_PATH=server node ./dist/server/index.js",
-    "dev": "ts-node-dev --respawn --pretty --transpile-only --ignore-watch swagger_output.json -r tsconfig-paths/register --exit-child server/index.ts",
+    "dev": "npm run dev:server",
+    "dev:server": "ts-node-dev --respawn --pretty --transpile-only --ignore-watch swagger_output.json -r tsconfig-paths/register --exit-child server/index.ts",
+    "dev:websocket": "ts-node-dev --respawn --pretty --transpile-only --ignore-watch swagger_output.json -r tsconfig-paths/register --exit-child websocket/index.ts",
     "build": "rimraf ./dist && tsc && tsc-alias",
     "lint": "npx eslint server/**/*.ts",
     "lint:fix": "npm run lint -- --fix"
@@ -18,10 +20,11 @@
   "_moduleAliases": {
     "src": "./dist/src",
     "server": "./dist/server",
-    "common": "./dist/common",
     "websocket": "./dist/websocket"
   },
   "dependencies": {
+    "@jukebox/config": "^1.0.0",
+    "@jukebox/lib": "^1.0.0",
     "axios": "^1.6.7",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
@@ -73,5 +76,10 @@
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.7.0",
     "typescript": "^4.9.5"
-  }
+  },
+  "workspaces": [
+    "packages/a",
+    "packages/lib",
+    "packages/config"
+  ]
 }

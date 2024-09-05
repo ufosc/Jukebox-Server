@@ -8,8 +8,9 @@ const router = Router()
 /**== User Authentication ==**/
 router.post('/register', userViews.registerUserView)
 router.post('/login', userViews.loginUserView)
-router.post('/request-password-reset', userViews.requestPasswordResetView)
-router.post('/reset-password', userViews.resetPasswordView)
+router.get('/me', isAuthenticated, userViews.currentUserView)
+router.post('/request-password-reset', isAuthenticated, userViews.requestPasswordResetView)
+router.post('/reset-password', isAuthenticated, userViews.resetPasswordView)
 
 /**== User Management ==**/
 router.use('/users', isAuthenticated, UserViewset.registerRouter())

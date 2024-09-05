@@ -1,6 +1,6 @@
 import { getUserToken, registerUser, requestPasswordReset, resetPassword } from 'server/controllers'
 import { cleanUser, User } from 'server/models'
-import { apiRequest, httpCreated, Viewset } from 'server/utils'
+import { apiAuthRequest, apiRequest, httpCreated, Viewset } from 'server/utils'
 
 export const registerUserView = apiRequest(
   async (req, res, next) => {
@@ -27,6 +27,17 @@ export const loginUserView = apiRequest(async (req, res, next) => {
   const token = await getUserToken(email, password)
   return { token }
 })
+
+export const currentUserView = apiAuthRequest(async (req, res, next) => {
+  /**
+  @swagger
+  #swagger.tags = ['User']
+  */
+  const { user } = res.locals
+
+  return user.serialize()
+})
+
 export const requestPasswordResetView = apiRequest(async (req, res, next) => {
   /**
   @swagger
@@ -37,6 +48,7 @@ export const requestPasswordResetView = apiRequest(async (req, res, next) => {
 
   await requestPasswordReset(email)
 })
+
 export const resetPasswordView = apiRequest(async (req, res, next) => {
   /**
   @swagger

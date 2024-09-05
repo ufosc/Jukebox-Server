@@ -1,7 +1,8 @@
+import { ResponseCodes, formatJsonResponse } from 'server/utils'
 import swaggerAutogen from 'swagger-autogen'
 
 const outputFile = './docs/swagger_output.json'
-const endpointsFiles = ['server/routes/index.ts']
+const endpointsFiles = ['server/routes/router.ts']
 
 swaggerAutogen({ openapi: '3.0.0' })
 
@@ -18,7 +19,7 @@ const doc = {
   produces: ['application/json'],
   tags: [
     {
-      name: 'Base',
+      name: 'General',
       description: 'General endpoints'
     },
     {
@@ -36,7 +37,8 @@ const doc = {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
-        in: 'header'
+        in: 'header',
+        description: 'Token used to authenticate with network.'
       }
     }
   },
@@ -47,6 +49,20 @@ const doc = {
   ],
   definitions: {}
 }
+const generateResponseDocs = () => {
+  const codes = ResponseCodes
+
+  for (const codeStr of Object.keys(codes)) {
+    const code = parseInt(codeStr)
+    if (code > 299) {
+      doc.definitions[`Error${code}`] = formatJsonResponse(code, 'Example message')
+    } else {
+      doc.definitions[`Success${code}`] = formatJsonResponse(code, 'Example message')
+    }
+  }
+}
+
 export const initializeSwagger = async () => {
-  await swaggerAutogen(outputFile, endpointsFiles, doc)
+  generateResponseDocs()
+  return await swaggerAutogen()(outputFile, endpointsFiles, doc)
 }

@@ -42,6 +42,7 @@ services:
     environment:
       - SERVER_URI=server-jbx:9000
       - WEBSOCKET_URI=websocket-jbx:9001
+    attach: false
 
   mongo-jukebox:
     image: mongo:6.0.9

@@ -8,14 +8,14 @@ import {
   httpSeeOther,
   httpUnauthorized
 } from 'server/utils'
-import type { AuthenticatedLocals } from './../middleware/authMiddleware'
+import type { AuthLocals } from './../middleware/authMiddleware'
 
 export const spotifyLogin = async (req: Request, res: Response) => {
   /**
   @swagger
   #swagger.tags = ['Spotify']
   */
-  const { user } = <AuthenticatedLocals>res.locals
+  const { user } = <AuthLocals>res.locals
   const { redirectUri, groupId } = req.query
 
   const spotifyLoginUri = SpotifyService.getSpotifyRedirectUri({

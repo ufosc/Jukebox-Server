@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express'
-import type { AuthenticatedLocals } from 'server/middleware'
+import type { AuthLocals } from 'server/middleware'
 import { Group, User } from 'server/models'
 import { AuthService, GroupService } from 'server/services'
 import { httpBadRequest, httpCreated, httpNoContent, httpNotFound, httpOk } from 'server/utils'
@@ -11,7 +11,7 @@ export const createGroup = async (req: Request, res: Response) => {
   #swagger.tags = ['Group']
   */
   const { body } = req
-  const { user } = <AuthenticatedLocals>res.locals
+  const { user } = <AuthLocals>res.locals
 
   try {
     // const group = await Group.create({ ...body, ownerId: user._id })

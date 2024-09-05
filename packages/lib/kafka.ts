@@ -56,7 +56,7 @@ const getKafkaInstance = () => {
       retry: {
         retries: 5,
         restartOnFailure: async () => true,
-        maxRetryTime: 15000
+        maxRetryTime: 20000
       }
     })
   } else {
@@ -125,7 +125,13 @@ export const createConsumer = async (
     const consumer = kafka.consumer({
       groupId: `${KAFKA_GROUP_ID}-${topic}`,
       sessionTimeout: 10000,
-      heartbeatInterval: 1000
+      heartbeatInterval: 1000,
+      allowAutoTopicCreation: true,
+      retry: {
+        retries: 5,
+        restartOnFailure: async () => true,
+        maxRetryTime: 20000
+      }
     })
     await consumer.connect()
     await consumer

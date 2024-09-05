@@ -129,6 +129,7 @@ services:
       - KAFKA_BROKERS=kafka-jbx:9092
       - KAFKA_GROUP_ID=websocket-jbx
       - LOG_NS=websocket
+      - BYPASS_AUTH=1
     command: npm run dev:websocket
     networks:
       - cluster

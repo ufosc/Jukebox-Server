@@ -11,6 +11,13 @@ upstream websocket {
 server {
   listen 8080;
   
+  add_header Access-Control-Allow-Origin *;
+  add_header Access-Control-Allow-Headers *;
+  add_header Access-Control-Allow-Methods *;
+  add_header Cross-Origin-Opener-Policy "unsafe-none";
+  
+  underscores_in_headers on;
+  
   location /api {
     proxy_pass http://apiserver;
     

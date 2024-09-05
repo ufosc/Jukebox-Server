@@ -11,7 +11,7 @@ services:
       - HOST=localhost
       - JWT_SECRET_KEY=changeme
       - TOKEN_HEADER_KEY=Authorization
-      - MONGO_URI=mongodb://root:changeme@mongo-jukebox-network:27017
+      - MONGO_URI=mongodb://root:changeme@mmongo-network-jbx:27017
       - SP_ID=${SP_ID}
       - SP_SECRET=${SP_SECRET}
       - LOG_LEVEL=debug
@@ -19,7 +19,7 @@ services:
     ports:
       - 9000:9000
     depends_on:
-      - mongo-jukebox
+      - mongodb
       - kafka
     volumes:
       - ./server:/app/server
@@ -44,10 +44,10 @@ services:
       - WEBSOCKET_URI=websocket-jbx:9001
     attach: false
 
-  mongo-jukebox:
+  mongodb:
     image: mongo:6.0.9
     restart: always
-    container_name: mongo-jukebox-network
+    container_name: mongo-network-jbx
     ports:
       - 27017:27017
     volumes:

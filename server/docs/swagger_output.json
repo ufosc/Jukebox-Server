@@ -60,6 +60,16 @@
         }
       }
     },
+    "/api/ping": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/spotify/login": {
       "get": {
         "tags": [

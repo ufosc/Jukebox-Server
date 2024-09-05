@@ -1,3 +1,4 @@
+import { producePing } from 'server/events/producers'
 import { apiRequest } from 'server/utils'
 
 /**
@@ -34,4 +35,9 @@ export const apiHelp = apiRequest((req, res) => {
     spotifyLogin: `${baseUrl}/api/spotify/login/`,
     documenation: `${baseUrl}/api/docs/`
   }
+})
+
+export const pingPongView = apiRequest((req, res) => {
+  const data = 'Ping from api.'
+  producePing(new Date().toLocaleTimeString(), data)
 })

@@ -19,7 +19,6 @@ RUN npm install -g npm && \
 
 COPY ./tsconfig.json /app/tsconfig.json
 COPY ./jest.config.ts /app/jest.config.ts
-COPY ./common/ /app/common
 COPY ./server/ /app/server
 
 RUN npm run build

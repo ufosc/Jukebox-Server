@@ -28,9 +28,10 @@ export const apiHelp = apiRequest((req, res) => {
     #swagger.tags = ['General']
     #swagger.description = 'Main links to use for navigating api.'
    *=========================== */
+  const baseUrl = req.protocol + '://' + req.get('host')
 
   return {
-    spotifyLogin: 'http://localhost:8000/api/spotify/login/',
-    documenation: 'http://localhost:8000/api/docs/'
+    spotifyLogin: `${baseUrl}/api/spotify/login/`,
+    documenation: `${baseUrl}/api/docs/`
   }
 })

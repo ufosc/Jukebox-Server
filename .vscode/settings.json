@@ -1,7 +1,7 @@
-{
-  "files.associations": {
-    "*.sh.tpl": "shellscript",
-    "*.json.tpl": "JSON",
-    "*.conf.tpl": "NGINX Conf"
-  }
-}
+// {
+//   "files.associations": {
+//     "*.sh.tpl": "shellscript",
+//     "*.json.tpl": "JSON",
+//     "*.conf.tpl": "NGINX Conf"
+//   }
+// }

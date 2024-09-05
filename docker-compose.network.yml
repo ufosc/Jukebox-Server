@@ -4,9 +4,10 @@ services:
     build:
       context: ./
       dockerfile: ./server/Dockerfile
+    container_name: server-jbx
     environment:
       - NODE_ENV=network
-      - PORT=8000
+      - PORT=9000
       - HOST=localhost
       - JWT_SECRET_KEY=changeme
       - TOKEN_HEADER_KEY=Authorization
@@ -16,7 +17,7 @@ services:
       - LOG_LEVEL=debug
       - KAFKA_BROKERS=kafka-jbx:9092
     ports:
-      - 8000:8000
+      - 9000:9000
     depends_on:
       - mongo-jukebox
       - kafka
@@ -38,6 +39,9 @@ services:
       - server
     volumes:
       - client-dist:/vol/client
+    environment:
+      - SERVER_URI=server-jbx:9000
+      - WEBSOCKET_URI=websocket-jbx:9001
 
   mongo-jukebox:
     image: mongo:6.0.9
@@ -111,7 +115,7 @@ services:
       dockerfile: ./websocket/Dockerfile
     restart: always
     ports:
-      - 9100:9100
+      - 9001:9001
     container_name: websocket-jbx
     volumes:
       - ./websocket:/app/websocket
@@ -119,7 +123,7 @@ services:
       - ./package.json:/app/package.json
     environment:
       - HOST=0.0.0.0
-      - PORT=9100
+      - PORT=9001
       - NODE_ENV=network
       - LOG_LEVEL=debug
       - KAFKA_BROKERS=kafka-jbx:9092

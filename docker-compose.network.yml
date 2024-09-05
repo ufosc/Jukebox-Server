@@ -4,28 +4,30 @@ services:
     build:
       context: ./
       dockerfile: ./server/Dockerfile
+    container_name: server-jbx
     environment:
       - NODE_ENV=network
-      - PORT=8000
+      - PORT=9000
       - HOST=localhost
       - JWT_SECRET_KEY=changeme
       - TOKEN_HEADER_KEY=Authorization
-      - MONGO_URI=mongodb://root:changeme@mongo-jukebox-network:27017
+      - MONGO_URI=mongodb://root:changeme@mongo-network-jbx:27017
       - SP_ID=${SP_ID}
       - SP_SECRET=${SP_SECRET}
       - LOG_LEVEL=debug
       - KAFKA_BROKERS=kafka-jbx:9092
+      - BASE_URL=http://localhost:8080
     ports:
-      - 8000:8000
+      - 9000:9000
     depends_on:
-      - mongo-jukebox
+      - mongodb
       - kafka
     volumes:
       - ./server:/app/server
-      - ./common:/app/common
+      - ./packages:/app/packages
     networks:
       - cluster
-    command: npm run dev
+    command: npm run dev:server
 
   proxy:
     build:
@@ -38,11 +40,15 @@ services:
       - server
     volumes:
       - client-dist:/vol/client
+    environment:
+      - SERVER_URI=server-jbx:9000
+      - WEBSOCKET_URI=websocket-jbx:9001
+    attach: false
 
-  mongo-jukebox:
+  mongodb:
     image: mongo:6.0.9
     restart: always
-    container_name: mongo-jukebox-network
+    container_name: mongo-network-jbx
     ports:
       - 27017:27017
     volumes:
@@ -89,14 +95,6 @@ services:
     networks:
       - cluster
     attach: false
-
-  # init-kafka:
-  #   image: confluentinc/cp-kafka:latest
-  #   depends_on:
-  #     - kafka
-  #   entrypoint: ['/bin/sh', '-c']
-  #   networks:
-  #     - cluster
       
   kafka-api:
     image: 'docker-spring-boot-postgres:latest'
@@ -109,6 +107,34 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       - kafka
+  
+  ####################################
+  # Web Socket Config
+  ####################################
+  websocket:
+    build:
+      context: ./
+      dockerfile: ./websocket/Dockerfile
+    restart: always
+    ports:
+      - 9001:9001
+    container_name: websocket-jbx
+    volumes:
+      - ./websocket:/app/websocket
+      - ./packages:/app/packages
+      - ./package.json:/app/package.json
+    environment:
+      - HOST=0.0.0.0
+      - PORT=9001
+      - NODE_ENV=network
+      - LOG_LEVEL=debug
+      - KAFKA_BROKERS=kafka-jbx:9092
+      - KAFKA_GROUP_ID=websocket-jbx
+      - LOG_NS=websocket
+      # - BYPASS_AUTH=1
+    command: npm run dev:websocket
+    networks:
+      - cluster
 
 volumes:
   client-dist:

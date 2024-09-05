@@ -1,5 +1,5 @@
 import { type NextFunction, type Request, type Response, Router } from 'express'
-import type { Document, Model } from 'mongoose'
+import type { Model } from 'mongoose'
 import { NotFoundError } from '../exceptions'
 import { httpCreated } from '../responses'
 import { apiRequest } from './wrappers'
@@ -10,11 +10,8 @@ export class Viewset<
 > {
   private model: T
   private clean: (data: any) => S
-  
-  constructor(
-    model: T,
-    clean: (data: any) => S
-  ) {
+
+  constructor(model: T, clean: (data: any) => S) {
     this.model = model
     this.clean = clean
   }
@@ -25,9 +22,8 @@ export class Viewset<
     const { body } = req
     const data = this.clean(body)
     const obj = await this.model.create(data)
-    
-    return obj.serialize()
 
+    return obj.serialize()
   }
   private async handleList(req: Request, res: Response, next: NextFunction) {
     const query = await this.model.find({})
@@ -47,7 +43,7 @@ export class Viewset<
 
     const obj = await this.model.findOneAndUpdate({ _id: params.id }, data, { new: true })
     if (!obj) throw new NotFoundError(`${this.model.name} with id ${params.id} not found.`)
-      
+
     return obj.serialize()
   }
   private async handlePartialUpdate(req: Request, res: Response, next: NextFunction) {
@@ -61,7 +57,8 @@ export class Viewset<
   }
   private async handleDelete(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params
-    const result: InstanceType<Model<T, any, IModelMethods<T>>> | null = await this.model.findById(id)
+    const result: InstanceType<Model<T, any, IModelMethods<T>>> | null =
+      await this.model.findById(id)
 
     if (!result) throw new NotFoundError(`${this.model.name} with id ${id} not found.`)
 
@@ -80,7 +77,7 @@ export class Viewset<
   registerRouter(path = '/'): Router {
     const router = Router()
 
-    router.post(path, this.create)
+    router.post(path, this.create.bind(this))
     router.get(path, this.list)
     router.get(`${path}:id`, this.get)
     router.post(`${path}:id`, this.update)

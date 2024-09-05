@@ -43,6 +43,9 @@ export const errorResponse = (error: any, res: Response, next: NextFunction) => 
 }
 
 /**
+ * #swagger.responses[200] = {
+      schema: {$ref: "#/definitions/Success200"},
+    }
  * @response 200 - OK
  * The request succeeded.
  */

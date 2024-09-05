@@ -6,7 +6,7 @@
  */
 
 import { Kafka, Partitioners, logLevel, type Message } from 'kafkajs'
-import { KAFKA_BROKERS, KAFKA_GROUP_ID, NODE_ENV } from '../config'
+import { KAFKA_BROKERS, KAFKA_GROUP_ID, NODE_ENV } from '@jukebox/config'
 import { logger } from './logger'
 
 const toWinstonLogLevel = (level: logLevel) => {
@@ -50,12 +50,13 @@ const getKafkaInstance = () => {
       brokers: KAFKA_BROKERS,
       logLevel: logLevel.INFO,
       logCreator: WinstonLogCreator,
-      connectionTimeout: 10000,
+      connectionTimeout: 20000,
+      requestTimeout: 20000,
 
       retry: {
-        retries: 3,
+        retries: 5,
         restartOnFailure: async () => true,
-        maxRetryTime: 10000
+        maxRetryTime: 20000
       }
     })
   } else {
@@ -124,7 +125,13 @@ export const createConsumer = async (
     const consumer = kafka.consumer({
       groupId: `${KAFKA_GROUP_ID}-${topic}`,
       sessionTimeout: 10000,
-      heartbeatInterval: 1000
+      heartbeatInterval: 1000,
+      allowAutoTopicCreation: true,
+      retry: {
+        retries: 5,
+        restartOnFailure: async () => true,
+        maxRetryTime: 20000
+      }
     })
     await consumer.connect()
     await consumer

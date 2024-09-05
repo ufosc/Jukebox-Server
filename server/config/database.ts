@@ -1,4 +1,4 @@
-import { logger } from 'common/lib'
+import { logger } from '@jukebox/lib'
 import mongoose from 'mongoose'
 import { MONGO_URI } from './constants'
 

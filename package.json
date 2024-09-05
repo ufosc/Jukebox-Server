@@ -8,7 +8,9 @@
     "test:watch": "npm run build && jest --watch --testTimeout=5000 --detectOpenHandles --forceExit --verbose",
     "test:verbose": "npm run build && jest --testTimeout=5000 --detectOpenHandles --forceExit --verbose",
     "start": "NODE_PATH=server node ./dist/server/index.js",
-    "dev": "ts-node-dev --respawn --pretty --transpile-only --ignore-watch swagger_output.json -r tsconfig-paths/register --exit-child server/index.ts",
+    "dev": "npm run dev:server",
+    "dev:server": "ts-node-dev --respawn --pretty --transpile-only --ignore-watch swagger_output.json -r tsconfig-paths/register --exit-child server/index.ts",
+    "dev:websocket": "ts-node-dev --respawn --pretty --transpile-only --ignore-watch swagger_output.json -r tsconfig-paths/register --exit-child websocket/index.ts",
     "build": "rimraf ./dist && tsc && tsc-alias",
     "lint": "npx eslint server/**/*.ts",
     "lint:fix": "npm run lint -- --fix"
@@ -18,10 +20,11 @@
   "_moduleAliases": {
     "src": "./dist/src",
     "server": "./dist/server",
-    "common": "./dist/common",
     "websocket": "./dist/websocket"
   },
   "dependencies": {
+    "@jukebox/config": "^1.0.0",
+    "@jukebox/lib": "^1.0.0",
     "axios": "^1.6.7",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
@@ -34,6 +37,7 @@
     "module-alias": "^2.2.3",
     "mongoose": "^7.5.2",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
     "socket.io": "^4.7.5",
     "url": "^0.11.3",
     "winston": "^3.10.0"
@@ -47,6 +51,7 @@
     "@types/jsonwebtoken": "^9.0.5",
     "@types/module-alias": "^2.0.4",
     "@types/morgan": "^1.9.9",
+    "@types/multer": "^1.4.12",
     "@types/request": "^2.48.10",
     "@types/swagger-ui-express": "^4.1.4",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
@@ -73,5 +78,10 @@
     "tsconfig-paths": "^4.2.0",
     "tsx": "^4.7.0",
     "typescript": "^4.9.5"
-  }
+  },
+  "workspaces": [
+    "packages/a",
+    "packages/lib",
+    "packages/config"
+  ]
 }

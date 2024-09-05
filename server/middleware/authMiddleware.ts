@@ -4,14 +4,18 @@
 import type { Jwt } from 'jsonwebtoken'
 import jwt from 'jsonwebtoken'
 
+import { NODE_ENV } from '@jukebox/config'
 import type { NextFunction, Request, Response } from 'express'
 import { AUTH_TOKEN_COOKIE_NAME, JWT_ALGORITHM, JWT_ISSUER, JWT_SECRET_KEY } from 'server/config'
 import { User } from 'server/models'
-import { NODE_ENV } from 'common/config'
 import { httpUnauthorized } from '../utils'
 
-export interface AuthenticatedLocals {
+export interface AuthLocals {
   user: User
+}
+
+export type AuthResponse = Response & {
+  locals: AuthLocals
 }
 
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
@@ -38,7 +42,7 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
     const user: User | null = await User.findById(userId)
     if (!user) return httpUnauthorized(res)
 
-    res.locals = { ...res.locals, user } as AuthenticatedLocals
+    res.locals = { ...res.locals, user } as AuthLocals
   } catch (error) {
     return httpUnauthorized(res)
   }

@@ -1,4 +1,39 @@
-import mongoose, { Types } from 'mongoose'
+import mongoose, { Types, type Model } from 'mongoose'
+
+export interface IGroup {
+  id: string
+  name: string
+  ownerId: string
+  spotifyAuthId: string
+}
+
+export interface IGroupFields extends Omit<IGroup, 'ownerId' | 'id' | 'spotifyAuthId'> {
+  ownerId: typeof Types.ObjectId
+  spotifyAuthId: typeof Types.ObjectId
+}
+export interface IGroupMethods extends IModelMethods {}
+type IGroupModel = Model<IGroup, any, IGroupMethods>
+
+const groupSchema = new mongoose.Schema<IGroupFields, IGroupModel, IGroupMethods>(
+  {
+    ownerId: {
+      type: Types.ObjectId,
+      required: true
+    },
+    name: {
+      type: String,
+      required: true
+    },
+    spotifyAuthId: {
+      type: Types.ObjectId,
+      ref: 'SpotifyAuth'
+    }
+  },
+  {
+    timestamps: true
+  }
+)
+
 
 const membershipSchema = new mongoose.Schema(
   {
@@ -27,29 +62,7 @@ const membershipSchema = new mongoose.Schema(
   }
 )
 
-const groupSchema = new mongoose.Schema(
-  {
-    ownerId: {
-      type: Types.ObjectId,
-      required: true
-    },
-    name: {
-      type: String,
-      required: true
-    },
-    spotifyToken: {
-      type: {
-        accessToken: String,
-        refreshTOken: String,
-        expirationDate: Date
-      },
-      required: false
-    }
-  },
-  {
-    timestamps: true
-  }
-)
+
 
 export const Group = mongoose.model('Group', groupSchema)
 export type Group = InstanceType<typeof Group>

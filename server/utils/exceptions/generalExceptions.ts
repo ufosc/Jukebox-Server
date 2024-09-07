@@ -21,3 +21,10 @@ export class ValidationError extends Error {
     this.name = 'ValidationError'
   }
 }
+
+export class UnauthorizedError extends Error {
+  constructor(message?: string) {
+    super(message ?? 'Unauthorized Error.')
+    this.name = 'UnauthorizedError'
+  }
+}

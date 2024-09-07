@@ -3,6 +3,7 @@ import morgan from 'morgan'
 import multer from 'multer'
 
 import { logger } from '@jukebox/lib'
+import cookieParser from 'cookie-parser'
 import { errorHandler } from 'server/middleware'
 import { router } from 'server/routes'
 
@@ -14,6 +15,7 @@ const jsonParser = express.json()
 server.use(urlencodedParser)
 server.use(jsonParser)
 server.use(multer().any())
+server.use(cookieParser())
 
 server.use(
   morgan(':remote-addr :method :url :status :res[content-length] - :response-time ms', {

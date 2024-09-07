@@ -24,9 +24,9 @@ export const isAuthenticated = async (req: Request, res: Response, next: NextFun
   let token: string = <string>req.headers['authorization'] || ''
   let jwtPayload: Jwt
 
-  if (NODE_ENV === 'development') {
-    token = String(req.cookies[AUTH_TOKEN_COOKIE_NAME])
-  }
+  // if (NODE_ENV === 'development') {
+  //   token = String(req.cookies[AUTH_TOKEN_COOKIE_NAME])
+  // }
 
   try {
     jwtPayload = jwt.verify(token.split(' ')[1], JWT_SECRET_KEY, {

@@ -2,12 +2,13 @@ import { Router } from 'express'
 import { hasSpotifyToken } from 'server/middleware/authMiddleware'
 import * as SpotifyController from '../controllers/spotifyController'
 import { isAuthenticated } from './../middleware/authMiddleware'
+import * as views from '../views/spotifyAuthViews'
 
 const router = Router()
 
 /**== Spotify Authentication - /api/spotify/ ==**/
-router.get('/login', isAuthenticated, SpotifyController.spotifyLogin)
-router.get('/login-callback', SpotifyController.spotifyLoginCallback)
+router.get('/login', isAuthenticated, views.spotifyLoginView)
+router.get('/login-callback', views.spotifyLoginCallbackView)
 
 /**== Spotify Communication - /api/spotify/ ==**/
 router.get('/me', isAuthenticated, hasSpotifyToken, SpotifyController.getUserProfile)

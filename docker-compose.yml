@@ -20,6 +20,7 @@ services:
       - MONGO_URI=mongodb://root:changeme@mongo-jbx:27017
       - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+      - LOG_LEVEL=debug
     ports:
       - 8000:8000
     depends_on:

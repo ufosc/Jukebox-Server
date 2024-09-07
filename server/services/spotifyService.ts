@@ -1,115 +1,48 @@
-import type { AxiosResponse } from 'axios'
-import axios from 'axios'
-import { stringify } from 'querystring'
-import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } from 'server/config'
-
-type TokenResponse = {
-  accessToken: string
-  refreshToken: string
-  expiresAt: Date
-}
+import { authenticateSpotify, getSpotifyEmail, getSpotifySdk, type SpotifySdk, type SpotifyTokens } from 'server/lib'
+import { SpotifyAuth } from 'server/models'
 
 export class SpotifyService {
-  private accessToken: string
-  protected static clientId: string = SPOTIFY_CLIENT_ID
-  protected static clientSecret: string = SPOTIFY_CLIENT_SECRET
-  protected static scope: string = 'user-read-private user-read-email'
-  protected static redirectUri: string = 'http://localhost:8000/api/spotify/login-callback/'
-  protected static spotifyTokenUrl: string = 'https://accounts.spotify.com/api/token'
-  constructor(accessToken: string) {
-    this.accessToken = accessToken
+  private auth: SpotifyAuth
+  public sdk: SpotifySdk
+
+  private constructor(auth: SpotifyAuth) {
+    this.auth = auth
+    this.sdk = getSpotifySdk(auth)
   }
 
-  private static requestAuthorization = async (
-    body:
-      | {
-          grant_type: 'authorization_code'
-          code: string
-          redirect_uri: string
-        }
-      | {
-          grant_type: 'refresh_token'
-          refresh_token: string
-        }
-  ): Promise<AxiosResponse<any, any>> => {
-    const spotifyAuthBuffer: Buffer = Buffer.from(this.clientId + ':' + this.clientSecret)
+  public static async connect(spotifyEmail: string): Promise<SpotifyService> {
+    const spotifyAuth = await SpotifyAuth.findOne({ spotifyEmail })
 
-    const spotifyRes = await axios
-      .post(this.spotifyTokenUrl, body, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: 'Basic ' + spotifyAuthBuffer.toString('base64')
-        }
-      })
-      .catch((error: any) => {
-        console.log('Error authorizing with spotify:', error)
-        throw new Error(error?.response?.data?.error_description || error)
-      })
+    if (!spotifyAuth)
+      throw new Error(`Unable to find connected spotify account with email ${spotifyEmail}.`)
 
-    if (spotifyRes.status > 299 || !spotifyRes.data)
-      throw new Error('Error authenticating with spotify.')
-
-    return spotifyRes
+    return new SpotifyService(spotifyAuth)
   }
 
-  private static getExpiresAt = (expiresIn: number): Date => new Date(Date.now() / 1000 + expiresIn)
+  public static async authenticateUser(userId: string, code: string): Promise<SpotifyService> {
+    const tokens = await authenticateSpotify(code)
+    const userEmail = await getSpotifyEmail(tokens)
 
-  static getSpotifyRedirectUri = (userState: {
-    userId: string
-    finalRedirect: string
-    groupId: string
-  }): string => {
-    const state = JSON.stringify(userState)
-
-    const url =
-      'https://accounts.spotify.com/authorize?' +
-      stringify({
-        response_type: 'code',
-        client_id: this.clientId,
-        scope: this.scope,
-        redirect_uri: this.redirectUri,
-        state: state
-      })
-
-    return url
-  }
-  static requestSpotifyToken = async (code: string): Promise<TokenResponse> => {
-    const spotifyRes = await this.requestAuthorization({
-      code: code,
-      redirect_uri: this.redirectUri,
-      grant_type: 'authorization_code'
-    })
-
-    const { access_token, refresh_token, expires_in } = spotifyRes.data
-    const expiresAt = this.getExpiresAt(expires_in)
-
-    return { accessToken: access_token, refreshToken: refresh_token, expiresAt }
+    const spotifyAuth = await this.udpateOrCreateAuth(userId, userEmail, tokens)
+    return new SpotifyService(spotifyAuth)
   }
 
-  static refreshUserToken = async (refreshToken: string): Promise<TokenResponse> => {
-    const spotifyRes = await this.requestAuthorization({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken
-    })
+  private static async udpateOrCreateAuth(
+    userId: string,
+    spotifyEmail: string,
+    tokens: SpotifyTokens
+  ): Promise<SpotifyAuth> {
+    const query = await SpotifyAuth.findOne({ userId, spotifyEmail })
 
-    const { access_token, refresh_token, expires_in } = spotifyRes.data
-    const expiresAt = this.getExpiresAt(expires_in)
-
-    return { accessToken: access_token, refreshToken: refresh_token, expiresAt }
+    if (!query) {
+      return await SpotifyAuth.create({ userId, spotifyEmail, ...tokens })
+    } else {
+      const updated = await query.updateOne({ ...tokens }, { new: true })
+      return updated
+    }
   }
-
-  getProfile = async (): Promise<SpotifyUserProfile> => {
-    const res = await axios
-      .get('https://api.spotify.com/v1/me', {
-        headers: {
-          Authorization: `Bearer ${this.accessToken}`
-        }
-      })
-      .catch((error: any) => {
-        console.log('error getting profile:', error)
-        throw error
-      })
-
-    return res.data
+  
+  public async getProfile() {
+    return await this.sdk.currentUser.profile()
   }
 }

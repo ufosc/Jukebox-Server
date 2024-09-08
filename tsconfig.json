@@ -38,7 +38,7 @@
       "server/*": ["./server/*"],
       "websocket/*": ["./websocket/*"],
       "common/*": ["./common/*"],
-      "*": ["./*", "./server/*", "./websocket/*",]
+      "*": ["./*", "./server/*", "./websocket/*"]
     } /* Specify a set of entries that re-map imports to additional lookup locations. */,
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     "typeRoots": [
@@ -130,5 +130,12 @@
     "common/lib/kafka.ts", // "./server/core/docs/swagger.ts",
     "common/lib/logger.ts" // "./src/core/docs/api/monitor.doc.ts",
   ],
-  "exclude": ["node_modules", "coverage", "logs", "_depricated"]
+  "exclude": [
+    "node_modules/",
+    "coverage",
+    "logs",
+    "_depricated",
+    "./node_modules",
+    "./node_modules/*"
+  ]
 }

@@ -4,9 +4,8 @@
 import type { Jwt } from 'jsonwebtoken'
 import jwt from 'jsonwebtoken'
 
-import { NODE_ENV } from '@jukebox/config'
 import type { NextFunction, Request, Response } from 'express'
-import { AUTH_TOKEN_COOKIE_NAME, JWT_ALGORITHM, JWT_ISSUER, JWT_SECRET_KEY } from 'server/config'
+import { JWT_ALGORITHM, JWT_ISSUER, JWT_SECRET_KEY } from 'server/config'
 import { User } from 'server/models'
 import { httpUnauthorized } from '../utils'
 
@@ -19,14 +18,19 @@ export type AuthResponse = Response & {
 }
 
 export const isAuthenticated = async (req: Request, res: Response, next: NextFunction) => {
-  // if (NODE_ENV === 'development') return next()
+  /**
+  @swagger
+  #swagger.security = [{
+    "Bearer": []
+  }]
+  */
 
   let token: string = <string>req.headers['authorization'] || ''
   let jwtPayload: Jwt
 
-  if (NODE_ENV === 'development') {
-    token = String(req.cookies[AUTH_TOKEN_COOKIE_NAME])
-  }
+  // if (NODE_ENV === 'development') {
+  //   token = String(req.cookies[AUTH_TOKEN_COOKIE_NAME])
+  // }
 
   try {
     jwtPayload = jwt.verify(token.split(' ')[1], JWT_SECRET_KEY, {

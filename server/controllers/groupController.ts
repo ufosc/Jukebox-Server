@@ -1,151 +1,81 @@
-import type { Request, Response } from 'express'
-import type { AuthLocals } from 'server/middleware'
-import { Group, User } from 'server/models'
-import { AuthService, GroupService } from 'server/services'
-import { httpBadRequest, httpCreated, httpNoContent, httpNotFound, httpOk } from 'server/utils'
+import type { Model } from 'mongoose'
+import { Group, SpotifyAuth, type User } from 'server/models'
+import { SpotifyService } from 'server/services'
+import { NotFoundError } from 'server/utils'
 
-// TODO: Requires permission
-export const createGroup = async (req: Request, res: Response) => {
-  /**
-  @swagger
-  #swagger.tags = ['Group']
-  */
-  const { body } = req
-  const { user } = <AuthLocals>res.locals
-
-  try {
-    // const group = await Group.create({ ...body, ownerId: user._id })
-    const { name } = body // TODO: Validate body, explicitly define fields
-
-    const group = await GroupService.createGroup(user, name, body)
-    return httpCreated(res, group)
-  } catch (error: any) {
-    return httpBadRequest(res, error?.message)
+const getOrError = async <T extends Model<any>>(id: string, model: T): Promise<InstanceType<T>> => {
+  const query = await model.findById(id)
+  if (!query) {
+    throw new NotFoundError(`${model.name} with id ${id} not found.`)
   }
+
+  return query
 }
 
-// TODO: Requires permission
-export const createGroupMember = async (req: Request, res: Response) => {
-  /**
-  @swagger
-  #swagger.tags = ['Group']
-  */
-  const { groupId } = req.params
-  const { email, options } = req.body
+export const assignSpotifyToGroup = async (
+  user: User,
+  groupId: string,
+  spotifyEmail: string
+): Promise<Group> => {
+  const auth = await SpotifyAuth.findOne({ userId: user._id.toString(), spotifyEmail })
 
-  const group: Group | null = await Group.findById(groupId)
-  if (!group) return httpNotFound(res, 'Group not found.')
+  if (!auth)
+    throw new Error(`User ${user.email} is not connected to spotify account ${spotifyEmail}.`)
 
-  try {
-    const userFound: User | null = await User.findOne({ email: email })
-    let user: User
+  const group = await getOrError(groupId, Group)
 
-    if (!userFound) {
-      user = await AuthService.inviteUser(email)
-    } else {
-      user = userFound
-    }
-
-    const newMembership = await GroupService.registerGroupMember(group, user, options)
-    return httpCreated(res, newMembership)
-  } catch (error: any) {
-    return httpBadRequest(res, error?.message)
-  }
+  await group.updateOne({ spotifyAuthId: auth._id }, { new: true })
+  return group
 }
 
-export const getGroup = async (req: Request, res: Response) => {
-  /**
-  @swagger
-  #swagger.tags = ['Group']
-  */
-  const { groupId } = req.params
+export const getGroupSpotify = async (groupId: string) => {
+  const group = await getOrError(groupId, Group)
 
-  const group: Group | null = await Group.findById(groupId)
-  if (!group) return httpNotFound(res, 'Group not found.')
+  const auth = await SpotifyAuth.findById(group.spotifyAuthId)
+  if (!auth) throw new Error(`No linked Spotify accounts for group ${group.name}.`)
 
-  return httpOk(res, group)
+  return SpotifyService.connect(auth.spotifyEmail)
 }
 
-export const updateGroup = async (req: Request, res: Response) => {
-  /**
-  @swagger
-  #swagger.tags = ['Group']
-  #swagger.summary = "Not implemented"
-  */
-  const { groupId } = req.params
-  const { ownerId, name, spotifyToken } = req.body
-
-  const group: Group | null = await Group.findById(groupId)
-  if (!group) return httpNotFound(res, 'Group not found.')
-
-  try {
-    // TODO: Validate body
-    // const updatedGroup = await group.updateOne({ ownerId, name, spotifyToken }, { new: true })
-    const updatedGroup = await Group.findByIdAndUpdate(
-      groupId,
-      { ownerId, name, spotifyToken },
-      { new: true }
-    )
-
-    return httpOk(res, updatedGroup)
-  } catch (error: any) {
-    return httpBadRequest(res, error?.message)
-  }
+export const getGroupTrack = async (groupId: string) => {
+  const spotify = await getGroupSpotify(groupId)
+  return await spotify.sdk.player.getCurrentlyPlayingTrack()
 }
 
-export const deleteGroup = async (req: Request, res: Response) => {
-  /**
-  @swagger
-  #swagger.tags = ['Group']
-  #swagger.summary = "Not implemented"
-  */
-  const { groupId } = req.params
-
-  const group: Group | null = await Group.findById(groupId)
-  if (!group) return httpNotFound(res, 'Group not found.')
-
-  try {
-    await GroupService.deleteGroup(group)
-    return httpNoContent(res)
-  } catch (error: any) {
-    return httpBadRequest(res, error?.message)
-  }
+export const getGroupDevices = async (groupId: string) => {
+  const spotify = await getGroupSpotify(groupId)
+  return await spotify.sdk.player.getAvailableDevices()
 }
 
-export const getGroupMembers = async (req: Request, res: Response) => {
-  /**
-  @swagger
-  #swagger.tags = ['Group']
-  #swagger.summary = "Not implemented"
-  */
-  const { groupId } = req.params
+export const setGroupDefaultDevice = async (groupId: string, deviceId: string) => {
+  const group = await getOrError(groupId, Group)
+  group.defaultDeviceId = deviceId
+  await group.save()
 
-  const group: Group | null = await Group.findById(groupId)
-  if (!group) return httpNotFound(res, 'Group not found.')
-
-  try {
-    const members = await GroupService.getGroupMembers(group)
-    return httpOk(res, members)
-  } catch (error: any) {
-    return httpBadRequest(res, error?.message)
-  }
+  return group
 }
 
-export const getGroupMemberships = async (req: Request, res: Response) => {
-  /**
-  @swagger
-  #swagger.tags = ['Group']
-  #swagger.summary = "Not implemented"
-  */
-  const { groupId } = req.params
+export const setGroupPlayerState = async (
+  groupId: string,
+  state: 'play' | 'pause' | 'next' | 'previous'
+) => {
+  const spotify = await getGroupSpotify(groupId)
+  const group = await getOrError(groupId, Group)
 
-  const group: Group | null = await Group.findById(groupId)
-  if (!group) return httpNotFound(res, 'Group not found.')
-
-  try {
-    const memberships = await GroupService.getGroupMemberships(group)
-    return httpOk(res, memberships)
-  } catch (error: any) {
-    return httpBadRequest(res, error?.message)
+  switch (state) {
+    case 'play':
+      await spotify.sdk.player.startResumePlayback(group.defaultDeviceId ?? '')
+      break
+    case 'pause':
+      await spotify.sdk.player.pausePlayback(group.defaultDeviceId ?? '')
+      break
+    case 'next':
+      await spotify.sdk.player.skipToNext(group.defaultDeviceId ?? '')
+      break
+    case 'previous':
+      await spotify.sdk.player.skipToPrevious(group.defaultDeviceId ?? '')
+      break
+    default:
+      throw new Error(`Cannot set player state to ${state}.`)
   }
 }

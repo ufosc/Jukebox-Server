@@ -11,25 +11,25 @@ export class Viewset<
   private model: T
   private clean: (data: any) => S
 
-  constructor(model: T, clean: (data: any) => S) {
+  constructor(model: T, clean: (data: any) => S = (data) => data) {
     this.model = model
     this.clean = clean
   }
 
   private apiWrapper = apiRequest
 
-  private async handleCreate(req: Request, res: Response, next: NextFunction) {
+  protected async handleCreate(req: Request, res: Response, next: NextFunction) {
     const { body } = req
     const data = this.clean(body)
     const obj = await this.model.create(data)
 
     return obj.serialize()
   }
-  private async handleList(req: Request, res: Response, next: NextFunction) {
+  protected async handleList(req: Request, res: Response, next: NextFunction) {
     const query = await this.model.find({})
     return query.map((obj: InstanceType<T>) => obj.serialize())
   }
-  private async handleGet(req: Request, res: Response, next: NextFunction) {
+  protected async handleGet(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params
     const result = await this.model.findById(id)
 
@@ -37,7 +37,7 @@ export class Viewset<
 
     return result.serialize()
   }
-  private async handleUpdate(req: Request, res: Response, next: NextFunction) {
+  protected async handleUpdate(req: Request, res: Response, next: NextFunction) {
     const { body, params } = req
     const data = this.clean(body)
 
@@ -46,7 +46,7 @@ export class Viewset<
 
     return obj.serialize()
   }
-  private async handlePartialUpdate(req: Request, res: Response, next: NextFunction) {
+  protected async handlePartialUpdate(req: Request, res: Response, next: NextFunction) {
     const { body, params } = req
     const data = this.clean(body)
 
@@ -55,7 +55,7 @@ export class Viewset<
 
     return obj.serialize()
   }
-  private async handleDelete(req: Request, res: Response, next: NextFunction) {
+  protected async handleDelete(req: Request, res: Response, next: NextFunction) {
     const { id } = req.params
     const result: InstanceType<Model<T, any, IModelMethods<T>>> | null =
       await this.model.findById(id)
@@ -67,6 +67,9 @@ export class Viewset<
     return result.serialize()
   }
 
+  /**
+   * #swagger.tags = ['Group']
+   */
   public create = this.apiWrapper(this.handleCreate.bind(this), { onSuccess: httpCreated })
   public list = this.apiWrapper(this.handleList.bind(this))
   public get = this.apiWrapper(this.handleGet.bind(this))
@@ -77,7 +80,7 @@ export class Viewset<
   registerRouter(path = '/'): Router {
     const router = Router()
 
-    router.post(path, this.create.bind(this))
+    router.post(path, this.create)
     router.get(path, this.list)
     router.get(`${path}:id`, this.get)
     router.post(`${path}:id`, this.update)

@@ -1,7 +1,3 @@
-// {
-//   "files.associations": {
-//     "*.sh.tpl": "shellscript",
-//     "*.json.tpl": "JSON",
-//     "*.conf.tpl": "NGINX Conf"
-//   }
-// }
+{
+  "java.compile.nullAnalysis.mode": "disabled"
+}

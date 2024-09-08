@@ -12,6 +12,7 @@ export interface IUser {
   image?: string
 }
 export interface IUserFields extends Omit<IUser, 'id'> {
+// export interface IUserFields extends IModelFields<IUser> {
   password: string
 }
 export interface IUserMethods extends IModelMethods<IUser> {}

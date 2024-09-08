@@ -1,4 +1,4 @@
-import { User } from 'server/models'
+import { SpotifyAuth, User } from 'server/models'
 import { AuthService } from 'server/services'
 import { NotFoundError } from 'server/utils'
 
@@ -28,4 +28,9 @@ export const resetPassword = async (email: string, newPassword: string): Promise
 
   const updatedUser: User = await AuthService.changePassword(user, newPassword)
   return true
+}
+
+export const getUserSpotifyEmails = async (user: User): Promise<string[]> => {
+  const auths = await SpotifyAuth.find({ userId: user._id })
+  return auths.map((auth) => auth.spotifyEmail)
 }

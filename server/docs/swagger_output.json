@@ -162,6 +162,54 @@
         }
       }
     },
+    "/api/spotify/": {
+      "delete": {
+        "tags": [
+          "Spotify"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "spotifyEmail": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/Error400"
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "schema": {
+              "$ref": "#/definitions/Error404"
+            },
+            "description": "Not found"
+          },
+          "500": {
+            "schema": {
+              "$ref": "#/definitions/Error500"
+            },
+            "description": "Internal Server Error"
+          },
+          "501": {
+            "schema": {
+              "$ref": "#/definitions/Error501"
+            },
+            "description": "Not implemented"
+          }
+        }
+      }
+    },
     "/api/user/register": {
       "post": {
         "tags": [
@@ -213,7 +261,7 @@
         }
       }
     },
-    "/api/user/login": {
+    "/api/user/token": {
       "post": {
         "tags": [
           "User"
@@ -236,40 +284,6 @@
             }
           }
         ],
-        "responses": {
-          "400": {
-            "schema": {
-              "$ref": "#/definitions/Error400"
-            },
-            "description": "Bad request"
-          },
-          "404": {
-            "schema": {
-              "$ref": "#/definitions/Error404"
-            },
-            "description": "Not found"
-          },
-          "500": {
-            "schema": {
-              "$ref": "#/definitions/Error500"
-            },
-            "description": "Internal Server Error"
-          },
-          "501": {
-            "schema": {
-              "$ref": "#/definitions/Error501"
-            },
-            "description": "Not implemented"
-          }
-        }
-      }
-    },
-    "/api/user/me": {
-      "get": {
-        "tags": [
-          "User"
-        ],
-        "description": "",
         "responses": {
           "400": {
             "schema": {
@@ -397,10 +411,10 @@
         }
       }
     },
-    "/api/group/groups": {
-      "post": {
+    "/api/user/me": {
+      "get": {
         "tags": [
-          "Group"
+          "User"
         ],
         "description": "",
         "responses": {
@@ -429,8 +443,270 @@
             "description": "Not implemented"
           }
         }
+      }
+    },
+    "/api/user/me/spotify-accounts": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "responses": {
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/Error400"
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "schema": {
+              "$ref": "#/definitions/Error404"
+            },
+            "description": "Not found"
+          },
+          "500": {
+            "schema": {
+              "$ref": "#/definitions/Error500"
+            },
+            "description": "Internal Server Error"
+          },
+          "501": {
+            "schema": {
+              "$ref": "#/definitions/Error501"
+            },
+            "description": "Not implemented"
+          }
+        }
+      }
+    },
+    "/api/group/{id}/spotify": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "spotifyEmail": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/Error400"
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "schema": {
+              "$ref": "#/definitions/Error404"
+            },
+            "description": "Not found"
+          },
+          "500": {
+            "schema": {
+              "$ref": "#/definitions/Error500"
+            },
+            "description": "Internal Server Error"
+          },
+          "501": {
+            "schema": {
+              "$ref": "#/definitions/Error501"
+            },
+            "description": "Not implemented"
+          }
+        }
+      }
+    },
+    "/api/group/{id}/spotify/current-track": {
+      "get": {
+        "tags": [
+          "Group"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/Error400"
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "schema": {
+              "$ref": "#/definitions/Error404"
+            },
+            "description": "Not found"
+          },
+          "500": {
+            "schema": {
+              "$ref": "#/definitions/Error500"
+            },
+            "description": "Internal Server Error"
+          },
+          "501": {
+            "schema": {
+              "$ref": "#/definitions/Error501"
+            },
+            "description": "Not implemented"
+          }
+        }
+      }
+    },
+    "/api/group/{id}/jam": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "summary": "Not implemented",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/Error400"
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "schema": {
+              "$ref": "#/definitions/Error404"
+            },
+            "description": "Not found"
+          },
+          "500": {
+            "schema": {
+              "$ref": "#/definitions/Error500"
+            },
+            "description": "Internal Server Error"
+          },
+          "501": {
+            "schema": {
+              "$ref": "#/definitions/Error501"
+            },
+            "description": "Not implemented"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Group"
+        ],
+        "summary": "Not implemented",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/Error400"
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "schema": {
+              "$ref": "#/definitions/Error404"
+            },
+            "description": "Not found"
+          },
+          "500": {
+            "schema": {
+              "$ref": "#/definitions/Error500"
+            },
+            "description": "Internal Server Error"
+          },
+          "501": {
+            "schema": {
+              "$ref": "#/definitions/Error501"
+            },
+            "description": "Not implemented"
+          }
+        }
+      }
+    },
+    "/api/group/groups": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "New Group",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Group"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/Error400"
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "schema": {
+              "$ref": "#/definitions/Error404"
+            },
+            "description": "Not found"
+          },
+          "500": {
+            "schema": {
+              "$ref": "#/definitions/Error500"
+            },
+            "description": "Internal Server Error"
+          },
+          "501": {
+            "schema": {
+              "$ref": "#/definitions/Error501"
+            },
+            "description": "Not implemented"
+          }
+        }
       },
       "get": {
+        "tags": [
+          "Group"
+        ],
         "description": "",
         "responses": {
           "400": {
@@ -462,6 +738,9 @@
     },
     "/api/group/groups/{id}": {
       "get": {
+        "tags": [
+          "Group"
+        ],
         "description": "",
         "parameters": [
           {
@@ -499,6 +778,9 @@
         }
       },
       "put": {
+        "tags": [
+          "Group"
+        ],
         "description": "",
         "parameters": [
           {
@@ -536,6 +818,9 @@
         }
       },
       "patch": {
+        "tags": [
+          "Group"
+        ],
         "description": "",
         "parameters": [
           {
@@ -573,94 +858,13 @@
         }
       },
       "delete": {
+        "tags": [
+          "Group"
+        ],
         "description": "",
         "parameters": [
           {
             "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "400": {
-            "schema": {
-              "$ref": "#/definitions/Error400"
-            },
-            "description": "Bad request"
-          },
-          "404": {
-            "schema": {
-              "$ref": "#/definitions/Error404"
-            },
-            "description": "Not found"
-          },
-          "500": {
-            "schema": {
-              "$ref": "#/definitions/Error500"
-            },
-            "description": "Internal Server Error"
-          },
-          "501": {
-            "schema": {
-              "$ref": "#/definitions/Error501"
-            },
-            "description": "Not implemented"
-          }
-        }
-      }
-    },
-    "/api/group/groups/{groupId}/jam": {
-      "post": {
-        "tags": [
-          "Group"
-        ],
-        "summary": "Not implemented",
-        "description": "",
-        "parameters": [
-          {
-            "name": "groupId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "400": {
-            "schema": {
-              "$ref": "#/definitions/Error400"
-            },
-            "description": "Bad request"
-          },
-          "404": {
-            "schema": {
-              "$ref": "#/definitions/Error404"
-            },
-            "description": "Not found"
-          },
-          "500": {
-            "schema": {
-              "$ref": "#/definitions/Error500"
-            },
-            "description": "Internal Server Error"
-          },
-          "501": {
-            "schema": {
-              "$ref": "#/definitions/Error501"
-            },
-            "description": "Not implemented"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Group"
-        ],
-        "summary": "Not implemented",
-        "description": "",
-        "parameters": [
-          {
-            "name": "groupId",
             "in": "path",
             "required": true,
             "type": "string"
@@ -696,6 +900,19 @@
     }
   },
   "definitions": {
+    "Group": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": ""
+        },
+        "ownerId": {
+          "type": "string",
+          "example": ""
+        }
+      }
+    },
     "Success200": {
       "type": "object",
       "properties": {

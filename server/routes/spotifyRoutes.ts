@@ -7,5 +7,6 @@ const router = Router()
 /**== Spotify Authentication - /api/spotify/ ==**/
 router.get('/login', isAuthenticated, views.spotifyLoginView)
 router.get('/login-callback', views.spotifyLoginCallbackView)
+router.delete('/', isAuthenticated, views.removeSpotifyConnection)
 
 export const spotifyRouter = router

@@ -1,4 +1,5 @@
 import { BASE_URL } from 'server/config'
+import type { IGroup } from 'server/models'
 import { ResponseCodes, formatJsonResponse } from 'server/utils'
 import swaggerAutogen from 'swagger-autogen'
 
@@ -48,7 +49,9 @@ const doc = {
       Bearer: []
     }
   ],
-  definitions: {}
+  definitions: {
+    Group: { name: '', ownerId: '' } as IGroup
+  }
 }
 const generateResponseDocs = () => {
   const codes = ResponseCodes

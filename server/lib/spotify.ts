@@ -1,9 +1,21 @@
+/**
+ * Resources
+ * - Repo: https://github.com/spotify/spotify-web-api-ts-sdk/tree/main
+ * - Authentication: https://developer.spotify.com/documentation/web-api/tutorials/code-flow
+ */
 import { SpotifyApi } from '@spotify/web-api-ts-sdk'
 import axios from 'axios'
 import { stringify } from 'querystring'
 import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI } from 'server/config'
 
-// tokens: { accessToken: string; refreshToken: string, expiresIn: number }
+const SPOTIFY_SCOPES = [
+  'user-read-private',
+  'user-read-email',
+  'playlist-modify-public',
+  'playlist-modify-private',
+  'user-read-playback-state',
+  'user-modify-playback-state'
+]
 
 export type SpotifySdk = SpotifyApi
 
@@ -42,7 +54,7 @@ export const getSpotifyRedirectUri = (state: { userId: string; finalRedirect?: s
     stringify({
       response_type: 'code',
       client_id: SPOTIFY_CLIENT_ID,
-      scope: 'user-read-private user-read-email',
+      scope: SPOTIFY_SCOPES.join(', '),
       redirect_uri: SPOTIFY_REDIRECT_URI,
       state: stateString
     })
@@ -50,12 +62,21 @@ export const getSpotifyRedirectUri = (state: { userId: string; finalRedirect?: s
   return url
 }
 
-export const authenticateSpotify = async (code: string): Promise<SpotifyTokens> => {
-  const body: SpotifyAuthReqBody = {
-    grant_type: 'authorization_code',
-    code,
-    redirect_uri: SPOTIFY_REDIRECT_URI
-  }
+export const authenticateSpotify = async (params: {
+  type: 'authorization_code' | 'refresh_token'
+  payload: string
+}): Promise<SpotifyTokens> => {
+  const body: SpotifyAuthReqBody =
+    params.type === 'authorization_code'
+      ? {
+          grant_type: params.type,
+          code: params.payload,
+          redirect_uri: SPOTIFY_REDIRECT_URI
+        }
+      : {
+          grant_type: params.type,
+          refresh_token: params.payload
+        }
   const spotifyAuthBuffer: Buffer = Buffer.from(SPOTIFY_CLIENT_ID + ':' + SPOTIFY_CLIENT_SECRET)
 
   const spotifyRes = await axios

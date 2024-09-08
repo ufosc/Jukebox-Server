@@ -4,17 +4,17 @@ export interface IGroup {
   id: string
   name: string
   ownerId: string
-  spotifyAuthId: string
+  spotifyAuthId?: string
 }
 
 export interface IGroupFields extends Omit<IGroup, 'ownerId' | 'id' | 'spotifyAuthId'> {
   ownerId: typeof Types.ObjectId
-  spotifyAuthId: typeof Types.ObjectId
+  spotifyAuthId?: typeof Types.ObjectId
 }
 export interface IGroupMethods extends IModelMethods {}
 type IGroupModel = Model<IGroup, any, IGroupMethods>
 
-const groupSchema = new mongoose.Schema<IGroupFields, IGroupModel, IGroupMethods>(
+const GroupSchema = new mongoose.Schema<IGroupFields, IGroupModel, IGroupMethods>(
   {
     ownerId: {
       type: Types.ObjectId,
@@ -22,11 +22,14 @@ const groupSchema = new mongoose.Schema<IGroupFields, IGroupModel, IGroupMethods
     },
     name: {
       type: String,
-      required: true
+      required: true,
+      unique: true
     },
     spotifyAuthId: {
       type: Types.ObjectId,
-      ref: 'SpotifyAuth'
+      ref: 'SpotifyAuth',
+      unique: true,
+      dropDups: true
     }
   },
   {
@@ -34,6 +37,14 @@ const groupSchema = new mongoose.Schema<IGroupFields, IGroupModel, IGroupMethods
   }
 )
 
+GroupSchema.methods.serialize = function () {
+  return {
+    id: this.id,
+    ownerId: this.ownerId.toString(),
+    name: this.name,
+    spotifyAuthId: this.spotifyAuthId?.toString()
+  }
+}
 
 const membershipSchema = new mongoose.Schema(
   {
@@ -62,9 +73,7 @@ const membershipSchema = new mongoose.Schema(
   }
 )
 
-
-
-export const Group = mongoose.model('Group', groupSchema)
+export const Group = mongoose.model('Group', GroupSchema)
 export type Group = InstanceType<typeof Group>
 export const Membership = mongoose.model('Membership', membershipSchema)
 export type Membership = InstanceType<typeof Membership>

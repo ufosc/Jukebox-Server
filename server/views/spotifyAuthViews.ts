@@ -1,5 +1,5 @@
 import { getSpotifyRedirectUri } from 'server/lib'
-import { User } from 'server/models'
+import { SpotifyAuth, User } from 'server/models'
 import { SpotifyService } from 'server/services'
 import { apiAuthRequest, apiRequest, httpSeeOther, UnauthorizedError } from 'server/utils'
 
@@ -43,4 +43,19 @@ export const spotifyLoginCallbackView = apiRequest(async (req, res) => {
   } else {
     return profile
   }
+})
+
+export const removeSpotifyConnection = apiAuthRequest(async (req, res, next) => {
+  /**
+  @swagger
+  #swagger.tags = ['Spotify']
+  */
+  const { user } = res.locals
+  const spotifyEmail = String(req.body.spotifyEmail)
+
+  const deleted = await SpotifyAuth.deleteOne({
+    spotifyEmail: spotifyEmail,
+    userId: user._id.toString()
+  })
+  return deleted.deletedCount
 })

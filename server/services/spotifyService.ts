@@ -1,4 +1,10 @@
-import { authenticateSpotify, getSpotifyEmail, getSpotifySdk, type SpotifySdk, type SpotifyTokens } from 'server/lib'
+import {
+  authenticateSpotify,
+  getSpotifyEmail,
+  getSpotifySdk,
+  type SpotifySdk,
+  type SpotifyTokens
+} from 'server/lib'
 import { SpotifyAuth } from 'server/models'
 
 export class SpotifyService {
@@ -16,11 +22,26 @@ export class SpotifyService {
     if (!spotifyAuth)
       throw new Error(`Unable to find connected spotify account with email ${spotifyEmail}.`)
 
-    return new SpotifyService(spotifyAuth)
+    if (spotifyAuth.expiresAt.getTime() > Date.now()) {
+      return new SpotifyService(spotifyAuth)
+    }
+
+    const tokens = await authenticateSpotify({
+      type: 'refresh_token',
+      payload: spotifyAuth.refreshToken
+    })
+
+    const updatedAuth = await this.udpateOrCreateAuth(
+      spotifyAuth.userId.toString(),
+      spotifyAuth.spotifyEmail,
+      tokens
+    )
+
+    return new SpotifyService(updatedAuth)
   }
 
   public static async authenticateUser(userId: string, code: string): Promise<SpotifyService> {
-    const tokens = await authenticateSpotify(code)
+    const tokens = await authenticateSpotify({ type: 'authorization_code', payload: code })
     const userEmail = await getSpotifyEmail(tokens)
 
     const spotifyAuth = await this.udpateOrCreateAuth(userId, userEmail, tokens)
@@ -35,13 +56,21 @@ export class SpotifyService {
     const query = await SpotifyAuth.findOne({ userId, spotifyEmail })
 
     if (!query) {
-      return await SpotifyAuth.create({ userId, spotifyEmail, ...tokens })
+      return await SpotifyAuth.create({
+        userId,
+        spotifyEmail,
+        expiresAt: new Date(Date.now() + tokens.expiresIn * 1000),
+        ...tokens
+      })
     } else {
-      const updated = await query.updateOne({ ...tokens }, { new: true })
-      return updated
+      // const updated = await query.updateOne({ ...tokens }, { new: true })
+      query.accessToken = tokens.accessToken
+      query.expiresIn = tokens.expiresIn
+      query.expiresAt = new Date(Date.now() + tokens.expiresIn * 1000)
+      return query
     }
   }
-  
+
   public async getProfile() {
     return await this.sdk.currentUser.profile()
   }

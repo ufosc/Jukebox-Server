@@ -6,11 +6,8 @@ export class NotImplementedError extends Error {
 }
 
 export class NotFoundError extends Error {
-  constructor(resource?: string, query?: Record<any, any>) {
-    const message = query
-      ? `Resource ${resource} with query ${query} not found.`
-      : `Resource ${resource} not found.`
-    super(message)
+  constructor(message?: string) {
+    super(message ?? 'Resource not found.')
     this.name = 'NotFoundError'
   }
 }

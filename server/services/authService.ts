@@ -8,7 +8,7 @@ export class AuthService {
   private static jwtSecret: string = JWT_SECRET_KEY
   private static jwtIssuer: string = JWT_ISSUER
   private static jwtAlgorithm: Algorithm | undefined = JWT_ALGORITHM || 'HS256'
-  private static jwtExpiresIn: string = '5h'
+  private static jwtExpiresIn: string = '48h'
   private static jwtNotBefore: string | number = 0
 
   /**

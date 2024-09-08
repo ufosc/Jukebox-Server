@@ -1,151 +1,26 @@
-import type { Request, Response } from 'express'
-import type { AuthLocals } from 'server/middleware'
-import { Group, User } from 'server/models'
-import { AuthService, GroupService } from 'server/services'
-import { httpBadRequest, httpCreated, httpNoContent, httpNotFound, httpOk } from 'server/utils'
+import { Group, SpotifyAuth, type User } from 'server/models'
+import { SpotifyService } from 'server/services'
+import { NotFoundError } from 'server/utils'
 
-// TODO: Requires permission
-export const createGroup = async (req: Request, res: Response) => {
-  /**
-  @swagger
-  #swagger.tags = ['Group']
-  */
-  const { body } = req
-  const { user } = <AuthLocals>res.locals
+export const assignSpotifyToGroup = async (user: User, groupId: string, spotifyEmail: string) => {
+  const auth = await SpotifyAuth.findOne({ userId: user._id.toString(), spotifyEmail })
 
-  try {
-    // const group = await Group.create({ ...body, ownerId: user._id })
-    const { name } = body // TODO: Validate body, explicitly define fields
+  if (!auth)
+    throw new Error(`User ${user.email} is not connected to spotify account ${spotifyEmail}.`)
 
-    const group = await GroupService.createGroup(user, name, body)
-    return httpCreated(res, group)
-  } catch (error: any) {
-    return httpBadRequest(res, error?.message)
-  }
+  const group = await Group.findById(groupId)
+  if (!group) throw new NotFoundError(`Group with id ${groupId} not found.`)
+
+  await group.updateOne({ spotifyAuthId: auth._id }, { new: true })
+  return group
 }
 
-// TODO: Requires permission
-export const createGroupMember = async (req: Request, res: Response) => {
-  /**
-  @swagger
-  #swagger.tags = ['Group']
-  */
-  const { groupId } = req.params
-  const { email, options } = req.body
+export const getGroupSpotify = async (groupId: string) => {
+  const group = await Group.findById(groupId)
+  if (!group) throw new NotFoundError(`Group with id ${groupId} not found.`)
 
-  const group: Group | null = await Group.findById(groupId)
-  if (!group) return httpNotFound(res, 'Group not found.')
+  const auth = await SpotifyAuth.findById(group.spotifyAuthId)
+  if (!auth) throw new Error(`No linked Spotify accounts for group ${group.name}.`)
 
-  try {
-    const userFound: User | null = await User.findOne({ email: email })
-    let user: User
-
-    if (!userFound) {
-      user = await AuthService.inviteUser(email)
-    } else {
-      user = userFound
-    }
-
-    const newMembership = await GroupService.registerGroupMember(group, user, options)
-    return httpCreated(res, newMembership)
-  } catch (error: any) {
-    return httpBadRequest(res, error?.message)
-  }
-}
-
-export const getGroup = async (req: Request, res: Response) => {
-  /**
-  @swagger
-  #swagger.tags = ['Group']
-  */
-  const { groupId } = req.params
-
-  const group: Group | null = await Group.findById(groupId)
-  if (!group) return httpNotFound(res, 'Group not found.')
-
-  return httpOk(res, group)
-}
-
-export const updateGroup = async (req: Request, res: Response) => {
-  /**
-  @swagger
-  #swagger.tags = ['Group']
-  #swagger.summary = "Not implemented"
-  */
-  const { groupId } = req.params
-  const { ownerId, name, spotifyToken } = req.body
-
-  const group: Group | null = await Group.findById(groupId)
-  if (!group) return httpNotFound(res, 'Group not found.')
-
-  try {
-    // TODO: Validate body
-    // const updatedGroup = await group.updateOne({ ownerId, name, spotifyToken }, { new: true })
-    const updatedGroup = await Group.findByIdAndUpdate(
-      groupId,
-      { ownerId, name, spotifyToken },
-      { new: true }
-    )
-
-    return httpOk(res, updatedGroup)
-  } catch (error: any) {
-    return httpBadRequest(res, error?.message)
-  }
-}
-
-export const deleteGroup = async (req: Request, res: Response) => {
-  /**
-  @swagger
-  #swagger.tags = ['Group']
-  #swagger.summary = "Not implemented"
-  */
-  const { groupId } = req.params
-
-  const group: Group | null = await Group.findById(groupId)
-  if (!group) return httpNotFound(res, 'Group not found.')
-
-  try {
-    await GroupService.deleteGroup(group)
-    return httpNoContent(res)
-  } catch (error: any) {
-    return httpBadRequest(res, error?.message)
-  }
-}
-
-export const getGroupMembers = async (req: Request, res: Response) => {
-  /**
-  @swagger
-  #swagger.tags = ['Group']
-  #swagger.summary = "Not implemented"
-  */
-  const { groupId } = req.params
-
-  const group: Group | null = await Group.findById(groupId)
-  if (!group) return httpNotFound(res, 'Group not found.')
-
-  try {
-    const members = await GroupService.getGroupMembers(group)
-    return httpOk(res, members)
-  } catch (error: any) {
-    return httpBadRequest(res, error?.message)
-  }
-}
-
-export const getGroupMemberships = async (req: Request, res: Response) => {
-  /**
-  @swagger
-  #swagger.tags = ['Group']
-  #swagger.summary = "Not implemented"
-  */
-  const { groupId } = req.params
-
-  const group: Group | null = await Group.findById(groupId)
-  if (!group) return httpNotFound(res, 'Group not found.')
-
-  try {
-    const memberships = await GroupService.getGroupMemberships(group)
-    return httpOk(res, memberships)
-  } catch (error: any) {
-    return httpBadRequest(res, error?.message)
-  }
+  return SpotifyService.connect(auth.spotifyEmail)
 }

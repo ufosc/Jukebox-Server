@@ -8,6 +8,7 @@ export interface ISpotifyAuth {
   spotifyEmail: string
   expiresIn: number
   tokenType: string
+  expiresAt: Date
 }
 
 export interface ISpotifyAuthFields extends Omit<ISpotifyAuth, 'id' | 'userId'> {
@@ -41,6 +42,9 @@ export const SpotifyAuthSchema = new Schema<
   },
   expiresIn: {
     type: Number
+  },
+  expiresAt: {
+    type: Date
   },
   tokenType: {
     type: String

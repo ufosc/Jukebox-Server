@@ -1,13 +1,19 @@
-import { getUserToken, registerUser, requestPasswordReset, resetPassword } from 'server/controllers'
+import {
+  getUserSpotifyEmails,
+  getUserToken,
+  registerUser,
+  requestPasswordReset,
+  resetPassword
+} from 'server/controllers'
 import { cleanUser, User } from 'server/models'
 import { apiAuthRequest, apiRequest, httpCreated, Viewset } from 'server/utils'
 
 export const registerUserView = apiRequest(
   async (req, res, next) => {
     /**
-  @swagger
-  #swagger.tags = ['User']
-  */
+    @swagger
+    #swagger.tags = ['User']
+    */
     const { email, password } = req.body
     if (!email || !password) throw new Error('Missing email or password.')
 
@@ -59,6 +65,15 @@ export const resetPasswordView = apiRequest(async (req, res, next) => {
   if (!email || !password) throw new Error('Missing email or password.')
 
   await resetPassword(email, password)
+})
+
+export const connectedSpotifyAccounts = apiAuthRequest(async (req, res, next) => {
+  /**
+  @swagger
+  #swagger.tags = ['User']
+  */
+  const { user } = res.locals
+  return getUserSpotifyEmails(user)
 })
 
 export const UserViewset = new Viewset(User, cleanUser)

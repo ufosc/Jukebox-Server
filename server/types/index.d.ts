@@ -8,5 +8,5 @@ declare interface IModelMethods<T extends Serializable = Serializable> {
 // declare type IModelFields<T extends Serializable = Serializable> = Omit<T, 'id'>
 
 // declare interface IModelFields<T extends Serializable = Serializable> extends Omit<T, 'id'> {
-  
+
 // }

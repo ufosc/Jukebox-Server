@@ -1,0 +1,25 @@
+name: Push Docker Images
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Login to Docker
+        run: |
+          echo "$DOCKER_PASS" | docker login $DOCKER_REGISTRY --username $DOCKER_USER --password-stdin
+        env:
+          DOCKER_PASS: ${{ secrets.DOCKER_REGISTRY_PASS }}
+          DOCKER_USER: ${{ secrets.DOCKER_REGISTRY_USER }}
+          DOCKER_REGISTRY: ${{ vars.DOCKER_REGISTRY }}
+      - name: Build and Push Images
+        run: |
+          docker buildx create --use
+          docker buildx build --platform=linux/amd64,linux/arm64 -t ikehunter5/jukebox-server:latest -f ./server/Dockerfile . --push
+          docker buildx build --platform=linux/amd64,linux/arm64 -t ikehunter5/jukebox-websocket:latest -f ./websocket/Dockerfile . --push
+          docker buildx build --platform=linux/amd64,linux/arm64 -t ikehunter5/jukebox-proxy:latest ./proxy --push

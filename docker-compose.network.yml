@@ -2,8 +2,9 @@ services:
   server:
     restart: always
     build:
-      context: ./
-      dockerfile: ./server/Dockerfile
+      context: .
+      dockerfile: ./server.Dockerfile
+      # dockerfile: ./server/Dockerfile
     container_name: server-jbx
     environment:
       - NODE_ENV=network

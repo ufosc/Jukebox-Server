@@ -25,6 +25,14 @@
     "http",
     "https"
   ],
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header",
+      "description": "The token for authentication into system."
+    }
+  },
   "consumes": [
     "application/json"
   ],
@@ -113,7 +121,12 @@
             },
             "description": "Not implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
     "/api/spotify/login-callback": {
@@ -207,7 +220,12 @@
             },
             "description": "Not implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
     "/api/user/register": {
@@ -357,7 +375,12 @@
             },
             "description": "Not implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
     "/api/user/reset-password": {
@@ -408,7 +431,12 @@
             },
             "description": "Not implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
     "/api/user/me": {
@@ -442,7 +470,12 @@
             },
             "description": "Not implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
     "/api/user/me/spotify-accounts": {
@@ -476,7 +509,12 @@
             },
             "description": "Not implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
     "/api/group/{id}/spotify": {
@@ -530,7 +568,12 @@
             },
             "description": "Not implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
     "/api/group/{id}/spotify/current-track": {
@@ -572,7 +615,177 @@
             },
             "description": "Not implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/group/{id}/spotify/state": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "state": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/Error400"
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "schema": {
+              "$ref": "#/definitions/Error404"
+            },
+            "description": "Not found"
+          },
+          "500": {
+            "schema": {
+              "$ref": "#/definitions/Error500"
+            },
+            "description": "Internal Server Error"
+          },
+          "501": {
+            "schema": {
+              "$ref": "#/definitions/Error501"
+            },
+            "description": "Not implemented"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/group/{id}/spotify/devices": {
+      "get": {
+        "tags": [
+          "Group"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/Error400"
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "schema": {
+              "$ref": "#/definitions/Error404"
+            },
+            "description": "Not found"
+          },
+          "500": {
+            "schema": {
+              "$ref": "#/definitions/Error500"
+            },
+            "description": "Internal Server Error"
+          },
+          "501": {
+            "schema": {
+              "$ref": "#/definitions/Error501"
+            },
+            "description": "Not implemented"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
+    "/api/group/{id}/spotify/default-device": {
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "deviceId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/Error400"
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "schema": {
+              "$ref": "#/definitions/Error404"
+            },
+            "description": "Not found"
+          },
+          "500": {
+            "schema": {
+              "$ref": "#/definitions/Error500"
+            },
+            "description": "Internal Server Error"
+          },
+          "501": {
+            "schema": {
+              "$ref": "#/definitions/Error501"
+            },
+            "description": "Not implemented"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
     "/api/group/{id}/jam": {
@@ -665,17 +878,6 @@
           "Group"
         ],
         "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "description": "New Group",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Group"
-            }
-          }
-        ],
         "responses": {
           "400": {
             "schema": {
@@ -701,7 +903,12 @@
             },
             "description": "Not implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       },
       "get": {
         "tags": [
@@ -733,7 +940,12 @@
             },
             "description": "Not implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     },
     "/api/group/groups/{id}": {
@@ -775,7 +987,12 @@
             },
             "description": "Not implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       },
       "put": {
         "tags": [
@@ -815,7 +1032,12 @@
             },
             "description": "Not implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       },
       "patch": {
         "tags": [
@@ -855,7 +1077,12 @@
             },
             "description": "Not implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       },
       "delete": {
         "tags": [
@@ -895,7 +1122,12 @@
             },
             "description": "Not implemented"
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     }
   },
@@ -1236,21 +1468,5 @@
         }
       }
     }
-  },
-  "components": {
-    "securitySchemes": {
-      "Bearer": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT",
-        "in": "header",
-        "description": "Token used to authenticate with network."
-      }
-    }
-  },
-  "security": [
-    {
-      "Bearer": []
-    }
-  ]
+  }
 }

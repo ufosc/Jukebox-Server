@@ -5,6 +5,7 @@ export interface IGroup {
   name: string
   ownerId: string
   spotifyAuthId?: string
+  defaultDeviceId?: string
 }
 
 export interface IGroupFields extends Omit<IGroup, 'ownerId' | 'id' | 'spotifyAuthId'> {
@@ -30,6 +31,9 @@ const GroupSchema = new mongoose.Schema<IGroupFields, IGroupModel, IGroupMethods
       ref: 'SpotifyAuth',
       unique: true,
       dropDups: true
+    },
+    defaultDeviceId: {
+      type: String
     }
   },
   {

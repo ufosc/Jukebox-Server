@@ -1,3 +1,4 @@
+import type { Device } from '@spotify/web-api-ts-sdk'
 import {
   authenticateSpotify,
   getSpotifyEmail,
@@ -74,4 +75,39 @@ export class SpotifyService {
   public async getProfile() {
     return await this.sdk.currentUser.profile()
   }
+
+  // public async getActiveDevice(failSilently: true): Promise<Device | null>
+  // public async getActiveDevice(failSilently?: false): Promise<Device>
+  // public async getActiveDevice(failSilently = false) {
+  //   const devices = await this.sdk.player.getAvailableDevices()
+  //   const activeDevice = devices.devices.reduce((currentDevice, device) => {
+  //     if (device.is_active || !currentDevice) return device
+
+  //     return currentDevice
+  //   })
+
+  //   if (!failSilently && !activeDevice) {
+  //     throw new Error('No active devices to play tracks.')
+  //   }
+
+  //   return activeDevice
+  // }
+
+  // public async playTrack() {
+  //   const activeDevice = await this.getActiveDevice()
+  //   await this.sdk.player.startResumePlayback(activeDevice.id!)
+  // }
+
+  // public async pauseTrack() {
+  //   const activeDevice = await this.getActiveDevice()
+  //   await this.sdk.player.pausePlayback(activeDevice.id!)
+  // }
+  // public async nextTrack() {
+  //   const activeDevice = await this.getActiveDevice()
+  //   await this.sdk.player.skipToNext(activeDevice.id!)
+  // }
+  // public async previousTrack() {
+  //   const activeDevice = await this.getActiveDevice()
+  //   await this.sdk.player.skipToPrevious(activeDevice.id!)
+  // }
 }

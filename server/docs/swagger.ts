@@ -33,22 +33,15 @@ const doc = {
       description: 'Communicate with Spotify'
     }
   ],
-  components: {
-    securitySchemes: {
-      Bearer: {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        in: 'header',
-        description: 'Token used to authenticate with network.'
-      }
+  components: {},
+  securityDefinitions: {
+    Bearer: {
+      type: 'apiKey',
+      name: 'Authorization',
+      in: 'header',
+      description: 'The token for authentication into system.'
     }
   },
-  security: [
-    {
-      Bearer: []
-    }
-  ],
   definitions: {
     Group: { name: '', ownerId: '' } as IGroup
   }

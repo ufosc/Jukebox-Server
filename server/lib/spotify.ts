@@ -2,6 +2,7 @@
  * Resources
  * - Repo: https://github.com/spotify/spotify-web-api-ts-sdk/tree/main
  * - Authentication: https://developer.spotify.com/documentation/web-api/tutorials/code-flow
+ * - Scopes: https://developer.spotify.com/documentation/web-api/concepts/scopes
  */
 import { SpotifyApi } from '@spotify/web-api-ts-sdk'
 import axios from 'axios'
@@ -14,7 +15,10 @@ const SPOTIFY_SCOPES = [
   'playlist-modify-public',
   'playlist-modify-private',
   'user-read-playback-state',
-  'user-modify-playback-state'
+  'user-modify-playback-state',
+  'user-read-currently-playing',
+  'app-remote-control',
+  'streaming'
 ]
 
 export type SpotifySdk = SpotifyApi

@@ -1,5 +1,11 @@
 import type { NextFunction, Request, Response } from 'express'
-import { assignSpotifyToGroup, getGroupSpotify } from 'server/controllers/groupController'
+import {
+  assignSpotifyToGroup,
+  getGroupDevices,
+  getGroupTrack,
+  setGroupDefaultDevice,
+  setGroupPlayerState
+} from 'server/controllers/groupController'
 import { Group } from 'server/models'
 import { apiAuthRequest } from 'server/utils'
 import { Viewset } from '../utils/apis/viewsets'
@@ -14,11 +20,8 @@ export const assignSpotifyAccountView = apiAuthRequest(async (req, res, next) =>
    #swagger.tags = ['Group']
    */
   const { user } = res.locals
-  let { spotifyEmail } = req.body
-  let { id } = req.params
-
-  spotifyEmail = String(spotifyEmail)
-  id = String(id)
+  const spotifyEmail = String(req.body.spotifyEmail)
+  const id = String(req.params.id)
 
   return await assignSpotifyToGroup(user, id, spotifyEmail)
 })
@@ -28,29 +31,48 @@ export const getGroupCurrentTrackView = apiAuthRequest(async (req, res, next) =>
    @swagger
    #swagger.tags = ['Group']
    */
-  let {id} = req.params
-  id = String(id)
-  
-  const spotify = await getGroupSpotify(id)
-  return await spotify.sdk.player.getCurrentlyPlayingTrack()
+  const id = String(req.params.id)
+  return await getGroupTrack(id)
 })
 
-/** ========= Resource CRUD Views ========== */
+export const getGroupDevicesView = apiAuthRequest(async (req, res) => {
+  /**
+   @swagger
+   #swagger.tags = ['Group']
+   */
+  const id = String(req.params.id)
+  return await getGroupDevices(id)
+})
+export const setGroupDefaultDeviceView = apiAuthRequest(async (req, res) => {
+  /**
+   @swagger
+   #swagger.tags = ['Group']
+   */
+  const id = String(req.params.id)
+  const deviceId = String(req.body.deviceId)
+
+  return await setGroupDefaultDevice(id, deviceId)
+})
+
+export const setGroupPlayerStateView = apiAuthRequest(async (req, res, next) => {
+  /**
+   @swagger
+   #swagger.tags = ['Group']
+   */
+  const id = String(req.params.id)
+  const state = String(req.body.state) as 'play' | 'pause'
+
+  return await setGroupPlayerState(id, state)
+})
 
 export const groupCreateView = (...args: ApiArgs) => {
   /**
    @swagger
    #swagger.tags = ['Group']
-   #swagger.parameters['body'] = {
-      in: "body",
-      name: "body",
-      description: "New Group",
-      required: true,
-      schema: {$ref: "#/definitions/Group"}
-    }
    */
   return groupViewset.create(...args)
 }
+
 export const groupListView = (...args: ApiArgs) => {
   /**
    @swagger

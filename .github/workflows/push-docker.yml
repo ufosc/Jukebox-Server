@@ -1,6 +1,6 @@
 name: Push Docker Images
 on:
-  pull_request:
+  push:
     branches:
       - main
 
@@ -11,12 +11,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Login to Docker
-        run: |
-          echo "$DOCKER_PASS" | docker login $DOCKER_REGISTRY --username $DOCKER_USER --password-stdin
-        env:
-          DOCKER_PASS: ${{ secrets.DOCKER_REGISTRY_PASS }}
-          DOCKER_USER: ${{ secrets.DOCKER_REGISTRY_USER }}
-          DOCKER_REGISTRY: ${{ vars.DOCKER_REGISTRY }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_PASS }}
       - name: Build and Push Images
         run: |
           docker buildx create --use

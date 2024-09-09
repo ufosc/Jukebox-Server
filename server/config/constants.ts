@@ -16,6 +16,7 @@ export const AUTH_TOKEN_COOKIE_NAME = 'dev-auth-token'
 
 export const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID || 'changeme'
 export const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET || 'changeme'
+export const SPOTIFY_REDIRECT_URI = process.env.SPOITFY_REDIRECT_URI || 'http://localhost:8000/api/spotify/login-callback/'
 
 // export const LOG_LEVEL = process.env.LOG_LEVEL || 'warn'
 // export const LOG_NS = process.env.LOG_NS || 'server'

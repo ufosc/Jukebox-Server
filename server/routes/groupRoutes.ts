@@ -1,19 +1,24 @@
 import { Router } from 'express'
-import * as GroupController from '../controllers/groupController'
 import * as JamController from '../controllers/jamController'
+import { isAuthenticated } from '../middleware/authMiddleware'
+import * as views from '../views/groupViews'
 
 const router = Router()
 
-router.post('/groups', GroupController.createGroup)
-router.post('/groups/:groupId/members', GroupController.createGroupMember)
-// router.post('/groups/:groupId/guests', GroupController.createSessionGuest)
-router.get('/groups/:groupId', GroupController.getGroup)
-router.put('/groups/:groupId', GroupController.updateGroup)
-router.patch('/groups/:groupId', GroupController.updateGroup)
-router.delete('/groups/:groupId', GroupController.deleteGroup)
-router.get('/groups/:groupId/members', GroupController.getGroupMembers)
+router.post('/:id/spotify', isAuthenticated, views.assignSpotifyAccountView)
+router.get('/:id/spotify/current-track', isAuthenticated, views.getGroupCurrentTrackView)
+router.post('/:id/spotify/state', isAuthenticated, views.setGroupPlayerStateView)
+router.get('/:id/spotify/devices', isAuthenticated, views.getGroupDevicesView)
+router.post('/:id/spotify/default-device', isAuthenticated, views.setGroupDefaultDeviceView)
 
-router.post('/groups/:groupId/jam', JamController.startJam)
-router.delete('/groups/:groupId/jam', JamController.endJam)
+router.post('/:id/jam', JamController.startJam)
+router.delete('/:id/jam', JamController.endJam)
+
+router.post('/groups', isAuthenticated, views.groupCreateView)
+router.get('/groups', isAuthenticated, views.groupListView)
+router.get('/groups/:id', isAuthenticated, views.groupGetView)
+router.put('/groups/:id', isAuthenticated, views.groupUpdateView)
+router.patch('/groups/:id', isAuthenticated, views.groupPartialUpdateView)
+router.delete('/groups/:id', isAuthenticated, views.groupDeleteView)
 
 export const groupRoutes = router

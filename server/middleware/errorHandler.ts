@@ -4,8 +4,10 @@ import {
   httpBadRequest,
   httpNotFound,
   httpNotImplemented,
+  httpUnauthorized,
   NotFoundError,
-  NotImplementedError
+  NotImplementedError,
+  UnauthorizedError
 } from 'server/utils'
 
 export const errorHandler = (error: Error, req: Request, res: Response, next: NextFunction) => {
@@ -15,6 +17,8 @@ export const errorHandler = (error: Error, req: Request, res: Response, next: Ne
     return next(httpNotFound(res, error))
   } else if (error instanceof NotImplementedError) {
     return next(httpNotImplemented(res, error))
+  } else if (error instanceof UnauthorizedError) {
+    return next(httpUnauthorized(res, error))
   } else {
     return next(httpBadRequest(res, error))
   }

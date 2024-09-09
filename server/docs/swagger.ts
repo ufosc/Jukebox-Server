@@ -1,4 +1,5 @@
 import { BASE_URL } from 'server/config'
+import type { IGroup } from 'server/models'
 import { ResponseCodes, formatJsonResponse } from 'server/utils'
 import swaggerAutogen from 'swagger-autogen'
 
@@ -32,23 +33,18 @@ const doc = {
       description: 'Communicate with Spotify'
     }
   ],
-  components: {
-    securitySchemes: {
-      Bearer: {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        in: 'header',
-        description: 'Token used to authenticate with network.'
-      }
+  components: {},
+  securityDefinitions: {
+    Bearer: {
+      type: 'apiKey',
+      name: 'Authorization',
+      in: 'header',
+      description: 'The token for authentication into system.'
     }
   },
-  security: [
-    {
-      Bearer: []
-    }
-  ],
-  definitions: {}
+  definitions: {
+    Group: { name: '', ownerId: '' } as IGroup
+  }
 }
 const generateResponseDocs = () => {
   const codes = ResponseCodes

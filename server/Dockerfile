@@ -1,4 +1,4 @@
-# Development Image
+# Server Image
 ################################################
 FROM node:20-bookworm
 

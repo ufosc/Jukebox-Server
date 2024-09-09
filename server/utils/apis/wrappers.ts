@@ -22,7 +22,10 @@ const wrapper = <T extends Response = Response>(
   return async (req: Request, res: T, next: NextFunction) => {
     try {
       const data = await cb(req, res, next)
-      return onSuccess ? onSuccess(res, data, showStatus) : httpOk(res, data, showStatus)
+
+      if (!res.headersSent) {
+        return onSuccess ? onSuccess(res, data, showStatus) : httpOk(res, data, showStatus)
+      }
     } catch (e) {
       return errorResponse(e, res, next)
     }

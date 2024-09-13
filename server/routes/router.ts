@@ -6,6 +6,7 @@ import { spotifyRouter } from './spotifyRoutes'
 import { userRouter } from './userRoutes'
 
 const router = Router()
+
 router.get('/', baseViews.healthcheck)
 router.get('/api', baseViews.apiHelp)
 router.get('/api/ping', baseViews.pingPongView)

@@ -1,7 +1,6 @@
 import { Router } from 'express'
 import { isAuthenticated } from '../middleware/authMiddleware'
 import * as views from '../views/userViews'
-import { UserViewset } from '../views/userViews'
 
 const router = Router()
 
@@ -15,6 +14,12 @@ router.get('/me', isAuthenticated, views.currentUserView)
 router.get('/me/spotify-accounts', isAuthenticated, views.connectedSpotifyAccounts)
 
 /**== User Management ==**/
-router.use('/users', isAuthenticated, UserViewset.registerRouter())
+// router.use('/users', isAuthenticated, UserViewset.registerRouter())
+router.post('/users', isAuthenticated, views.userCreateView)
+router.get('/users', isAuthenticated, views.userListView)
+router.get('/users/:id', isAuthenticated, views.userGetView)
+router.put('/users/:id', isAuthenticated, views.userUpdateView)
+router.patch('/users/:id', isAuthenticated, views.userPartialUpdateView)
+router.delete('/users/:id', isAuthenticated, views.userDeleteView)
 
 export const userRouter = router

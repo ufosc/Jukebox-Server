@@ -5,8 +5,8 @@ import {
   requestPasswordReset,
   resetPassword
 } from 'server/controllers'
-import { cleanUser, User } from 'server/models'
-import { apiAuthRequest, apiRequest, httpCreated, Viewset } from 'server/utils'
+import { cleanUser, User, type IUser } from 'server/models'
+import { apiAuthRequest, apiRequest, httpCreated, Viewset, type ApiArgs } from 'server/utils'
 
 export const registerUserView = apiRequest(
   async (req, res, next) => {
@@ -18,7 +18,9 @@ export const registerUserView = apiRequest(
     if (!email || !password) throw new Error('Missing email or password.')
 
     const user = await registerUser(email, password)
-    return user.serialize()
+    const serialized: IUser = user.serialize()
+
+    return serialized
   },
   { onSuccess: httpCreated }
 )
@@ -29,8 +31,8 @@ export const loginUserView = apiRequest(async (req, res, next) => {
   */
   const { email, password } = req.body
   if (!email || !password) throw new Error('Missing email or password.')
-
   const token = await getUserToken(email, password)
+
   return { token }
 })
 
@@ -40,8 +42,9 @@ export const currentUserView = apiAuthRequest(async (req, res, next) => {
   #swagger.tags = ['User']
   */
   const { user } = res.locals
+  const userSerialized: IUser = user.serialize()
 
-  return user.serialize()
+  return userSerialized
 })
 
 export const requestPasswordResetView = apiRequest(async (req, res, next) => {
@@ -73,7 +76,65 @@ export const connectedSpotifyAccounts = apiAuthRequest(async (req, res, next) =>
   #swagger.tags = ['User']
   */
   const { user } = res.locals
-  return getUserSpotifyEmails(user)
+  const emails: string[] = await getUserSpotifyEmails(user)
+
+  return emails
 })
 
-export const UserViewset = new Viewset(User, cleanUser)
+const UserViewset = new Viewset(User, cleanUser)
+
+export const userCreateView = apiAuthRequest(async (...args: ApiArgs) => {
+  /**
+   @swagger
+   #swagger.tags = ['User']
+   */
+  const user: IUser = await UserViewset.create(...args)
+
+  return user
+})
+
+export const userListView = apiAuthRequest(async (...args: ApiArgs) => {
+  /**
+   @swagger
+   #swagger.tags = ['User']
+   */
+  const users: IUser[] = await UserViewset.list(...args)
+
+  return users
+})
+export const userGetView = apiAuthRequest(async (...args: ApiArgs) => {
+  /**
+   @swagger
+   #swagger.tags = ['User']
+   */
+  const user: IUser = await UserViewset.get(...args)
+
+  return user
+})
+export const userUpdateView = apiAuthRequest(async (...args: ApiArgs) => {
+  /**
+   @swagger
+   #swagger.tags = ['User']
+   */
+  const user: IUser = await UserViewset.update(...args)
+
+  return user
+})
+export const userPartialUpdateView = apiAuthRequest(async (...args: ApiArgs) => {
+  /**
+   @swagger
+   #swagger.tags = ['User']
+   */
+  const user: IUser = await UserViewset.partialUpdate(...args)
+
+  return user
+})
+export const userDeleteView = apiAuthRequest(async (...args: ApiArgs) => {
+  /**
+   @swagger
+   #swagger.tags = ['User']
+   */
+  const user: IUser = await UserViewset.delete(...args)
+
+  return user
+})

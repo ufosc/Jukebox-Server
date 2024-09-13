@@ -28,11 +28,19 @@ export const assignSpotifyToGroup = async (
   return group
 }
 
-export const getGroupSpotify = async (groupId: string) => {
+export const getGroupSpotifyAuth = async (groupId) => {
   const group = await getOrError(groupId, Group)
+  const auth = await getOrError(group.spotifyAuthId?.toString() ?? '', SpotifyAuth)
 
-  const auth = await SpotifyAuth.findById(group.spotifyAuthId)
-  if (!auth) throw new Error(`No linked Spotify accounts for group ${group.name}.`)
+  return auth
+}
+
+export const getGroupSpotify = async (groupId: string) => {
+  const auth = await getGroupSpotifyAuth(groupId)
+  // const group = await getOrError(groupId, Group)
+
+  // const auth = await SpotifyAuth.findById(group.spotifyAuthId)
+  // if (!auth) throw new Error(`No linked Spotify accounts for group ${group.name}.`)
 
   return SpotifyService.connect(auth.spotifyEmail)
 }

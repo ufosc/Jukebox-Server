@@ -51,5 +51,18 @@ export const SpotifyAuthSchema = new Schema<
   }
 })
 
+SpotifyAuthSchema.methods.serialize = function () {
+  return {
+    id: this.id,
+    accessToken: this.accessToken,
+    refreshToken: this.refreshToken,
+    userId: this.userId,
+    spotifyEmail: this.spotifyEmail,
+    expiresIn: this.expiresIn,
+    tokenType: this.tokenType,
+    expiresAt: this.expiresAt
+  }
+}
+
 export const SpotifyAuth = model('SpotifyAuth', SpotifyAuthSchema)
 export type SpotifyAuth = InstanceType<typeof SpotifyAuth>

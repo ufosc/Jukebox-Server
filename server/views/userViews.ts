@@ -13,7 +13,14 @@ export const registerUserView = apiRequest(
     /**
     @swagger
     #swagger.tags = ['User']
-    */
+    #swagger.responses[201] = {
+      schema: {
+        "id": "66ec5cc706ebdf0462a024d2",
+        "email": "email@gmail.com"
+      },
+      description: "Monitor updated"
+    }
+   */
     const { email, password } = req.body
     if (!email || !password) throw new Error('Missing email or password.')
 
@@ -28,6 +35,12 @@ export const loginUserView = apiRequest(async (req, res, next) => {
   /**
   @swagger
   #swagger.tags = ['User']
+  #swagger.responses[200] = {
+      schema: {
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmVjNWNjNzA2ZWJkZjA0NjJhMDI0ZDIiLCJpYXQiOjE3MjY3NjYzNDIsIm5iZiI6MTcyNjc2NjM0MiwiZXhwIjoxNzI2OTM5MTQyLCJpc3MiOiJqdWtlYm94In0.JWGMcuOjFKFAhi5ZJfaISl40AmCxwXVKBzmvh-6NHWg"
+      },
+      description: "Monitor updated"
+    }
   */
   const { email, password } = req.body
   if (!email || !password) throw new Error('Missing email or password.')
@@ -40,7 +53,14 @@ export const currentUserView = apiAuthRequest(async (req, res, next) => {
   /**
   @swagger
   #swagger.tags = ['User']
-  */
+  #swagger.responses[200] = {
+      schema: {
+        "id": "66e9f875b14c1ccc11b3d8f0",
+        "email": "email"
+      },
+      description: "Monitor updated"
+    }
+   */
   const { user } = res.locals
   const userSerialized: IUser = user.serialize()
   const userGroups = await Group.find({ ownerId: user._id })
@@ -54,7 +74,14 @@ export const requestPasswordResetView = apiRequest(async (req, res, next) => {
   /**
   @swagger
   #swagger.tags = ['User']
-  */
+  #swagger.responses[200] = {
+      schema: {
+        "status": 200,
+        "type": "Ok"
+      },
+      description: "Monitor updated"
+    }
+   */
   const { email } = req.body
   if (!email) throw new Error('Missing email.')
 
@@ -65,7 +92,14 @@ export const resetPasswordView = apiRequest(async (req, res, next) => {
   /**
   @swagger
   #swagger.tags = ['User']
-  */
+  #swagger.responses[200] = {
+      schema: {
+        "status": 200,
+        "type": "Ok"
+      },
+      description: "Monitor updated"
+    }
+   */
   // FIXME: Insecure password reset, HIGH security risk
   const { email, password } = req.body
   if (!email || !password) throw new Error('Missing email or password.')
@@ -77,7 +111,13 @@ export const connectedSpotifyAccounts = apiAuthRequest(async (req, res, next) =>
   /**
   @swagger
   #swagger.tags = ['User']
-  */
+  #swagger.responses[200] = {
+      schema: {
+        "email"
+      },
+      description: "Monitor updated"
+    }
+   */
   const { user } = res.locals
   const emails: string[] = await getUserSpotifyEmails(user)
 
@@ -90,6 +130,7 @@ export const userCreateView = apiAuthRequest(async (...args: ApiArgs) => {
   /**
    @swagger
    #swagger.tags = ['User']
+   #
    */
   const user: IUser = await UserViewset.create(...args)
 

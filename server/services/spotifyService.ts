@@ -1,4 +1,3 @@
-import type { Device } from '@spotify/web-api-ts-sdk'
 import {
   authenticateSpotify,
   getSpotifyEmail,
@@ -74,6 +73,11 @@ export class SpotifyService {
 
   public async getProfile() {
     return await this.sdk.currentUser.profile()
+  }
+
+  public async getAccessToken() {
+    const tokens = await this.sdk.getAccessToken()
+    return tokens?.access_token ?? ''
   }
 
   // public async getActiveDevice(failSilently: true): Promise<Device | null>

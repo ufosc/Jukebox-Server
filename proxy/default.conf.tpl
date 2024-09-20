@@ -25,7 +25,8 @@ server {
     proxy_set_header X-Forwarded-For "$proxy_add_x_forwarded_for";
     proxy_set_header Token "$http_token";
     
-    proxy_pass_header  Token;
+    proxy_pass_header Token;
+    proxy_pass_header Authorization;
   }
   
   location /socket.io {

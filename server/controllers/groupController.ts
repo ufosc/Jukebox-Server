@@ -28,9 +28,16 @@ export const assignSpotifyToGroup = async (
   return group
 }
 
-export const getGroupSpotifyAuth = async (groupId) => {
+export const getGroupSpotifyAuth = async (groupId: string) => {
   const group = await getOrError(groupId, Group)
   const auth = await getOrError(group.spotifyAuthId?.toString() ?? '', SpotifyAuth)
+
+  if (auth.isExpired()) {
+    const spotify = await SpotifyService.connect(auth.spotifyEmail)
+    const updatedAccessToken = await spotify.getAccessToken()
+    auth.accessToken = updatedAccessToken
+    auth.save()
+  }
 
   return auth
 }

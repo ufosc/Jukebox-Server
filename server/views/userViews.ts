@@ -5,7 +5,7 @@ import {
   requestPasswordReset,
   resetPassword
 } from 'server/controllers'
-import { cleanUser, User, type IUser } from 'server/models'
+import { cleanUser, Group, User, type IUser } from 'server/models'
 import { apiAuthRequest, apiRequest, httpCreated, Viewset, type ApiArgs } from 'server/utils'
 
 export const registerUserView = apiRequest(
@@ -43,8 +43,11 @@ export const currentUserView = apiAuthRequest(async (req, res, next) => {
   */
   const { user } = res.locals
   const userSerialized: IUser = user.serialize()
+  const userGroups = await Group.find({ ownerId: user._id })
+  
+  const groups = userGroups.map((group) => ({ id: group._id, name: group.name }))
 
-  return userSerialized
+  return { ...userSerialized, groups }
 })
 
 export const requestPasswordResetView = apiRequest(async (req, res, next) => {

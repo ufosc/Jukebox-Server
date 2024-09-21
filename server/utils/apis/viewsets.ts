@@ -4,6 +4,8 @@ import { NotFoundError } from '../exceptions'
 import { httpCreated } from '../responses'
 import { apiRequest } from './wrappers'
 
+export type ApiArgs = [req: Request, res: Response, next: NextFunction]
+
 export class Viewset<
   T extends Model<any, any, IModelMethods> = Model<any, any, IModelMethods>,
   S extends Serializable = any

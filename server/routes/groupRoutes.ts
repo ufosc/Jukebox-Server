@@ -1,18 +1,15 @@
 import { Router } from 'express'
-import * as JamController from '../controllers/jamController'
 import { isAuthenticated } from '../middleware/authMiddleware'
 import * as views from '../views/groupViews'
 
 const router = Router()
 
-router.post('/:id/spotify', isAuthenticated, views.assignSpotifyAccountView)
 router.get('/:id/spotify/current-track', isAuthenticated, views.getGroupCurrentTrackView)
 router.post('/:id/spotify/state', isAuthenticated, views.setGroupPlayerStateView)
 router.get('/:id/spotify/devices', isAuthenticated, views.getGroupDevicesView)
 router.post('/:id/spotify/default-device', isAuthenticated, views.setGroupDefaultDeviceView)
-
-router.post('/:id/jam', JamController.startJam)
-router.delete('/:id/jam', JamController.endJam)
+router.get('/:id/spotify/auth', isAuthenticated, views.getGroupSpotifyAuthView)
+router.post('/:id/spotify/auth', isAuthenticated, views.assignSpotifyAccountView)
 
 router.post('/groups', isAuthenticated, views.groupCreateView)
 router.get('/groups', isAuthenticated, views.groupListView)

@@ -1,5 +1,5 @@
 import { BASE_URL } from 'server/config'
-import type { IGroup } from 'server/models'
+import type { IGroup, IGroupFields } from 'server/models'
 import { ResponseCodes, formatJsonResponse } from 'server/utils'
 import swaggerAutogen from 'swagger-autogen'
 
@@ -43,7 +43,8 @@ const doc = {
     }
   },
   definitions: {
-    Group: { name: '', ownerId: '' } as IGroup
+    IGroupFields: { name: '', ownerId: '' } as IGroupFields,
+    IGroup: { id: '', name: '', ownerId: '' } as IGroup
   }
 }
 const generateResponseDocs = () => {

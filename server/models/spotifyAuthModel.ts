@@ -15,7 +15,9 @@ export interface ISpotifyAuthFields extends Omit<ISpotifyAuth, 'id' | 'userId'> 
   userId: typeof Types.ObjectId
 }
 
-export interface ISpotifyAuthMethods extends IModelMethods<ISpotifyAuth> {}
+export interface ISpotifyAuthMethods extends IModelMethods<ISpotifyAuth> {
+  isExpired: () => boolean
+}
 
 export type ISpotifyAuthModel = Model<ISpotifyAuth, any, ISpotifyAuthMethods>
 
@@ -50,6 +52,25 @@ export const SpotifyAuthSchema = new Schema<
     type: String
   }
 })
+
+SpotifyAuthSchema.methods.isExpired = function () {
+  const expiresAt: Date = this.expiresAt
+
+  return expiresAt.getTime() <= Date.now()
+}
+
+SpotifyAuthSchema.methods.serialize = function () {
+  return {
+    id: this.id,
+    accessToken: this.accessToken,
+    refreshToken: this.refreshToken,
+    userId: this.userId,
+    spotifyEmail: this.spotifyEmail,
+    expiresIn: this.expiresIn,
+    tokenType: this.tokenType,
+    expiresAt: this.expiresAt
+  }
+}
 
 export const SpotifyAuth = model('SpotifyAuth', SpotifyAuthSchema)
 export type SpotifyAuth = InstanceType<typeof SpotifyAuth>

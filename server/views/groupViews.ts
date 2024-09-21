@@ -1,18 +1,16 @@
-import type { NextFunction, Request, Response } from 'express'
+import type { Devices, PlaybackState } from '@spotify/web-api-ts-sdk'
 import {
   assignSpotifyToGroup,
   getGroupDevices,
+  getGroupSpotifyAuth,
   getGroupTrack,
   setGroupDefaultDevice,
   setGroupPlayerState
-} from 'server/controllers/groupController'
-import { Group } from 'server/models'
-import { apiAuthRequest } from 'server/utils'
-import { Viewset } from '../utils/apis/viewsets'
+} from 'server/controllers'
+import { Group, type IGroup, type ISpotifyAuth } from 'server/models'
+import { apiAuthRequest, Viewset, type ApiArgs } from 'server/utils'
 
 const groupViewset = new Viewset(Group)
-
-type ApiArgs = [req: Request, res: Response, next: NextFunction]
 
 export const assignSpotifyAccountView = apiAuthRequest(async (req, res, next) => {
   /**
@@ -23,7 +21,10 @@ export const assignSpotifyAccountView = apiAuthRequest(async (req, res, next) =>
   const spotifyEmail = String(req.body.spotifyEmail)
   const id = String(req.params.id)
 
-  return await assignSpotifyToGroup(user, id, spotifyEmail)
+  const group = await assignSpotifyToGroup(user, id, spotifyEmail)
+  const serialized: IGroup = group.serialize()
+
+  return serialized
 })
 
 export const getGroupCurrentTrackView = apiAuthRequest(async (req, res, next) => {
@@ -32,7 +33,9 @@ export const getGroupCurrentTrackView = apiAuthRequest(async (req, res, next) =>
    #swagger.tags = ['Group']
    */
   const id = String(req.params.id)
-  return await getGroupTrack(id)
+  const track: PlaybackState = await getGroupTrack(id)
+
+  return track
 })
 
 export const getGroupDevicesView = apiAuthRequest(async (req, res) => {
@@ -41,7 +44,9 @@ export const getGroupDevicesView = apiAuthRequest(async (req, res) => {
    #swagger.tags = ['Group']
    */
   const id = String(req.params.id)
-  return await getGroupDevices(id)
+  const devices: Devices = await getGroupDevices(id)
+
+  return devices
 })
 export const setGroupDefaultDeviceView = apiAuthRequest(async (req, res) => {
   /**
@@ -51,7 +56,10 @@ export const setGroupDefaultDeviceView = apiAuthRequest(async (req, res) => {
   const id = String(req.params.id)
   const deviceId = String(req.body.deviceId)
 
-  return await setGroupDefaultDevice(id, deviceId)
+  const group = await setGroupDefaultDevice(id, deviceId)
+  const serialized: IGroup = group.serialize()
+
+  return serialized
 })
 
 export const setGroupPlayerStateView = apiAuthRequest(async (req, res, next) => {
@@ -62,49 +70,83 @@ export const setGroupPlayerStateView = apiAuthRequest(async (req, res, next) => 
   const id = String(req.params.id)
   const state = String(req.body.state) as 'play' | 'pause'
 
-  return await setGroupPlayerState(id, state)
+  await setGroupPlayerState(id, state)
 })
 
-export const groupCreateView = (...args: ApiArgs) => {
+export const getGroupSpotifyAuthView = apiAuthRequest(async (req, res, next) => {
   /**
    @swagger
    #swagger.tags = ['Group']
    */
-  return groupViewset.create(...args)
+  const id = String(req.params.id)
+  const auth = await getGroupSpotifyAuth(id)
+  const serialized: ISpotifyAuth = auth.serialize()
+
+  return serialized
+})
+
+export const groupCreateView = async (...args: ApiArgs) => {
+  /**
+   @swagger
+   #swagger.tags = ['Group']
+   #swagger.parameters['body'] = {
+      in: "body",
+      name: "body",
+      description: "Group Object",
+      required: true,
+      schema: {$ref: "#/definitions/IGroupFields"}
+    }
+   #swagger.responses[200] = {
+    schema: { $ref: "#/definitions/IGroup" }
+   }
+   */
+  const group: IGroup = await groupViewset.create(...args)
+
+  return group
 }
 
-export const groupListView = (...args: ApiArgs) => {
+export const groupListView = async (...args: ApiArgs) => {
   /**
    @swagger
    #swagger.tags = ['Group']
    */
-  return groupViewset.list(...args)
+  const groups: IGroup[] = await groupViewset.list(...args)
+
+  return groups
 }
-export const groupGetView = (...args: ApiArgs) => {
+export const groupGetView = async (...args: ApiArgs) => {
   /**
    @swagger
    #swagger.tags = ['Group']
    */
-  return groupViewset.get(...args)
+  const group: IGroup = await groupViewset.get(...args)
+
+  return group
 }
-export const groupUpdateView = (...args: ApiArgs) => {
+export const groupUpdateView = async (...args: ApiArgs) => {
   /**
    @swagger
    #swagger.tags = ['Group']
    */
-  return groupViewset.update(...args)
+  const group: IGroup = await groupViewset.update(...args)
+
+  return group
 }
-export const groupPartialUpdateView = (...args: ApiArgs) => {
+export const groupPartialUpdateView = async (...args: ApiArgs) => {
   /**
    @swagger
    #swagger.tags = ['Group']
    */
-  return groupViewset.partialUpdate(...args)
+  const group: IGroup = await groupViewset.partialUpdate(...args)
+
+  return group
 }
-export const groupDeleteView = (...args: ApiArgs) => {
+export const groupDeleteView = async (...args: ApiArgs) => {
   /**
    @swagger
    #swagger.tags = ['Group']
    */
-  return groupViewset.delete(...args)
+  const group: IGroup = await groupViewset.delete(...args)
+
+  return group
 }

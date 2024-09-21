@@ -1,21 +1,24 @@
 import mongoose, { Types, type Model } from 'mongoose'
 
-export interface IGroup {
-  id: string
+export interface IGroupFields {
   name: string
   ownerId: string
   spotifyAuthId?: string
   defaultDeviceId?: string
 }
 
-export interface IGroupFields extends Omit<IGroup, 'ownerId' | 'id' | 'spotifyAuthId'> {
+export interface IGroup extends IGroupFields {
+  id: string
+}
+
+export interface GroupFields extends Omit<IGroupFields, 'ownerId' | 'id' | 'spotifyAuthId'> {
   ownerId: typeof Types.ObjectId
   spotifyAuthId?: typeof Types.ObjectId
 }
-export interface IGroupMethods extends IModelMethods {}
-type IGroupModel = Model<IGroup, any, IGroupMethods>
+export interface GroupMethods extends IModelMethods<IGroup> {}
+type GroupModel = Model<IGroup, any, GroupMethods>
 
-const GroupSchema = new mongoose.Schema<IGroupFields, IGroupModel, IGroupMethods>(
+const GroupSchema = new mongoose.Schema<GroupFields, GroupModel, GroupMethods>(
   {
     ownerId: {
       type: Types.ObjectId,

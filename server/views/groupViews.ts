@@ -16,6 +16,15 @@ export const assignSpotifyAccountView = apiAuthRequest(async (req, res, next) =>
   /**
    @swagger
    #swagger.tags = ['Group']
+   #swagger.responses[200] = {
+      schema: {
+        "id": "66e9f064f4b6247a0c26291e",
+        "ownerId": "66e8a2e7f4b6247a0c262910",
+        "name": "group",
+        "spotifyAuthId": "66e9fbbcb14c1ccc11b3d8fd"
+      },
+      description: "Monitor updated"
+    }
    */
   const { user } = res.locals
   const spotifyEmail = String(req.body.spotifyEmail)
@@ -31,6 +40,15 @@ export const getGroupCurrentTrackView = apiAuthRequest(async (req, res, next) =>
   /**
    @swagger
    #swagger.tags = ['Group']
+   #swagger.responses[200] = {
+      schema: {
+        "id": "66e9f064f4b6247a0c26291e",
+        "ownerId": "66e8a2e7f4b6247a0c262910",
+        "name": "group",
+        "spotifyAuthId": "66e9fbbcb14c1ccc11b3d8fd"
+      },
+      description: "Success"
+    }
    */
   const id = String(req.params.id)
   const track: PlaybackState = await getGroupTrack(id)
@@ -42,6 +60,22 @@ export const getGroupDevicesView = apiAuthRequest(async (req, res) => {
   /**
    @swagger
    #swagger.tags = ['Group']
+   #swagger.responses[200] = {
+      schema: {
+        "devices": [
+          {
+            "id": "ff25d0139c6039819da122cacbdb275fe83e5286",
+            "is_active": false,
+            "is_private_session": false,
+            "is_restricted": false,
+            "name": "Nabeel’s MacBook Air",
+            "supports_volume": true,
+            "type": "Computer",
+            "volume_percent": 81
+          },"
+      },
+      description: "Success"
+    }
    */
   const id = String(req.params.id)
   const devices: Devices = await getGroupDevices(id)
@@ -52,6 +86,13 @@ export const setGroupDefaultDeviceView = apiAuthRequest(async (req, res) => {
   /**
    @swagger
    #swagger.tags = ['Group']
+   #swagger.responses[200] = {
+      schema: {
+        "spotifyLogin": "http://localhost:8000/api/spotify/login/",
+        "documenation": "http://localhost:8000/api/docs/"
+      },
+      description: "Monitor updated"
+    }
    */
   const id = String(req.params.id)
   const deviceId = String(req.body.deviceId)

@@ -22,9 +22,9 @@ This project has two Github pages this is designated for the Backend Development
 
 ## Project Install One-Liner
 
-Copy this command to quickly get started.
+Copy and paste the following command into your terminal to clone the repository and get the server up and running.
 
-Make sure docker, docker-compose, and git installed on your machine.
+This assumes you have **Docker**, **Docker Compose**, and **Git** installed.
 
 ```sh
 git clone git@github.com:ufosc/Jukebox-Server.git && cd Jukebox-Server && cp sample.env .env && docker-compose up --build
@@ -37,7 +37,7 @@ Follow these steps to download the project locally and get it running with nodem
 1. Clone the repository:
 
 ```sh
-git clone <git url>
+git clone https://github.com/ufosc/Jukebox-Server.git
 cd Jukebox-Server
 ```
 
@@ -60,17 +60,17 @@ Once the server is running, visit <https://localhost:8000/login> to authenticate
 
 ## Technology Stack (with documentation link)
 
-| Use                    | Tech                                                                                        |
-| ---------------------- | ------------------------------------------------------------------------------------------- |
-| Language               | [TypeScript](https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html)     |
-| Backend Runtime        | [Node.js](https://nodejs.dev/en/learn/)                                                     |
-| Backend Framework      | [Express.js](https://expressjs.com/en/4x/api.html#express)                                  |
-| SQL Database           | [Postgres](https://node-postgres.com/)                                                      |
-| Unit Tests             | [Mocha](https://semaphoreci.com/community/tutorials/getting-started-with-node-js-and-mocha) |
-| Auto Documentation     | [Swagger](https://swagger.io/docs/specification/about/)                                     |
-| Infrastructure as Code | [Terraform](#)                                                                              |
-| Hosting                | [AWS](#)                                                                                    |
-| Containerization       | [Docker](https://docs.docker.com/get-started/)                                              |
+| Use                    | Tech                                                                                    |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| Language               | [TypeScript](https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html) |
+| Backend Runtime        | [Node.js](https://nodejs.dev/en/learn/)                                                 |
+| Backend Framework      | [Express.js](https://expressjs.com/en/4x/api.html#express)                              |
+| SQL Database           | [Postgres](https://node-postgres.com/)                                                  |
+| Unit Tests             | [Jest](https://jestjs.io/docs/getting-started)                                          |
+| Auto Documentation     | [Swagger](https://swagger.io/docs/specification/about/)                                 |
+| Infrastructure as Code | [Terraform](https://developer.hashicorp.com/terraform/docs)                             |
+| Hosting                | [AWS](https://docs.aws.amazon.com/)                                                     |
+| Containerization       | [Docker](https://docs.docker.com/get-started/)                                          |
 
 ## Workflow
 
@@ -82,11 +82,13 @@ Once the server is running, visit <https://localhost:8000/login> to authenticate
 git clone git@github.com:ufosc/Jukebox-Server.git && cd Jukebox-Server && cp sample.env .env && docker-compose up --build
 ```
 
-3. Create a feature branch **(ensure your branch focuses on a specific, fully working feature e.g. documentation, implementing new authentication logic)**:
+3. Create a feature branch:
 
 ```sh
-git checkout -b feature-name
+git checkout -b feature/[insert name here]
 ```
+
+_Ensure your branch focuses on a specific, fully working feature e.g. documentation, implementing new authentication logic. [Read more about feature branch workflow here](https://craftquest.io/guides/git/git-workflows/feature-branch-workflow)._
 
 Before submitting a pull request, write at least three unit tests. If possible, follow the Test-Driven Development (TDD) paradigm, which involves writing tests before coding the feature itself. [Learn more about TDD here](https://www.browserstack.com/guide/what-is-test-driven-development).
 
@@ -94,21 +96,20 @@ Before submitting a pull request, write at least three unit tests. If possible, 
 
 ## Testing
 
-We use Mocha for unit testing. **At least 3 unit tests** must accompany any new feature.
+We use Jest for unit testing. **At least 3 unit tests** must accompany any new feature.
 
-Example of Mocha Formatting:
+Example of Jest Formatting:
 
 ```
-var expect = require("chai").expect;
-var converter = require("../app/converter");
+const converter = require('../app/converter');
 
-describe("JukeboxTest", function() {
-// Specification code
-// e.g., Play from this specific playlist, source from another artist, etc.
+// Example test
+test('Jukebox Unit Test', () => {
+  expect(converter.convertPlaylist('playlist-id')).toBe('expected-output');
 });
 ```
 
-To run the tests, use the following command. This will run Mocha, which will look for test files inside the `/test` directory:
+To run the tests, use the following command. This will execute Jest, which will look for test files inside the `/test` directory:
 
 ```sh
 docker-compose run --rm api sh -c "npm test"

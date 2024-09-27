@@ -889,92 +889,6 @@
         ]
       }
     },
-    "/api/group/{id}/spotify": {
-      "post": {
-        "tags": [
-          "Group"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "spotifyEmail": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "example": "66e9f064f4b6247a0c26291e"
-                },
-                "ownerId": {
-                  "type": "string",
-                  "example": "66e8a2e7f4b6247a0c262910"
-                },
-                "name": {
-                  "type": "string",
-                  "example": "group"
-                },
-                "spotifyAuthId": {
-                  "type": "string",
-                  "example": "66e9fbbcb14c1ccc11b3d8fd"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "Monitor updated"
-          },
-          "400": {
-            "schema": {
-              "$ref": "#/definitions/Error400"
-            },
-            "description": "Bad request"
-          },
-          "404": {
-            "schema": {
-              "$ref": "#/definitions/Error404"
-            },
-            "description": "Not found"
-          },
-          "500": {
-            "schema": {
-              "$ref": "#/definitions/Error500"
-            },
-            "description": "Internal Server Error"
-          },
-          "501": {
-            "schema": {
-              "$ref": "#/definitions/Error501"
-            },
-            "description": "Not implemented"
-          }
-        },
-        "security": [
-          {
-            "Bearer": []
-          }
-        ]
-      }
-    },
     "/api/group/{id}/spotify/current-track": {
       "get": {
         "tags": [
@@ -1257,6 +1171,90 @@
           }
         ],
         "responses": {
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/Error400"
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "schema": {
+              "$ref": "#/definitions/Error404"
+            },
+            "description": "Not found"
+          },
+          "500": {
+            "schema": {
+              "$ref": "#/definitions/Error500"
+            },
+            "description": "Internal Server Error"
+          },
+          "501": {
+            "schema": {
+              "$ref": "#/definitions/Error501"
+            },
+            "description": "Not implemented"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "spotifyEmail": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "66e9f064f4b6247a0c26291e"
+                },
+                "ownerId": {
+                  "type": "string",
+                  "example": "66e8a2e7f4b6247a0c262910"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "group"
+                },
+                "spotifyAuthId": {
+                  "type": "string",
+                  "example": "66e9fbbcb14c1ccc11b3d8fd"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Monitor updated"
+          },
           "400": {
             "schema": {
               "$ref": "#/definitions/Error400"

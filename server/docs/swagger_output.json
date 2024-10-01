@@ -253,7 +253,8 @@
         "tags": [
           "User"
         ],
-        "description": "",
+        "summary": "Register new user",
+        "description": "Create a new user account",
         "parameters": [
           {
             "name": "body",
@@ -261,10 +262,10 @@
             "schema": {
               "type": "object",
               "properties": {
-                "schema": {
+                "email": {
                   "example": "any"
                 },
-                "description": {
+                "password": {
                   "example": "any"
                 }
               }
@@ -272,24 +273,11 @@
           }
         ],
         "responses": {
-          "201": {
+          "200": {
+            "description": "Return created user",
             "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "example": "66ec5cc706ebdf0462a024d2"
-                },
-                "email": {
-                  "type": "string",
-                  "example": "email@gmail.com"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "Monitor updated"
+              "$ref": "#/definitions/IUser"
+            }
           },
           "400": {
             "schema": {
@@ -323,6 +311,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Get token for logging in a user",
         "description": "",
         "parameters": [
           {
@@ -331,10 +320,10 @@
             "schema": {
               "type": "object",
               "properties": {
-                "schema": {
+                "email": {
                   "example": "any"
                 },
-                "description": {
+                "password": {
                   "example": "any"
                 }
               }
@@ -348,14 +337,14 @@
               "properties": {
                 "token": {
                   "type": "string",
-                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NmVjNWNjNzA2ZWJkZjA0NjJhMDI0ZDIiLCJpYXQiOjE3MjY3NjYzNDIsIm5iZiI6MTcyNjc2NjM0MiwiZXhwIjoxNzI2OTM5MTQyLCJpc3MiOiJqdWtlYm94In0.JWGMcuOjFKFAhi5ZJfaISl40AmCxwXVKBzmvh-6NHWg"
+                  "example": "example-token"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "Monitor updated"
+            "description": "OK"
           },
           "400": {
             "schema": {
@@ -389,6 +378,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Request a password reset for authenticated user (TODO)",
         "description": "",
         "parameters": [
           {
@@ -425,7 +415,7 @@
                 "name": "main"
               }
             },
-            "description": "Monitor updated"
+            "description": "OK"
           },
           "400": {
             "schema": {
@@ -464,6 +454,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Allow user to reset password from reset request (TODO)",
         "description": "",
         "parameters": [
           {
@@ -500,7 +491,7 @@
                 "name": "main"
               }
             },
-            "description": "Monitor updated"
+            "description": "OK"
           },
           "400": {
             "schema": {
@@ -539,6 +530,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Get info about the authenticated user",
         "description": "",
         "responses": {
           "200": {
@@ -551,14 +543,14 @@
                 },
                 "email": {
                   "type": "string",
-                  "example": "email"
+                  "example": "user@example.com"
                 }
               },
               "xml": {
                 "name": "main"
               }
             },
-            "description": "Monitor updated"
+            "description": "OK"
           },
           "400": {
             "schema": {
@@ -597,8 +589,19 @@
         "tags": [
           "User"
         ],
+        "summary": "Get connected spotify accounts for user",
         "description": "",
         "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "OK"
+          },
           "400": {
             "schema": {
               "$ref": "#/definitions/Error400"
@@ -636,6 +639,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Create a new user",
         "description": "",
         "responses": {
           "400": {
@@ -673,6 +677,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Get a list of all users",
         "description": "",
         "responses": {
           "400": {
@@ -712,6 +717,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Get a single user by id",
         "description": "",
         "parameters": [
           {
@@ -757,6 +763,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Update all fields on a user",
         "description": "",
         "parameters": [
           {
@@ -802,6 +809,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Update some fields on a user",
         "description": "",
         "parameters": [
           {
@@ -847,6 +855,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Delete a user by id",
         "description": "",
         "parameters": [
           {
@@ -857,92 +866,6 @@
           }
         ],
         "responses": {
-          "400": {
-            "schema": {
-              "$ref": "#/definitions/Error400"
-            },
-            "description": "Bad request"
-          },
-          "404": {
-            "schema": {
-              "$ref": "#/definitions/Error404"
-            },
-            "description": "Not found"
-          },
-          "500": {
-            "schema": {
-              "$ref": "#/definitions/Error500"
-            },
-            "description": "Internal Server Error"
-          },
-          "501": {
-            "schema": {
-              "$ref": "#/definitions/Error501"
-            },
-            "description": "Not implemented"
-          }
-        },
-        "security": [
-          {
-            "Bearer": []
-          }
-        ]
-      }
-    },
-    "/api/group/{id}/spotify": {
-      "post": {
-        "tags": [
-          "Group"
-        ],
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "spotifyEmail": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "example": "66e9f064f4b6247a0c26291e"
-                },
-                "ownerId": {
-                  "type": "string",
-                  "example": "66e8a2e7f4b6247a0c262910"
-                },
-                "name": {
-                  "type": "string",
-                  "example": "group"
-                },
-                "spotifyAuthId": {
-                  "type": "string",
-                  "example": "66e9fbbcb14c1ccc11b3d8fd"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            },
-            "description": "Monitor updated"
-          },
           "400": {
             "schema": {
               "$ref": "#/definitions/Error400"
@@ -1120,18 +1043,60 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "description": "Group Object",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/IGroupFields"
-            }
           }
         ],
         "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "devices": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "ff25d0139c6039819da122cacbdb275fe83e5286"
+                      },
+                      "is_active": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "is_private_session": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "is_restricted": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Nabeel’s MacBook Air"
+                      },
+                      "supports_volume": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "type": {
+                        "type": "string",
+                        "example": "Computer"
+                      },
+                      "volume_percent": {
+                        "type": "number",
+                        "example": 81
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Success"
+          },
           "400": {
             "schema": {
               "$ref": "#/definitions/Error400"
@@ -1257,6 +1222,90 @@
           }
         ],
         "responses": {
+          "400": {
+            "schema": {
+              "$ref": "#/definitions/Error400"
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "schema": {
+              "$ref": "#/definitions/Error404"
+            },
+            "description": "Not found"
+          },
+          "500": {
+            "schema": {
+              "$ref": "#/definitions/Error500"
+            },
+            "description": "Internal Server Error"
+          },
+          "501": {
+            "schema": {
+              "$ref": "#/definitions/Error501"
+            },
+            "description": "Not implemented"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Group"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "spotifyEmail": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "66e9f064f4b6247a0c26291e"
+                },
+                "ownerId": {
+                  "type": "string",
+                  "example": "66e8a2e7f4b6247a0c262910"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "group"
+                },
+                "spotifyAuthId": {
+                  "type": "string",
+                  "example": "66e9fbbcb14c1ccc11b3d8fd"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            },
+            "description": "Monitor updated"
+          },
           "400": {
             "schema": {
               "$ref": "#/definitions/Error400"
@@ -1593,6 +1642,19 @@
         "ownerId": {
           "type": "string",
           "example": ""
+        }
+      }
+    },
+    "IUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "some-id"
+        },
+        "email": {
+          "type": "string",
+          "example": "user@example.com"
         }
       }
     },

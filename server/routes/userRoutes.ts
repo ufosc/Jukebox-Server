@@ -11,6 +11,7 @@ router.post('/request-password-reset', isAuthenticated, views.requestPasswordRes
 router.post('/reset-password', isAuthenticated, views.resetPasswordView)
 
 router.get('/me', isAuthenticated, views.currentUserView)
+router.put('/me', isAuthenticated, views.updateCurrentUserView)
 router.get('/me/spotify-accounts', isAuthenticated, views.connectedSpotifyAccounts)
 
 /**== User Management ==**/

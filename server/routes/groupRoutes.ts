@@ -12,7 +12,7 @@ router.get('/:id/spotify/auth', isAuthenticated, views.getGroupSpotifyAuthView)
 router.post('/:id/spotify/auth', isAuthenticated, views.assignSpotifyAccountView)
 
 router.post('/groups', isAuthenticated, views.groupCreateView)
-router.get('/groups', isAuthenticated, views.groupListView)
+router.get('/groups', views.groupListView)
 router.get('/groups/:id', isAuthenticated, views.groupGetView)
 router.put('/groups/:id', isAuthenticated, views.groupUpdateView)
 router.patch('/groups/:id', isAuthenticated, views.groupPartialUpdateView)

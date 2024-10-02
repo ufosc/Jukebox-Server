@@ -67,13 +67,21 @@ export const currentUserView = apiAuthRequest(async (req, res, next) => {
 
   /*
   #swagger.responses[200] = {
-    schema: {
-      id: "66e9f875b14c1ccc11b3d8f0",
-      email: "user@example.com"
-    },
+    schema: { $ref: "#/definitions/IUserDetails" },
   } 
   */
   return { ...userSerialized, groups }
+})
+
+export const updateCurrentUserView = apiAuthRequest(async (req, res, next) => {
+  const attrs: Partial<IUser> = {
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    image: req.body.image
+  }
+  const { user } = res.locals
+
+  return await User.findOneAndUpdate({ id: user._id }, attrs, { new: true }).exec()
 })
 
 // TODO: Remove authentication requirement, send email to user

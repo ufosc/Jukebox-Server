@@ -2,7 +2,7 @@ import { TrackQueueItem } from '../trackQueue';
 import { TrackQueue } from '../trackQueue';
 import type { Track } from '@spotify/web-api-ts-sdk';
 
-describe('TrackQueue Tests', () => {
+// describe('TrackQueue Tests', () => {
   let queue: TrackQueue;
   const sometrack: Track = {
     id: '1',

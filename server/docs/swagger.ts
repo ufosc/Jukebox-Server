@@ -45,13 +45,22 @@ const doc = {
   definitions: {
     IGroupFields: { name: '', ownerId: '' } as IGroupFields,
     IGroup: { id: '', name: '', ownerId: '' } as IGroup,
-    IUser: new class implements IUser {
+    IUser: new (class implements IUser {
       id: string = 'some-id'
       email: string = 'user@example.com'
       firstName?: string | undefined
       lastName?: string | undefined
       image?: string | undefined
-    }()
+    })(),
+    IUserDetails: {
+      id: 'abc123',
+      firstName: 'John',
+      email: 'john@example.com',
+      lastName: 'Doe',
+      groups: [{ id: '456def', name: 'Example Group', ownerId: 'abc123' }],
+      image:
+        'https://static.vecteezy.com/system/resources/thumbnails/001/840/618/small_2x/picture-profile-icon-male-icon-human-or-people-sign-and-symbol-free-vector.jpg'
+    } as IUser & { groups: IGroup[] }
   }
 }
 const generateResponseDocs = () => {

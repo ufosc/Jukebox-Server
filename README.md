@@ -1,118 +1,85 @@
-# OSC Jukebox Server
+<p align="center">
+  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
+</p>
 
-[![Unit Testing](https://github.com/ufosc/Jukebox-Server/actions/workflows/test-api.yml/badge.svg)](https://github.com/ufosc/Jukebox-Server/actions/workflows/test-api.yml)
-[![Code Linting](https://github.com/ufosc/Jukebox-Server/actions/workflows/code-linting.yml/badge.svg)](https://github.com/ufosc/Jukebox-Server/actions/workflows/code-linting.yml)
+[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
+[circleci-url]: https://circleci.com/gh/nestjs/nest
 
-Welcome to the Jukebox Server! To get the server running, you only need Node.js installed on your computer. If you want to contribute to the DevOps portion, you will also need docker and docker-compose installed.
-
-## Table of Contents
-
-- [Table of Contents](#table-of-contents)
-- [Description](#description)
-- [Project Install One-Liner](#project-install-one-liner)
-- [Getting started](#getting-started)
-- [Technology Stack (with documentation link)](#technology-stack-with-documentation-link)
-- [Workflow](#workflow)
-- [Testing](#testing)
+  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
+    <p align="center">
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
+<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
+<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
+<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
+<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
+<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
+<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
+  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
+    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
+  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
+</p>
+  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
+  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
 
-The Jukebox Server is a Node.js-based server that connects with Spotify's API, allowing users to manage and potentially play music and function like a Jukebox. Required software includes Docker, Docker Compose, and Git.
-This project has two Github pages this is designated for the Backend Development. If you are interested in the Frontend Development please link here. <https://github.com/ufosc/Jukebox-Frontend>
+[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Project Install One-Liner
+## Project setup
 
-Copy and paste the following command into your terminal to clone the repository and get the server up and running.
-
-This assumes you have **Docker**, **Docker Compose**, and **Git** installed.
-
-```sh
-git clone git@github.com:ufosc/Jukebox-Server.git && cd Jukebox-Server && cp sample.env .env && docker-compose up --build
+```bash
+$ npm install
 ```
 
-## Getting started
+## Compile and run the project
 
-Follow these steps to download the project locally and get it running with nodemon.
+```bash
+# development
+$ npm run start
 
-1. Clone the repository:
+# watch mode
+$ npm run start:dev
 
-```sh
-git clone https://github.com/ufosc/Jukebox-Server.git
-cd Jukebox-Server
+# production mode
+$ npm run start:prod
 ```
 
-2. Set up the environment:
+## Run tests
 
-```sh
-cp sample.env .env
+```bash
+# unit tests
+$ npm run test
+
+# e2e tests
+$ npm run test:e2e
+
+# test coverage
+$ npm run test:cov
 ```
 
-3. Build and run the Docker containers:
+## Resources
 
-```sh
-docker-compose build
-docker-compose up
-```
+Check out a few resources that may come in handy when working with NestJS:
 
-We use Docker Compose to manage the server and its dependencies, including databases and other containers. While you can run the server using `npm run dev`, Docker Compose provides more reliability.
+- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
+- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
+- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
+- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
+- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
+- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
+- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
 
-Once the server is running, visit <https://localhost:8000/login> to authenticate with Spotify.
+## Support
 
-## Technology Stack (with documentation link)
+Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-| Use                    | Tech                                                                                    |
-| ---------------------- | --------------------------------------------------------------------------------------- |
-| Language               | [TypeScript](https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html) |
-| Backend Runtime        | [Node.js](https://nodejs.dev/en/learn/)                                                 |
-| Backend Framework      | [Express.js](https://expressjs.com/en/4x/api.html#express)                              |
-| SQL Database           | [Postgres](https://node-postgres.com/)                                                  |
-| Unit Tests             | [Jest](https://jestjs.io/docs/getting-started)                                          |
-| Auto Documentation     | [Swagger](https://swagger.io/docs/specification/about/)                                 |
-| Infrastructure as Code | [Terraform](https://developer.hashicorp.com/terraform/docs)                             |
-| Hosting                | [AWS](https://docs.aws.amazon.com/)                                                     |
-| Containerization       | [Docker](https://docs.docker.com/get-started/)                                          |
+## Stay in touch
 
-## Workflow
+- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
+- Website - [https://nestjs.com](https://nestjs.com/)
+- Twitter - [@nestframework](https://twitter.com/nestframework)
 
-1. Start by reviewing the [issues list](https://github.com/ufosc/Jukebox-Server/issues) and pick a task or propose a new feature.
+## License
 
-2. Clone the main branch onto your local system:
-
-```sh
-git clone git@github.com:ufosc/Jukebox-Server.git && cd Jukebox-Server && cp sample.env .env && docker-compose up --build
-```
-
-3. Create a feature branch:
-
-```sh
-git checkout -b feature/[insert name here]
-```
-
-_Ensure your branch focuses on a specific, fully working feature e.g. documentation, implementing new authentication logic. [Read more about feature branch workflow here](https://craftquest.io/guides/git/git-workflows/feature-branch-workflow)._
-
-Before submitting a pull request, write at least three unit tests. If possible, follow the Test-Driven Development (TDD) paradigm, which involves writing tests before coding the feature itself. [Learn more about TDD here](https://www.browserstack.com/guide/what-is-test-driven-development).
-
-4. Push your feature branch and submit a pull request (PR). Your PR will be reviewed and tested by a maintainer before merging.
-
-## Testing
-
-We use Jest for unit testing. **At least 3 unit tests** must accompany any new feature.
-
-Example of Jest Formatting:
-
-```
-const converter = require('../app/converter');
-
-// Example test
-test('Jukebox Unit Test', () => {
-  expect(converter.convertPlaylist('playlist-id')).toBe('expected-output');
-});
-```
-
-To run the tests, use the following command. This will execute Jest, which will look for test files inside the `/test` directory:
-
-```sh
-docker-compose run --rm api sh -c "npm test"
-```
-
-When writing new tests, write them inside this `/test` directory.
+Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).

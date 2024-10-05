@@ -4,9 +4,9 @@ services:
     build:
       context: .
       args:
-        - NODE_ENV=development
+        - NODE_ENV=dev
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=dev
       - PORT=8000
       - HOST=localhost
       - JWT_SECRET_KEY=changeme

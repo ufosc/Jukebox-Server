@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import type { Track } from '@spotify/web-api-ts-sdk'
+import type { Track } from '@spotify/web-api-ts-sdk';
 
 export class TrackQueueItem {
   constructor(public track: Track) {}
 }
 
-@Injectable()
-export class TrackQueueService {
+// @Injectable()
+export class TrackQueue {
   protected tracks: TrackQueueItem[] = [];
+  // private groupId: string = '';
 
   constructor(readonly groupId: string) {}
+  public setGroupId(groupId: string) {
+    // this.groupId = groupId;
+  }
 
   // Pushes a track to the end of the queue and returns the new length
   public push(track: Track): number {
@@ -31,7 +35,7 @@ export class TrackQueueService {
 
   // Moves a track to a new position in the queue
   public setPosition(track: Track, pos: number) {
-    const currentIndex = this.tracks.findIndex(item => item.track === track);
+    const currentIndex = this.tracks.findIndex((item) => item.track === track);
     if (currentIndex === -1) {
       throw new Error('Track not found');
     }
@@ -46,3 +50,7 @@ export class TrackQueueService {
     this.tracks.splice(pos, 0, removedTrack);
   }
 }
+
+
+@Injectable()
+export class TrackQueueService {}

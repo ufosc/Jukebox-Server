@@ -16,8 +16,19 @@ export const AUTH_TOKEN_COOKIE_NAME = 'dev-auth-token'
 
 export const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID || 'changeme'
 export const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET || 'changeme'
-export const SPOTIFY_REDIRECT_PATH = '/api/spotify/login-callback/'
+export const SPOTIFY_REDIRECT_PATH = '/api/v1/spotify/login/success/'
 export const SPOTIFY_REDIRECT_URI = BASE_URL + SPOTIFY_REDIRECT_PATH
+export const SPOTIFY_SCOPES = [
+  'user-read-private',
+  'user-read-email',
+  'playlist-modify-public',
+  'playlist-modify-private',
+  'user-read-playback-state',
+  'user-modify-playback-state',
+  'user-read-currently-playing',
+  'app-remote-control',
+  'streaming',
+]
 
 // export const LOG_LEVEL = process.env.LOG_LEVEL || 'warn'
 // export const LOG_NS = process.env.LOG_NS || 'server'

@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { HydratedDocument } from 'mongoose'
+import { Document, HydratedDocument } from 'mongoose'
 
 @Schema()
-export class SpotifyLink {
+export class SpotifyLink extends Document {
   @Prop()
   accessToken: string
 
@@ -27,7 +27,13 @@ export class SpotifyLink {
   isExpired() {
     return this.expiresAt.getTime() <= Date.now()
   }
+
+  syncExpiresAt() {
+    this.expiresAt = new Date(Date.now() + this.expiresIn * 1000)
+  }
 }
 
-export const SpotifyLinkSchema = SchemaFactory.createForClass(SpotifyLink)
 export type SpotifyLinkDocument = HydratedDocument<SpotifyLink>
+export const SpotifyLinkSchema = SchemaFactory.createForClass(SpotifyLink)
+
+SpotifyLinkSchema.loadClass(SpotifyLink)

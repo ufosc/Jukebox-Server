@@ -33,7 +33,8 @@ const GroupSchema = new mongoose.Schema<GroupFields, GroupModel, GroupMethods>(
       type: Types.ObjectId,
       ref: 'SpotifyAuth',
       unique: true,
-      dropDups: true
+      dropDups: true,
+      sparse: true
     },
     defaultDeviceId: {
       type: String

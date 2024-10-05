@@ -62,7 +62,7 @@ export const getGroupDevicesView = apiAuthRequest(async (req, res) => {
    #swagger.tags = ['Group']
    #swagger.responses[200] = {
       schema: {
-        "devices": [
+        devices: [
           {
             "id": "ff25d0139c6039819da122cacbdb275fe83e5286",
             "is_active": false,
@@ -72,7 +72,8 @@ export const getGroupDevicesView = apiAuthRequest(async (req, res) => {
             "supports_volume": true,
             "type": "Computer",
             "volume_percent": 81
-          },"
+          }
+        ]
       },
       description: "Success"
     }

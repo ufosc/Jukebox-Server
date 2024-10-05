@@ -3,9 +3,9 @@ services:
     restart: always
     build:
       context: .
-      # dockerfile: ./server.Dockerfile
-      dockerfile: ./server/Dockerfile
     container_name: server-jbx
+    networks:
+      - cluster
     environment:
       - NODE_ENV=network
       - PORT=9000
@@ -24,11 +24,9 @@ services:
       - mongodb
       - kafka
     volumes:
-      - ./server:/app/server
-      - ./packages:/app/packages
-    networks:
-      - cluster
-    command: npm run dev:server
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+    command: npm run start:network
 
   proxy:
     build:
@@ -43,8 +41,8 @@ services:
       - client-dist:/vol/client
     environment:
       - SERVER_URI=server-jbx:9000
-      - WEBSOCKET_URI=websocket-jbx:9001
-    attach: false
+      - WEBSOCKET_URI=server-jbx:9000
+    # attach: false
 
   mongodb:
     image: mongo:6.0.9
@@ -60,7 +58,7 @@ services:
     command: mongod --quiet --logpath /dev/null --bind_ip_all
     networks:
       - cluster
-  
+
   ####################################
   # Kafka Config
   ####################################
@@ -96,7 +94,7 @@ services:
     networks:
       - cluster
     attach: false
-      
+
   kafka-api:
     image: 'docker-spring-boot-postgres:latest'
     build:
@@ -108,34 +106,6 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       - kafka
-  
-  ####################################
-  # Web Socket Config
-  ####################################
-  websocket:
-    build:
-      context: ./
-      dockerfile: ./websocket/Dockerfile
-    restart: always
-    ports:
-      - 9001:9001
-    container_name: websocket-jbx
-    volumes:
-      - ./websocket:/app/websocket
-      - ./packages:/app/packages
-      - ./package.json:/app/package.json
-    environment:
-      - HOST=0.0.0.0
-      - PORT=9001
-      - NODE_ENV=network
-      - LOG_LEVEL=debug
-      - KAFKA_BROKERS=kafka-jbx:9092
-      - KAFKA_GROUP_ID=websocket-jbx
-      - LOG_NS=websocket
-      # - BYPASS_AUTH=1
-    command: npm run dev:websocket
-    networks:
-      - cluster
 
 volumes:
   client-dist:

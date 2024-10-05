@@ -5,7 +5,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'prefer-arrow-functions'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
@@ -20,6 +20,23 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
+    
+    '@typescript-eslint/consistent-type-imports': 'warn',
+    '@typescript-eslint/no-unused-vars': 'off',
+    '@typescript-eslint/no-redeclare': 'off',
+    '@typescript-eslint/space-before-function-paren': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    'prefer-const': 'warn',
+    'prettier/prettier': 'warn',
+    'prefer-arrow-functions/prefer-arrow-functions': [
+      'warn',
+      {
+        allowNamedFunctions: false,
+        classPropertiesAllowed: false,
+        disallowPrototype: false,
+        returnStyle: 'unchanged',
+        singleReturnOnly: false
+      }
+    ]
   },
 };

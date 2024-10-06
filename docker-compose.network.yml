@@ -39,9 +39,12 @@ services:
       - server
     volumes:
       - client-dist:/vol/client
+      - club-static:/vol/static
     environment:
       - SERVER_URI=server-jbx:9000
       - WEBSOCKET_URI=server-jbx:9000
+      - CLUB_MANAGER_URI=club-app-network:9000
+
     # attach: false
 
   mongodb:
@@ -111,6 +114,9 @@ volumes:
   client-dist:
     name: client-dist
   mongo-data:
+  club-static:
+    name: club-static
+    # external: true
 
 networks:
   cluster:

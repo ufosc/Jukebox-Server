@@ -20,7 +20,7 @@ async function bootstrap() {
     .addTag('spotify')
     .build()
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig)
-  SwaggerModule.setup('/api/docs', app, swaggerDocument)
+  SwaggerModule.setup('/api/v1/docs/jukebox', app, swaggerDocument)
 
   await app.listen(PORT)
 }

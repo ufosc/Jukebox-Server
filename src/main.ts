@@ -13,7 +13,12 @@ async function bootstrap() {
   app.setGlobalPrefix('api/v1')
   app.useGlobalFilters(new HttpExceptionFilter())
 
-  const swaggerConfig = new DocumentBuilder().setTitle('Jukebox API').build()
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Jukebox API')
+    .setVersion('1.0.0')
+    .addTag('jukeboxes')
+    .addTag('spotify')
+    .build()
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig)
   SwaggerModule.setup('/api/docs', app, swaggerDocument)
 

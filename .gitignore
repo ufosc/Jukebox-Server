@@ -14,6 +14,7 @@ utils-old/
 coverage/
 _depricated/
 _deprecated/
+_deprecated_*/
 
 ### Terraform ###
 # Local .terraform directories

@@ -2,12 +2,11 @@ services:
   server:
     restart: always
     build:
-      context: ./
-      dockerfile: ./server/Dockerfile
+      context: .
       args:
-        - NODE_ENV=development
+        - NODE_ENV=dev
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=dev
       - PORT=8000
       - HOST=localhost
       - JWT_SECRET_KEY=changeme
@@ -26,11 +25,9 @@ services:
     depends_on:
       - mongodb
     volumes:
-      - ./server:/app/server
-      - ./jest.config.ts:/app/jest.config.ts
-      - ./packages:/app/packages
-      # - ./dist:/app/dist
-    command: npm run dev
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+    command: npm run start:dev
 
   mongodb:
     image: mongo:6.0.9

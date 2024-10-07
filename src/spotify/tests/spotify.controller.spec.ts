@@ -1,18 +1,31 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { SpotifyController } from '../spotify.controller';
+import { getModelToken } from '@nestjs/mongoose'
+import { Test, TestingModule } from '@nestjs/testing'
+import { Model } from 'mongoose'
+import { SpotifyLink } from '../schemas/spotify-link.schema'
+import { SpotifyController } from '../spotify.controller'
+import { SpotifyService } from '../spotify.service'
+import Axios from 'axios'
 
 describe('SpotifyController', () => {
-  let controller: SpotifyController;
+  let controller: SpotifyController
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SpotifyController],
-    }).compile();
+      providers: [
+        SpotifyService,
+        { provide: getModelToken(SpotifyLink.name), useValue: Model<SpotifyLink> },
+        {
+          provide: Axios.Axios,
+          useValue: Axios.create(),
+        },
+      ],
+    }).compile()
 
-    controller = module.get<SpotifyController>(SpotifyController);
-  });
+    controller = module.get<SpotifyController>(SpotifyController)
+  })
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-});
+    expect(controller).toBeDefined()
+  })
+})

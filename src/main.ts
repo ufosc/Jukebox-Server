@@ -5,7 +5,7 @@ import { AppModule } from './app.module'
 import { PORT } from './config'
 import { HttpExceptionFilter } from './utils'
 
-async function bootstrap() {
+const bootstrap = async () => {
   const app = await NestFactory.create(AppModule, {
     logger: ['debug', 'error', 'fatal', 'log', 'verbose', 'warn'],
   })

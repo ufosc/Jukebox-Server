@@ -10,7 +10,7 @@ export class SpotifyTokensDto {
     this.expiresIn = data.expires_in ?? data.expiresIn
     this.tokenType = data.token_type ?? data.tokenType
   }
-  
+
   getSnakeCase() {
     return {
       access_token: this.accessToken,

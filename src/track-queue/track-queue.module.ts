@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
-import { TrackQueueService } from './track-queue.service';
+import { Module } from '@nestjs/common'
+import { TrackQueueService } from './track-queue.service'
 
 @Module({
-  providers: [TrackQueueService]
+  providers: [TrackQueueService],
 })
 export class TrackQueueModule {}

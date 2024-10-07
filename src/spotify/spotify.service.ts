@@ -90,13 +90,7 @@ export class SpotifyService {
   }
 
   private async updateLink(id: string, attrs: UpdateSpotifyLinkDto) {
-    const link = this.spotifyLinkModel
-      .findByIdAndUpdate(
-        id,
-        attrs,
-        { new: true },
-      )
-      .exec()
+    const link = this.spotifyLinkModel.findByIdAndUpdate(id, attrs, { new: true }).exec()
 
     if (!link) {
       throw new BadRequestException(`Cannot find preexisting spotify account link with id ${id}`)

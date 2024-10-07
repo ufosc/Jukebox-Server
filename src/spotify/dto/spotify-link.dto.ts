@@ -16,19 +16,19 @@ export class UpdateSpotifyLinkDto {
 export class SpotifyLinkDto extends PartialType(SpotifyLink) {
   @ApiProperty()
   accessToken: string
-  
+
   @ApiProperty()
   userId: string
-  
+
   @ApiProperty()
   spotifyEmail: string
-  
+
   @ApiProperty()
   expiresIn: number
-  
+
   @ApiProperty()
   expiresAt: Date
-  
+
   @ApiProperty()
   tokenType: string
 }

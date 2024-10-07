@@ -7,7 +7,7 @@ import { AppService } from './app.service'
 import { MONGO_URI } from './config'
 import { SpotifyModule } from './spotify/spotify.module'
 import { TrackQueueModule } from './track-queue/track-queue.module'
-import { JukeboxModule } from './jukebox/jukebox.module';
+import { JukeboxModule } from './jukebox/jukebox.module'
 
 @Module({
   imports: [

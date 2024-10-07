@@ -1,5 +1,6 @@
 import { getModelToken } from '@nestjs/mongoose'
-import { Test, TestingModule } from '@nestjs/testing'
+import type { TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing'
 import Axios from 'axios'
 import { Model } from 'mongoose'
 import { SpotifyLink } from '../schemas/spotify-link.schema'

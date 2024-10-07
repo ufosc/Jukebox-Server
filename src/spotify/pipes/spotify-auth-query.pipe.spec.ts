@@ -1,7 +1,7 @@
-import { SpotifyAuthQueryPipe } from './spotify-auth-query.pipe';
+import { SpotifyAuthQueryPipe } from './spotify-auth-query.pipe'
 
 describe('SpotifyAuthQueryPipe', () => {
   it('should be defined', () => {
-    expect(new SpotifyAuthQueryPipe()).toBeDefined();
-  });
-});
+    expect(new SpotifyAuthQueryPipe()).toBeDefined()
+  })
+})

@@ -1,0 +1,1034 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: OSC Microservices API
+servers: []
+tags:
+  - name: jukeboxes
+    description: ''
+  - name: spotify
+    description: ''
+paths:
+  /api/v1/club/clubs/:
+    get:
+      operationId: club_clubs_list
+      description: CRUD Api routes for Club models.
+      tags:
+        - club
+      security:
+        - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Club'
+          description: ''
+    post:
+      operationId: club_clubs_create
+      description: CRUD Api routes for Club models.
+      tags:
+        - club
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Club'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Club'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Club'
+        required: true
+      security:
+        - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Club'
+          description: ''
+  '/api/v1/club/clubs/{club_id}/members/':
+    get:
+      operationId: club_clubs_members_list
+      description: CRUD Api routes for ClubMembership for a specific Club.
+      parameters:
+        - in: path
+          name: club_id
+          schema:
+            type: string
+            pattern: ^.+$
+          required: true
+      tags:
+        - club
+      security:
+        - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClubMembership'
+          description: ''
+    post:
+      operationId: club_clubs_members_create
+      description: CRUD Api routes for ClubMembership for a specific Club.
+      parameters:
+        - in: path
+          name: club_id
+          schema:
+            type: string
+            pattern: ^.+$
+          required: true
+      tags:
+        - club
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClubMembership'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClubMembership'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClubMembership'
+        required: true
+      security:
+        - tokenAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClubMembership'
+          description: ''
+  '/api/v1/club/clubs/{club_id}/members/{id}/':
+    get:
+      operationId: club_clubs_members_retrieve
+      description: CRUD Api routes for ClubMembership for a specific Club.
+      parameters:
+        - in: path
+          name: club_id
+          schema:
+            type: string
+            pattern: ^.+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this club membership.
+          required: true
+      tags:
+        - club
+      security:
+        - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClubMembership'
+          description: ''
+    put:
+      operationId: club_clubs_members_update
+      description: CRUD Api routes for ClubMembership for a specific Club.
+      parameters:
+        - in: path
+          name: club_id
+          schema:
+            type: string
+            pattern: ^.+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this club membership.
+          required: true
+      tags:
+        - club
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClubMembership'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ClubMembership'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClubMembership'
+        required: true
+      security:
+        - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClubMembership'
+          description: ''
+    patch:
+      operationId: club_clubs_members_partial_update
+      description: CRUD Api routes for ClubMembership for a specific Club.
+      parameters:
+        - in: path
+          name: club_id
+          schema:
+            type: string
+            pattern: ^.+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this club membership.
+          required: true
+      tags:
+        - club
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedClubMembership'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedClubMembership'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedClubMembership'
+      security:
+        - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClubMembership'
+          description: ''
+    delete:
+      operationId: club_clubs_members_destroy
+      description: CRUD Api routes for ClubMembership for a specific Club.
+      parameters:
+        - in: path
+          name: club_id
+          schema:
+            type: string
+            pattern: ^.+$
+          required: true
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this club membership.
+          required: true
+      tags:
+        - club
+      security:
+        - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  '/api/v1/club/clubs/{id}/':
+    get:
+      operationId: club_clubs_retrieve
+      description: CRUD Api routes for Club models.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this club.
+          required: true
+      tags:
+        - club
+      security:
+        - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Club'
+          description: ''
+    put:
+      operationId: club_clubs_update
+      description: CRUD Api routes for Club models.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this club.
+          required: true
+      tags:
+        - club
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Club'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Club'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Club'
+        required: true
+      security:
+        - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Club'
+          description: ''
+    patch:
+      operationId: club_clubs_partial_update
+      description: CRUD Api routes for Club models.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this club.
+          required: true
+      tags:
+        - club
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedClub'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedClub'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedClub'
+      security:
+        - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Club'
+          description: ''
+    delete:
+      operationId: club_clubs_destroy
+      description: CRUD Api routes for Club models.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          description: A unique integer value identifying this club.
+          required: true
+      tags:
+        - club
+      security:
+        - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/schema/club-manager:
+    get:
+      operationId: schema_club_manager_retrieve
+      description: >-
+        OpenApi3 schema for this API. Format can be selected via content
+        negotiation.
+
+
+        - YAML: application/vnd.oai.openapi
+
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+        - in: query
+          name: format
+          schema:
+            type: string
+            enum:
+              - json
+              - yaml
+        - in: query
+          name: lang
+          schema:
+            type: string
+            enum:
+              - af
+              - ar
+              - ar-dz
+              - ast
+              - az
+              - be
+              - bg
+              - bn
+              - br
+              - bs
+              - ca
+              - ckb
+              - cs
+              - cy
+              - da
+              - de
+              - dsb
+              - el
+              - en
+              - en-au
+              - en-gb
+              - eo
+              - es
+              - es-ar
+              - es-co
+              - es-mx
+              - es-ni
+              - es-ve
+              - et
+              - eu
+              - fa
+              - fi
+              - fr
+              - fy
+              - ga
+              - gd
+              - gl
+              - he
+              - hi
+              - hr
+              - hsb
+              - hu
+              - hy
+              - ia
+              - id
+              - ig
+              - io
+              - is
+              - it
+              - ja
+              - ka
+              - kab
+              - kk
+              - km
+              - kn
+              - ko
+              - ky
+              - lb
+              - lt
+              - lv
+              - mk
+              - ml
+              - mn
+              - mr
+              - ms
+              - my
+              - nb
+              - ne
+              - nl
+              - nn
+              - os
+              - pa
+              - pl
+              - pt
+              - pt-br
+              - ro
+              - ru
+              - sk
+              - sl
+              - sq
+              - sr
+              - sr-latn
+              - sv
+              - sw
+              - ta
+              - te
+              - tg
+              - th
+              - tk
+              - tr
+              - tt
+              - udm
+              - uk
+              - ur
+              - uz
+              - vi
+              - zh-hans
+              - zh-hant
+      tags:
+        - schema
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/user/me/:
+    get:
+      operationId: user_me_retrieve
+      description: Manage the authenticated user.
+      tags:
+        - user
+      security:
+        - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: user_me_update
+      description: Manage the authenticated user.
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+        - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: user_me_partial_update
+      description: Manage the authenticated user.
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+      security:
+        - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/user/token/:
+    post:
+      operationId: user_token_create
+      description: Create a new auth token for user.
+      tags:
+        - user
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AuthToken'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AuthToken'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthToken'
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthToken'
+          description: ''
+  /api/v1/user/users/create/:
+    post:
+      operationId: user_users_create_create
+      description: Create a new user in the system.
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+        - cookieAuth: []
+        - basicAuth: []
+        - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/v1/spotify/login:
+    get:
+      operationId: SpotifyController_login
+      parameters: []
+      responses:
+        '200':
+          description: ''
+      tags:
+        - spotify
+  /api/v1/spotify/login/success:
+    get:
+      operationId: SpotifyController_loginSuccessCallback
+      parameters:
+        - name: code
+          required: true
+          in: query
+          schema:
+            type: string
+        - required: true
+          name: userId
+          in: query
+          schema:
+            type: string
+        - required: false
+          name: finalRedirect
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+      tags:
+        - spotify
+  /api/v1/jukebox/jukeboxes:
+    post:
+      operationId: JukeboxController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJukeboxDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JukeboxDto'
+      tags:
+        - jukeboxes
+    get:
+      operationId: JukeboxController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JukeboxDto'
+      tags:
+        - jukeboxes
+  '/api/v1/jukebox/jukeboxes/{id}':
+    get:
+      operationId: JukeboxController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JukeboxDto'
+      tags:
+        - jukeboxes
+    patch:
+      operationId: JukeboxController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJukeboxDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JukeboxDto'
+      tags:
+        - jukeboxes
+    delete:
+      operationId: JukeboxController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JukeboxDto'
+      tags:
+        - jukeboxes
+components:
+  schemas:
+    AuthToken:
+      type: object
+      description: Serialzer for the user auth token
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+    BlankEnum:
+      enum:
+        - ''
+    Club:
+      type: object
+      description: Convert club model to JSON fields.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 64
+        logo:
+          type: string
+          format: uri
+          nullable: true
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClubMemberNested'
+          readOnly: true
+      required:
+        - id
+        - members
+        - name
+    ClubMemberNested:
+      type: object
+      description: Represents a user's membership within a club.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user_id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+        owner:
+          type: boolean
+          readOnly: true
+        role:
+          oneOf:
+            - $ref: '#/components/schemas/RoleEnum'
+            - $ref: '#/components/schemas/BlankEnum'
+        coins:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+        - id
+        - owner
+        - user_id
+        - username
+    ClubMembership:
+      type: object
+      description: Represents a club membership to use for CRUD operations.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user_id:
+          type: integer
+        club_id:
+          type: integer
+          readOnly: true
+        role:
+          oneOf:
+            - $ref: '#/components/schemas/RoleEnum'
+            - $ref: '#/components/schemas/BlankEnum'
+        owner:
+          type: boolean
+        coins:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+        - club_id
+        - id
+        - user_id
+    PatchedClub:
+      type: object
+      description: Convert club model to JSON fields.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 64
+        logo:
+          type: string
+          format: uri
+          nullable: true
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClubMemberNested'
+          readOnly: true
+    PatchedClubMembership:
+      type: object
+      description: Represents a club membership to use for CRUD operations.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user_id:
+          type: integer
+        club_id:
+          type: integer
+          readOnly: true
+        role:
+          oneOf:
+            - $ref: '#/components/schemas/RoleEnum'
+            - $ref: '#/components/schemas/BlankEnum'
+        owner:
+          type: boolean
+        coins:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+    PatchedUser:
+      type: object
+      description: Serialzier for the user object.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+          minLength: 5
+        clubs:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserClubNested'
+    RoleEnum:
+      enum:
+        - president
+        - officer
+        - member
+      type: string
+      description: |-
+        * `president` - President
+        * `officer` - Officer
+        * `member` - Member
+    User:
+      type: object
+      description: Serialzier for the user object.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+          maxLength: 128
+          minLength: 5
+        clubs:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserClubNested'
+      required:
+        - clubs
+        - email
+        - id
+        - password
+    UserClubNested:
+      type: object
+      description: Represents nested club info for users.
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        role:
+          type: string
+          readOnly: true
+      required:
+        - id
+        - name
+        - role
+    CreateJukeboxDto:
+      type: object
+      properties:
+        name:
+          type: string
+        clubId:
+          type: string
+      required:
+        - name
+        - clubId
+    SpotifyLinkDto:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        userId:
+          type: string
+        spotifyEmail:
+          type: string
+        expiresIn:
+          type: number
+        expiresAt:
+          format: date-time
+          type: string
+        tokenType:
+          type: string
+      required:
+        - accessToken
+        - userId
+        - spotifyEmail
+        - expiresIn
+        - expiresAt
+        - tokenType
+    JukeboxDto:
+      type: object
+      properties:
+        name:
+          type: string
+        clubId:
+          type: string
+        spotifyLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpotifyLinkDto'
+        activeSpotifyLink:
+          $ref: '#/components/schemas/SpotifyLinkDto'
+      required:
+        - name
+        - clubId
+        - spotifyLinks
+    UpdateJukeboxDto:
+      type: object
+      properties:
+        name:
+          type: string
+        clubId:
+          type: string
+        activeSpotifyLink:
+          $ref: '#/components/schemas/SpotifyLinkDto'
+      required:
+        - activeSpotifyLink
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"

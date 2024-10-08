@@ -1,8 +1,10 @@
 import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { SwaggerModule } from '@nestjs/swagger'
+import { writeFileSync } from 'fs'
+import { stringify } from 'yaml'
 import { AppModule } from './app.module'
-import { PORT } from './config'
+import { generateSwaggerDocument, PORT } from './config'
 import { HttpExceptionFilter } from './utils'
 
 const bootstrap = async () => {
@@ -13,14 +15,11 @@ const bootstrap = async () => {
   app.setGlobalPrefix('api/v1')
   app.useGlobalFilters(new HttpExceptionFilter())
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Jukebox API')
-    .setVersion('1.0.0')
-    .addTag('jukeboxes')
-    .addTag('spotify')
-    .build()
-  const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig)
-  SwaggerModule.setup('/api/v1/docs/jukebox', app, swaggerDocument)
+  const document = generateSwaggerDocument(app)
+  const yamlSpec = stringify(document)
+  writeFileSync('./generated/jukebox-api-spec.yml', yamlSpec, { flag: 'w+' })
+
+  SwaggerModule.setup('/api/v1/docs/jukebox', app, document, {yamlDocumentUrl: '/api/v1/schema/jukebox'})
 
   await app.listen(PORT)
 }

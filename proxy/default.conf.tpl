@@ -33,7 +33,7 @@ server {
     proxy_pass_header Authorization;
   }
   
-  location ~* ^/api/v[0-9]/docs/jukebox {
+  location ~* ^/api/v[0-9]/(docs|schema)/jukebox {
     proxy_pass http://apiserver;
     
     proxy_set_header Host "$host:$server_port";
@@ -66,7 +66,19 @@ server {
     include /etc/nginx/uwsgi_params;
   }
   
-
+  location /api/docs {
+    # root /vol/apispec;
+    # rewrite /api/docs(.*) /$1 break;
+    # try_files $uri $uri/ index.html;
+    alias /vol/apispec;
+    index index.html;
+    
+    try_files $uri $uri/ index.html;
+    
+    # error_page 404 =200 index.html;
+    
+    # return 200 '{"message": "Hello"}';
+  }
   
   location /socket.io {
     # Basic config: https://socket.io/docs/v4/reverse-proxy/

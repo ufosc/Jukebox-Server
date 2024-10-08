@@ -5,9 +5,9 @@ import { AppController } from './app.controller'
 import { AppGateway } from './app.gateway'
 import { AppService } from './app.service'
 import { MONGO_URI } from './config'
+import { JukeboxModule } from './jukebox/jukebox.module'
 import { SpotifyModule } from './spotify/spotify.module'
 import { TrackQueueModule } from './track-queue/track-queue.module'
-import { JukeboxModule } from './jukebox/jukebox.module'
 
 @Module({
   imports: [

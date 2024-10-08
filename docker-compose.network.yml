@@ -26,6 +26,8 @@ services:
     volumes:
       - ./src:/app/src
       - ./package.json:/app/package.json
+      - ./generated:/app/generated
+      # - api-spec:/app/generated
     command: npm run start:network
 
   proxy:
@@ -40,6 +42,7 @@ services:
     volumes:
       - client-dist:/vol/client
       - club-static:/vol/static
+      - ./api:/vol/apispec
     environment:
       - SERVER_URI=server-jbx:9000
       - WEBSOCKET_URI=server-jbx:9000
@@ -116,6 +119,8 @@ volumes:
   mongo-data:
   club-static:
     name: club-static
+  # api-spec:
+  #   name: api-spec
     # external: true
 
 networks:

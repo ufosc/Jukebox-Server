@@ -35,14 +35,16 @@ services:
       context: ./proxy/
     ports:
       - 8080:8080
+      - 8081:8081
     networks:
       - cluster
     depends_on:
       - server
+      
     volumes:
       - client-dist:/vol/client
       - club-static:/vol/static
-      - ./api:/vol/apispec
+      - ./proxy/api:/vol/apispec
     environment:
       - SERVER_URI=server-jbx:9000
       - WEBSOCKET_URI=server-jbx:9000

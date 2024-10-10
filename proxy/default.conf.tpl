@@ -7,6 +7,7 @@ upstream websocket {
   server "$WEBSOCKET_URI";
 }
 
+include /etc/nginx/conf.d/includes/club-admin.conf;
 
 server {
   listen 8080;
@@ -67,17 +68,10 @@ server {
   }
   
   location /api/docs {
-    # root /vol/apispec;
-    # rewrite /api/docs(.*) /$1 break;
-    # try_files $uri $uri/ index.html;
-    alias /vol/apispec;
+    alias /vol/apidoc;
     index index.html;
     
     try_files $uri $uri/ index.html;
-    
-    # error_page 404 =200 index.html;
-    
-    # return 200 '{"message": "Hello"}';
   }
   
   location /socket.io {

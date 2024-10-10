@@ -2,7 +2,9 @@ FROM nginxinc/nginx-unprivileged:1-alpine
 LABEL maintainer="web@ikehunter.dev"
 
 COPY ./default.conf.tpl /etc/nginx/default.conf.tpl
+COPY ./includes /etc/nginx/includes
 COPY ./entrypoint.sh /entrypoint.sh
+COPY ./api/index.html /vol/apidoc/
 
 USER root
 
@@ -20,6 +22,6 @@ USER nginx
 
 EXPOSE 8080
 VOLUME /vol/client
-VOLUME /vol/apispec
+VOLUME /vol/apidoc
 
 CMD ["/entrypoint.sh"]

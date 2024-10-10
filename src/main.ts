@@ -16,8 +16,8 @@ const bootstrap = async () => {
   app.useGlobalFilters(new HttpExceptionFilter())
 
   const document = generateSwaggerDocument(app)
-  const yamlSpec = stringify(document)
-  writeFileSync('./generated/jukebox-api-spec.yml', yamlSpec, { flag: 'w+' })
+  // const yamlSpec = stringify(document)
+  // writeFileSync('./generated/jukebox-api-spec.yml', yamlSpec, { flag: 'w+' })
 
   SwaggerModule.setup('/api/v1/docs/jukebox', app, document, {yamlDocumentUrl: '/api/v1/schema/jukebox'})
 

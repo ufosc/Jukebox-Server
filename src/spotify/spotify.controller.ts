@@ -3,8 +3,6 @@ import { ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 import { AuthInterceptor } from 'src/auth/auth.interceptor'
 import { CurrentUser } from 'src/auth/current-user.decorator'
-import { SpotifyAuthQueryDto } from './dto/spotify-auth-query.dto'
-import { SpotifyAuthQueryPipe } from './pipes/spotify-auth-query.pipe'
 import { SpotifyService } from './spotify.service'
 
 @ApiTags('spotify')
@@ -23,10 +21,10 @@ export class SpotifyController {
   @Get('login/success')
   async loginSuccessCallback(
     @Res() res: Response,
-    @Query(new SpotifyAuthQueryPipe()) query: SpotifyAuthQueryDto,
+    @Query() query: { code: string; state: string },
   ) {
     const { code, state } = query
-    const { userId, finalRedirect } = state
+    const { userId, finalRedirect } = JSON.parse(state)
 
     const profile = await this.spotifyService.handleAuthCode(userId, code)
 

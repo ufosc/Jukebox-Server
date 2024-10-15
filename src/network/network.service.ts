@@ -36,10 +36,11 @@ export class NetworkService {
         data: body,
         ...config,
       })
-      .catch((error) => {
-        console.log('caught error:', error)
-        return error.response
-      })
+      // .catch((error) => {
+      //   console.log('caught error:', error)
+      //   throw new
+      //   // return error.response
+      // })
 
     return {
       status: res.status,
@@ -54,6 +55,10 @@ export class NetworkService {
 
   async fetchUser(): Promise<IUser> {
     const res = await this.sendRequest(this.routes.getUser)
+    
+    if (res.status > 299) {
+      throw new Error("Error fetching data from network")
+    }
 
     return {
       email: res.data.email ?? '',

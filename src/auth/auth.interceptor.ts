@@ -1,4 +1,10 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common'
+import {
+  CallHandler,
+  ExecutionContext,
+  Injectable,
+  NestInterceptor,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { Request } from 'express'
 import { Observable } from 'rxjs'
 import { NODE_ENV } from 'src/config'
@@ -20,9 +26,13 @@ export class AuthInterceptor implements NestInterceptor {
     const authHeader = request.headers.authorization || ''
     const [_, token] = authHeader.split(' ')
 
-    this.network.setToken(token)
-    request.user = await this.network.fetchUser()
+    try {
+      this.network.setToken(token)
+      request.user = await this.network.fetchUser()
+      return next.handle()
+    } catch (e) {
+      throw new UnauthorizedException()
+    }
 
-    return next.handle()
   }
 }

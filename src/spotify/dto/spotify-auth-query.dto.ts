@@ -1,5 +1,5 @@
-import { Transform, Type } from 'class-transformer'
-import { IsOptional, IsUrl, ValidateNested } from 'class-validator'
+import { Type } from 'class-transformer'
+import { IsOptional, IsUrl } from 'class-validator'
 
 export class SpotifyAuthStateDto {
   @Type(() => String)
@@ -11,18 +11,18 @@ export class SpotifyAuthStateDto {
   finalRedirect?: string
 }
 
-export class SpotifyAuthQueryDto {
-  @Type(() => String)
-  code: string
+// export class SpotifyAuthQueryDto {
+//   @Type(() => String)
+//   code: string
 
-  // @Type(() => SpotifyAuthQueryDto)
-  // @Transform(({ value }) => {
-  //   if (typeof value === 'string') {
-  //     value = JSON.parse(value)
-  //   }
+//   // @Type(() => SpotifyAuthQueryDto)
+//   // @Transform(({ value }) => {
+//   //   if (typeof value === 'string') {
+//   //     value = JSON.parse(value)
+//   //   }
 
-  //   return value
-  // })
-  // @ValidateNested()
-  state: SpotifyAuthStateDto
-}
+//   //   return value
+//   // })
+//   // @ValidateNested()
+//   state: SpotifyAuthStateDto
+// }

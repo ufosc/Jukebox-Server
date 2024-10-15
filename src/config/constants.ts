@@ -30,6 +30,8 @@ export const SPOTIFY_SCOPES = [
   'streaming',
 ]
 
+export const PROXY_URL = process.env.PROXY_URL ?? 'http://localhost:8080'
+
 // export const LOG_LEVEL = process.env.LOG_LEVEL || 'warn'
 // export const LOG_NS = process.env.LOG_NS || 'server'
 

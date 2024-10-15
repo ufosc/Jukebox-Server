@@ -1,10 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Response } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
+import { Serialize } from 'src/utils'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
 import { JukeboxDto } from './dto/jukebox.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { JukeboxService } from './jukebox.service'
 
+@Serialize(JukeboxDto)
 @ApiTags('jukeboxes')
 @Controller('jukebox')
 export class JukeboxController {

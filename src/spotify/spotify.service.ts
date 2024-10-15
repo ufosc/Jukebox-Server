@@ -76,6 +76,10 @@ export class SpotifyService {
     return profile
   }
 
+  public async findUserLinks(userId: string) {
+    return this.spotifyLinkModel.find({ userId }).exec()
+  }
+
   private async createLink(attrs: CreateSpotifyLinkDto) {
     const { userId, spotifyEmail, tokens } = attrs
     const link = new this.spotifyLinkModel({

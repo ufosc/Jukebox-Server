@@ -4,6 +4,8 @@ import { SpotifyLink } from 'src/spotify/schemas/spotify-link.schema'
 
 @Schema()
 export class Jukebox extends Document {
+  id: string
+  
   @Prop()
   name: string
 

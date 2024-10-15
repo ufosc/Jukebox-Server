@@ -36,4 +36,9 @@ export class SpotifyController {
       return res.json(profile)
     }
   }
+
+  @Get('links')
+  async getSpotifyLinks(@CurrentUser() user: IUser) {
+    return this.spotifyService.findUserLinks(user.id)
+  }
 }

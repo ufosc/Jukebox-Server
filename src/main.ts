@@ -1,8 +1,6 @@
 import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { SwaggerModule } from '@nestjs/swagger'
-import { writeFileSync } from 'fs'
-import { stringify } from 'yaml'
 import { AppModule } from './app.module'
 import { generateSwaggerDocument, PORT } from './config'
 import { HttpExceptionFilter } from './utils'
@@ -15,11 +13,10 @@ const bootstrap = async () => {
   app.setGlobalPrefix('api/v1')
   app.useGlobalFilters(new HttpExceptionFilter())
 
+  app.enableCors({ origin: [] })
   const document = generateSwaggerDocument(app)
-  // const yamlSpec = stringify(document)
-  // writeFileSync('./generated/jukebox-api-spec.yml', yamlSpec, { flag: 'w+' })
 
-  SwaggerModule.setup('/api/v1/docs/jukebox', app, document, {yamlDocumentUrl: '/api/v1/schema/jukebox'})
+  SwaggerModule.setup('/api/docs/', app, document, { yamlDocumentUrl: '/api/v1/schema/jukebox' })
 
   await app.listen(PORT)
 }

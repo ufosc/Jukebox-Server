@@ -13,6 +13,7 @@ server {
   listen 8080;
   
   add_header Access-Control-Allow-Origin *;
+  # proxy_set_header Access-Control-Allow-Origin *;
   add_header Access-Control-Allow-Headers *;
   add_header Access-Control-Allow-Methods *;
   add_header Cross-Origin-Opener-Policy "unsafe-none";

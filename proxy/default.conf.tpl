@@ -69,10 +69,16 @@ server {
   }
   
   location /api/docs {
+    # index index.html;
+    # root /vol/apidoc;
     alias /vol/apidoc;
-    index index.html;
     
+    add_header Cache-Control no-cache;
+    expires 0;
+    
+    index index.html index.htm;
     try_files $uri $uri/ index.html;
+    error_page 404 =200 /index.html;
   }
   
   location /socket.io {
@@ -94,7 +100,7 @@ server {
     root /vol/client;
     index index.html index.htm;
     
-    # try_files $uri $uri/ index.html;
+    try_files $uri $uri/ /index.html /vol/apidoc/;
     error_page 404 =200 /index.html;
   }
   

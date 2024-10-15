@@ -7,7 +7,7 @@
       "inputURL": "http://localhost:8080/api/v1/schema/club-manager"
     },
     {
-      "inputURL": "http://localhost:8080/api/v1/schema/jukebox"
+      "inputURL": "http://localhost:8080/api/v1/schema/jukebox/"
     }
   ],
   "output": "./output.swagger.yml"

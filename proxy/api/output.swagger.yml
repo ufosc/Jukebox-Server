@@ -624,22 +624,7 @@ paths:
   /api/v1/spotify/login/success:
     get:
       operationId: SpotifyController_loginSuccessCallback
-      parameters:
-        - name: code
-          required: true
-          in: query
-          schema:
-            type: string
-        - required: true
-          name: userId
-          in: query
-          schema:
-            type: string
-        - required: false
-          name: finalRedirect
-          in: query
-          schema:
-            type: string
+      parameters: []
       responses:
         '200':
           description: ''
@@ -647,6 +632,21 @@ paths:
             application/json:
               schema:
                 type: object
+      tags:
+        - spotify
+  /api/v1/spotify/links:
+    get:
+      operationId: SpotifyController_getSpotifyLinks
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
       tags:
         - spotify
   /api/v1/jukebox/jukeboxes:
@@ -738,6 +738,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/JukeboxDto'
+      tags:
+        - jukeboxes
+  '/api/v1/jukebox/{jukeboxId}/links':
+    get:
+      operationId: JukeboxController_getJukeboxLinks
+      parameters:
+        - name: jukeboxId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SpotifyLinkDto'
       tags:
         - jukeboxes
 components:
@@ -994,6 +1014,8 @@ components:
     JukeboxDto:
       type: object
       properties:
+        id:
+          type: string
         name:
           type: string
         clubId:
@@ -1005,6 +1027,7 @@ components:
         activeSpotifyLink:
           $ref: '#/components/schemas/SpotifyLinkDto'
       required:
+        - id
         - name
         - clubId
         - spotifyLinks

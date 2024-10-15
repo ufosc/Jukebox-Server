@@ -10,5 +10,6 @@ import { SpotifyService } from './spotify.service'
   controllers: [SpotifyController],
   providers: [SpotifyService, AxiosProvider, NetworkService],
   imports: [MongooseModule.forFeature([{ name: SpotifyLink.name, schema: SpotifyLinkSchema }])],
+  exports: [SpotifyService]
 })
 export class SpotifyModule {}

@@ -2,7 +2,7 @@
 
 set -e
 
-cd api
+cd ./proxy/api
 
 npx openapi-merge-cli
 npx redocly build-docs --output=index.html

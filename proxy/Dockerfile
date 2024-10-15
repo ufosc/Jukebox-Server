@@ -22,6 +22,6 @@ USER nginx
 
 EXPOSE 8080
 VOLUME /vol/client
-VOLUME /vol/apidoc
+# VOLUME /vol/apidoc
 
 CMD ["/entrypoint.sh"]

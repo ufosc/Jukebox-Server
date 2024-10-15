@@ -16,7 +16,7 @@ const bootstrap = async () => {
   app.enableCors({ origin: [] })
   const document = generateSwaggerDocument(app)
 
-  SwaggerModule.setup('/api/docs/', app, document, { yamlDocumentUrl: '/api/v1/schema/jukebox' })
+  SwaggerModule.setup('/api/docs/', app, document, { yamlDocumentUrl: '/api/v1/schema/jukebox/' })
 
   await app.listen(PORT)
 }

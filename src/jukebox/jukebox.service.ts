@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { SpotifyLinkDto } from '../spotify/dto/spotify-link.dto'
+import { SpotifyLink } from '../spotify/schemas/spotify-link.schema'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { Jukebox } from './schemas/jukebox.schema'
@@ -41,6 +43,25 @@ export class JukeboxService {
     if (!jukebox) {
       throw new NotFoundException(`Jukebox with id ${id} not found`)
     }
+
+    return jukebox
+  }
+
+  async getJukeboxSpotifyLinks(jukeboxId: string) {
+    const jukebox = await this.findOne(jukeboxId)
+    return jukebox.spotifyLinks
+  }
+
+  async addSpotifyLinkToJukebox(jukeboxId: string, spotifyLink: SpotifyLinkDto) {
+    const jukebox = await this.findOne(jukeboxId)
+
+    if (jukebox.spotifyLinks) {
+      // FIXME: This does not properly add to list
+      jukebox.spotifyLinks.push(spotifyLink as SpotifyLink)
+    } else {
+      jukebox.spotifyLinks = [spotifyLink as SpotifyLink]
+    }
+    jukebox.save()
 
     return jukebox
   }

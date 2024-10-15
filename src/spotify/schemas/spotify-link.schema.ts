@@ -3,6 +3,8 @@ import { Document, HydratedDocument } from 'mongoose'
 
 @Schema()
 export class SpotifyLink extends Document {
+  id: string
+
   @Prop()
   accessToken: string
 

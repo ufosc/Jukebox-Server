@@ -80,6 +80,10 @@ export class SpotifyService {
     return this.spotifyLinkModel.find({ userId }).exec()
   }
 
+  public async findOneUserLink(userId: string, spotifyEmail: string) {
+    return this.spotifyLinkModel.findOne({ userId, spotifyEmail }).exec()
+  }
+
   private async createLink(attrs: CreateSpotifyLinkDto) {
     const { userId, spotifyEmail, tokens } = attrs
     const link = new this.spotifyLinkModel({

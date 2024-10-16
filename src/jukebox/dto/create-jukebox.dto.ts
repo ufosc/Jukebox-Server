@@ -1,12 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger'
-import { IsString } from 'class-validator'
+import { IsNumber, IsString } from 'class-validator'
 
 export class CreateJukeboxDto {
   @ApiProperty()
-  // @IsString()
+  @IsString()
   name: string
 
   @ApiProperty()
-  // @IsString()
+  @IsNumber()
   club_id: number
 }

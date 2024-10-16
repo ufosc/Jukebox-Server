@@ -6,11 +6,11 @@ import { CurrentUser } from 'src/auth/current-user.decorator'
 import { SpotifyService } from './spotify.service'
 
 @ApiTags('spotify')
-@Controller('spotify')
+@Controller('spotify/')
 export class SpotifyController {
   constructor(protected spotifyService: SpotifyService) {}
 
-  @Get('login')
+  @Get('login/')
   @UseInterceptors(AuthInterceptor)
   login(@CurrentUser() user: IUser, @Res() res: Response, @Query() query: { redirectUri: string }) {
     const url = this.spotifyService.getSpotifyRedirectUri(user.id, query.redirectUri)
@@ -18,7 +18,7 @@ export class SpotifyController {
     return res.redirect(url)
   }
 
-  @Get('login/success')
+  @Get('login/success/')
   async loginSuccessCallback(
     @Res() res: Response,
     @Query() query: { code: string; state: string },
@@ -35,7 +35,7 @@ export class SpotifyController {
     }
   }
 
-  @Get('links')
+  @Get('links/')
   async getSpotifyLinks(@CurrentUser() user: IUser) {
     return this.spotifyService.findUserLinks(user.id)
   }

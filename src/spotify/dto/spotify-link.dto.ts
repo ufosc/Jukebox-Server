@@ -15,47 +15,27 @@ export class UpdateSpotifyLinkDto {
 }
 
 export class SpotifyLinkDto extends BaseDto {
+  @Expose()
   @ApiProperty()
   access_token: string
 
-  // @ApiProperty()
-  // refresh_token: string
-
+  @Expose()
   @ApiProperty()
   user_id: string
 
+  @Expose()
   @ApiProperty()
   spotify_email: string
 
-  // @ApiProperty()
-  // expires_in: number
+  expires_in: number
 
+  @Expose()
   @ApiProperty()
   expires_at: Date
 
   @ApiProperty()
   token_type: string
 }
-
-// export class SpotifyLinkSummaryDto extends PartialType(SpotifyLinkDto) {
-//   @ApiProperty()
-//   access_token: string
-
-//   @ApiProperty()
-//   user_id: string
-
-//   @ApiProperty()
-//   spotify_email: string
-
-//   @ApiProperty()
-//   expires_in: number
-
-//   @ApiProperty()
-//   expires_at: Date
-
-//   @ApiProperty()
-//   token_type: string
-// }
 
 export class SpotifyLinkNestedDto {
   @Expose()

@@ -10,7 +10,7 @@ export class JukeboxDto extends BaseDto {
   id: number
 
   @Expose()
-  @ApiProperty({ type: 'string' })
+  @ApiProperty()
   name: string
 
   @Expose()

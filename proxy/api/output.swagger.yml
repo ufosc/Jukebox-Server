@@ -646,7 +646,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
+                  $ref: '#/components/schemas/SpotifyLink'
       tags:
         - spotify
   /api/v1/jukebox/jukeboxes:
@@ -690,7 +690,7 @@ paths:
           required: true
           in: path
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: ''
@@ -707,7 +707,7 @@ paths:
           required: true
           in: path
           schema:
-            type: string
+            type: number
       requestBody:
         required: true
         content:
@@ -730,7 +730,7 @@ paths:
           required: true
           in: path
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: ''
@@ -740,24 +740,28 @@ paths:
                 $ref: '#/components/schemas/JukeboxDto'
       tags:
         - jukeboxes
-  '/api/v1/jukebox/{jukeboxId}/links':
-    get:
-      operationId: JukeboxController_getJukeboxLinks
+  '/api/v1/jukebox/{jukebox_id}/links':
+    post:
+      operationId: JukeboxController_addLinkToJukebox
       parameters:
-        - name: jukeboxId
+        - name: jukebox_id
           required: true
           in: path
           schema:
-            type: string
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddJukeboxLinkDto'
       responses:
-        '200':
+        '201':
           description: ''
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/SpotifyLinkDto'
+                $ref: '#/components/schemas/SpotifyLinkDto'
       tags:
         - jukeboxes
 components:
@@ -978,70 +982,176 @@ components:
         - id
         - name
         - role
+    Jukebox:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        club_id:
+          type: number
+        spotify_link_assignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/JukeboxSpotifyLinkAssignment'
+      required:
+        - id
+        - name
+        - club_id
+        - spotify_link_assignments
+    SpotifyLink:
+      type: object
+      properties:
+        id:
+          type: number
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        user_id:
+          type: string
+        spotify_email:
+          type: string
+        expires_in:
+          type: number
+        expires_at:
+          format: date-time
+          type: string
+        token_type:
+          type: string
+        jukebox_assignments:
+          type: array
+          items:
+            $ref: '#/components/schemas/JukeboxSpotifyLinkAssignment'
+      required:
+        - id
+        - access_token
+        - refresh_token
+        - user_id
+        - spotify_email
+        - expires_in
+        - expires_at
+        - token_type
+        - jukebox_assignments
+    JukeboxSpotifyLinkAssignment:
+      type: object
+      properties:
+        jukebox_id:
+          type: number
+        jukebox:
+          $ref: '#/components/schemas/Jukebox'
+        spotify_link_id:
+          type: number
+        spotify_link:
+          $ref: '#/components/schemas/SpotifyLink'
+        active:
+          type: boolean
+      required:
+        - jukebox_id
+        - jukebox
+        - spotify_link_id
+        - spotify_link
+        - active
     CreateJukeboxDto:
       type: object
       properties:
         name:
           type: string
-        clubId:
-          type: string
+        club_id:
+          type: number
       required:
         - name
-        - clubId
+        - club_id
+    SpotifyLinkNestedDto:
+      type: object
+      properties:
+        spotify_email:
+          type: string
+      required:
+        - spotify_email
     SpotifyLinkDto:
       type: object
       properties:
-        accessToken:
-          type: string
-        userId:
-          type: string
-        spotifyEmail:
-          type: string
-        expiresIn:
+        id:
           type: number
-        expiresAt:
+          readOnly: true
+        created_at:
           format: date-time
           type: string
-        tokenType:
+          readOnly: true
+        updated_at:
+          format: date-time
           type: string
+          readOnly: true
+        access_token:
+          type: string
+        user_id:
+          type: string
+        spotify_email:
+          type: string
+        expires_at:
+          format: date-time
+          type: string
+        token_type:
+          type: string
+        expires_in:
+          type: number
       required:
-        - accessToken
-        - userId
-        - spotifyEmail
-        - expiresIn
-        - expiresAt
-        - tokenType
+        - id
+        - created_at
+        - updated_at
+        - access_token
+        - user_id
+        - spotify_email
+        - expires_at
+        - token_type
+        - expires_in
     JukeboxDto:
       type: object
       properties:
         id:
+          type: number
+          readOnly: true
+        created_at:
+          format: date-time
           type: string
+          readOnly: true
+        updated_at:
+          format: date-time
+          type: string
+          readOnly: true
         name:
           type: string
-        clubId:
-          type: string
-        spotifyLinks:
+        club_id:
+          type: number
+        spotify_links:
           type: array
           items:
-            $ref: '#/components/schemas/SpotifyLinkDto'
-        activeSpotifyLink:
+            $ref: '#/components/schemas/SpotifyLinkNestedDto'
+        active_spotify_link:
           $ref: '#/components/schemas/SpotifyLinkDto'
       required:
         - id
+        - created_at
+        - updated_at
         - name
-        - clubId
-        - spotifyLinks
+        - club_id
+        - spotify_links
     UpdateJukeboxDto:
       type: object
       properties:
         name:
           type: string
-        clubId:
+        active_spotify_link:
+          $ref: '#/components/schemas/SpotifyLinkNestedDto'
+    AddJukeboxLinkDto:
+      type: object
+      properties:
+        spotifyEmail:
           type: string
-        activeSpotifyLink:
-          $ref: '#/components/schemas/SpotifyLinkDto'
       required:
-        - activeSpotifyLink
+        - spotifyEmail
   securitySchemes:
     basicAuth:
       type: http

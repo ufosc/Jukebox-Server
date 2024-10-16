@@ -21,33 +21,33 @@ import { JukeboxService } from './jukebox.service'
 
 // @Serialize(JukeboxDto)
 @ApiTags('jukeboxes')
-@Controller('jukebox')
+@Controller('jukebox/')
 export class JukeboxController {
   constructor(
     private readonly jukeboxService: JukeboxService,
     private spotifyService: SpotifyService,
   ) {}
 
-  @Post('/jukeboxes')
+  @Post('jukeboxes/')
   async create(@Body() createJukeboxDto: CreateJukeboxDto): Promise<JukeboxDto> {
     console.log('Create jbx body:', createJukeboxDto)
     const jbx = await this.jukeboxService.create(createJukeboxDto)
     return JukeboxDto.serialize(jbx)
   }
 
-  @Get('jukeboxes')
+  @Get('jukeboxes/')
   async findAll(): Promise<JukeboxDto[]> {
     const jbxs = await this.jukeboxService.findAll()
     return jbxs.map((jbx) => JukeboxDto.serialize(jbx))
   }
 
-  @Get('jukeboxes/:id')
+  @Get('jukeboxes/:id/')
   async findOne(@Param('id') id: number): Promise<JukeboxDto> {
     const jbx = await this.jukeboxService.findOne(id)
     return JukeboxDto.serialize(jbx)
   }
 
-  @Patch('jukeboxes/:id')
+  @Patch('jukeboxes/:id/')
   async update(
     @Param('id') id: number,
     @Body() updateJukeboxDto: UpdateJukeboxDto,
@@ -56,7 +56,7 @@ export class JukeboxController {
     return JukeboxDto.serialize(jbx)
   }
 
-  @Delete('jukeboxes/:id')
+  @Delete('jukeboxes/:id/')
   async remove(@Param('id') id: number): Promise<JukeboxDto> {
     const jbx = await this.jukeboxService.remove(id)
     return JukeboxDto.serialize(jbx)
@@ -67,7 +67,7 @@ export class JukeboxController {
   //   return this.jukeboxService.getJukeboxSpotifyLinks(jukeboxId)
   // }
 
-  @Post('/:jukebox_id/links')
+  @Post('/:jukebox_id/links/')
   async addLinkToJukebox(
     @CurrentUser() user: IUser,
     @Param('jukebox_id') jukeboxId: number,

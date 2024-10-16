@@ -34,19 +34,6 @@ services:
       - ./package.json:/app/package.json
     command: npm run start:dev
 
-  # mongodb:
-  #   image: mongo:6.0.9
-  #   restart: always
-  #   container_name: mongo-jbx
-  #   ports:
-  #     - 27017:27017
-  #   volumes:
-  #     - data:/data/db
-  #   environment:
-  #     - MONGO_INITDB_ROOT_USERNAME=root
-  #     - MONGO_INITDB_ROOT_PASSWORD=changeme
-  #   command: mongod --quiet --logpath /dev/null --bind_ip_all
-    
   postgres:
     image: postgres:13-alpine
     container_name: jbx-dev-db

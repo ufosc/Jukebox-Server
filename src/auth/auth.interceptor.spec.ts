@@ -1,4 +1,4 @@
-import { AxiosStatic } from 'axios'
+import type { AxiosStatic } from 'axios'
 import { NetworkService } from 'src/network/network.service'
 import { AuthInterceptor } from './auth.interceptor'
 

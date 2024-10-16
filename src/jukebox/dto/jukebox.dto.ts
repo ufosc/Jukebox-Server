@@ -30,11 +30,12 @@ export class JukeboxDto extends BaseDto {
       ...super.serialize(entity),
       name: entity.name,
       club_id: entity.club_id,
-      spotify_links: entity.spotify_link_assignments?.map((assignment) => ({
-        spotify_email: assignment.spotify_link.spotify_email,
-      })) ?? [],
+      spotify_links:
+        entity.spotify_link_assignments?.map((assignment) => ({
+          spotify_email: assignment.spotify_link.spotify_email,
+        })) ?? [],
       active_spotify_link: entity.spotify_link_assignments?.find((assignment) => assignment.active)
-      ?.spotify_link,
+        ?.spotify_link,
     }
   }
 }

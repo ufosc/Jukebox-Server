@@ -30,7 +30,7 @@ export class JukeboxController {
 
   @Post('/jukeboxes')
   async create(@Body() createJukeboxDto: CreateJukeboxDto): Promise<JukeboxDto> {
-    console.log("Create jbx body:", createJukeboxDto)
+    console.log('Create jbx body:', createJukeboxDto)
     const jbx = await this.jukeboxService.create(createJukeboxDto)
     return JukeboxDto.serialize(jbx)
   }

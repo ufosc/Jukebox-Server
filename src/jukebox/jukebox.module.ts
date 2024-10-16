@@ -13,6 +13,6 @@ import { JukeboxService } from './jukebox.service'
     // TypeOrmModule.forFeature([Jukebox, JukeboxSpotifyLinkAssignment]),
     SpotifyModule,
   ],
-  exports: [JukeboxService]
+  exports: [JukeboxService],
 })
 export class JukeboxModule {}

@@ -11,7 +11,7 @@ import {
 import { ApiTags } from '@nestjs/swagger'
 import { Serialize } from 'src/utils'
 import { CurrentUser } from '../auth/current-user.decorator'
-import { SpotifyLinkSummaryDto } from '../spotify/dto/spotify-link.dto'
+import { SpotifyLinkDto } from '../spotify/dto/spotify-link.dto'
 import { SpotifyService } from '../spotify/spotify.service'
 import { AddJukeboxLinkDto } from './dto/add-jukebox-link.dto'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
@@ -19,7 +19,7 @@ import { JukeboxDto } from './dto/jukebox.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { JukeboxService } from './jukebox.service'
 
-@Serialize(JukeboxDto)
+// @Serialize(JukeboxDto)
 @ApiTags('jukeboxes')
 @Controller('jukebox')
 export class JukeboxController {
@@ -28,42 +28,51 @@ export class JukeboxController {
     private spotifyService: SpotifyService,
   ) {}
 
-  @Post('jukeboxes')
-  create(@Body() createJukeboxDto: CreateJukeboxDto): Promise<JukeboxDto> {
-    return this.jukeboxService.create(createJukeboxDto)
+  @Post('/jukeboxes')
+  async create(@Body() createJukeboxDto: CreateJukeboxDto): Promise<JukeboxDto> {
+    console.log("Create jbx body:", createJukeboxDto)
+    const jbx = await this.jukeboxService.create(createJukeboxDto)
+    return JukeboxDto.serialize(jbx)
   }
 
   @Get('jukeboxes')
-  findAll(): Promise<JukeboxDto[]> {
-    return this.jukeboxService.findAll()
+  async findAll(): Promise<JukeboxDto[]> {
+    const jbxs = await this.jukeboxService.findAll()
+    return jbxs.map((jbx) => JukeboxDto.serialize(jbx))
   }
 
   @Get('jukeboxes/:id')
-  findOne(@Param('id') id: string): Promise<JukeboxDto> {
-    return this.jukeboxService.findOne(id)
+  async findOne(@Param('id') id: number): Promise<JukeboxDto> {
+    const jbx = await this.jukeboxService.findOne(id)
+    return JukeboxDto.serialize(jbx)
   }
 
   @Patch('jukeboxes/:id')
-  update(@Param('id') id: string, @Body() updateJukeboxDto: UpdateJukeboxDto): Promise<JukeboxDto> {
-    return this.jukeboxService.update(id, updateJukeboxDto)
+  async update(
+    @Param('id') id: number,
+    @Body() updateJukeboxDto: UpdateJukeboxDto,
+  ): Promise<JukeboxDto> {
+    const jbx = await this.jukeboxService.update(id, updateJukeboxDto)
+    return JukeboxDto.serialize(jbx)
   }
 
   @Delete('jukeboxes/:id')
-  remove(@Param('id') id: string): Promise<JukeboxDto> {
-    return this.jukeboxService.remove(id)
+  async remove(@Param('id') id: number): Promise<JukeboxDto> {
+    const jbx = await this.jukeboxService.remove(id)
+    return JukeboxDto.serialize(jbx)
   }
 
-  @Get('/:jukeboxId/links')
-  getJukeboxLinks(@Param('jukeboxId') jukeboxId: string): Promise<SpotifyLinkSummaryDto[]> {
-    return this.jukeboxService.getJukeboxSpotifyLinks(jukeboxId)
-  }
+  // @Get('/:jukeboxId/links')
+  // getJukeboxLinks(@Param('jukeboxId') jukeboxId: number): Promise<SpotifyLinkSummaryDto[]> {
+  //   return this.jukeboxService.getJukeboxSpotifyLinks(jukeboxId)
+  // }
 
-  @Post('/:jukeboxId/links')
+  @Post('/:jukebox_id/links')
   async addLinkToJukebox(
     @CurrentUser() user: IUser,
-    @Param('jukeboxId') jukeboxId: string,
+    @Param('jukebox_id') jukeboxId: number,
     @Body() spotifyLink: AddJukeboxLinkDto,
-  ): Promise<SpotifyLinkSummaryDto> {
+  ): Promise<SpotifyLinkDto> {
     const link = await this.spotifyService.findOneUserLink(user.id, spotifyLink.spotifyEmail)
 
     if (!link) {

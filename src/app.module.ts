@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 import { APP_INTERCEPTOR } from '@nestjs/core'
-import { MongooseModule } from '@nestjs/mongoose'
 import { AppController } from './app.controller'
 import { AppGateway } from './app.gateway'
 import { AppService } from './app.service'
 import { AuthInterceptor } from './auth/auth.interceptor'
-import { MONGO_URI } from './config'
+import { DatabaseModule } from './config/database.module'
 import { JukeboxModule } from './jukebox/jukebox.module'
 import { NetworkModule } from './network/network.module'
 import { NetworkService } from './network/network.service'
@@ -17,7 +16,8 @@ import { AxiosProvider } from './utils/providers/axios.provider'
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(MONGO_URI),
+    // MongooseModule.forRoot(MONGO_URI),
+    DatabaseModule,
     SpotifyModule,
     TrackQueueModule,
     JukeboxModule,

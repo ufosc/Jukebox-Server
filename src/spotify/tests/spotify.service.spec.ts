@@ -3,7 +3,7 @@ import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 import Axios from 'axios'
 import { Model } from 'mongoose'
-import { SpotifyLink } from '../schemas/spotify-link.schema'
+import { SpotifyLink } from '../../../_deprecated_mongo/schemas/spotify-link.schema'
 import { SpotifyService } from '../spotify.service'
 
 describe('SpotifyService', () => {

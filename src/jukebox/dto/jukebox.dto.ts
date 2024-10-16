@@ -1,11 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Expose } from 'class-transformer'
-import { SpotifyLinkDto } from 'src/spotify/dto/spotify-link.dto'
+import { BaseDto } from 'src/config/dtos'
+import { SpotifyLinkDto, SpotifyLinkNestedDto } from 'src/spotify/dto/spotify-link.dto'
+import { Jukebox } from '../entities/jukebox.entity'
 
-export class JukeboxDto {
+export class JukeboxDto extends BaseDto {
   @Expose()
   @ApiProperty()
-  id: string
+  id: number
 
   @Expose()
   @ApiProperty({ type: 'string' })
@@ -13,13 +15,26 @@ export class JukeboxDto {
 
   @Expose()
   @ApiProperty()
-  clubId: string
+  club_id: number
 
   @Expose()
   @ApiProperty()
-  spotifyLinks: SpotifyLinkDto[]
+  spotify_links: SpotifyLinkNestedDto[]
 
   @Expose()
   @ApiProperty()
-  activeSpotifyLink?: SpotifyLinkDto
+  active_spotify_link?: SpotifyLinkDto
+
+  static serialize(entity: Jukebox): JukeboxDto {
+    return {
+      ...super.serialize(entity),
+      name: entity.name,
+      club_id: entity.club_id,
+      spotify_links: entity.spotify_link_assignments?.map((assignment) => ({
+        spotify_email: assignment.spotify_link.spotify_email,
+      })) ?? [],
+      active_spotify_link: entity.spotify_link_assignments?.find((assignment) => assignment.active)
+      ?.spotify_link,
+    }
+  }
 }

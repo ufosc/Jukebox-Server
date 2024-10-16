@@ -32,6 +32,12 @@ export const SPOTIFY_SCOPES = [
 
 export const PROXY_URL = process.env.PROXY_URL ?? 'http://localhost:8080'
 
+export const DB_HOST = process.env.DB_HOST
+export const DB_PORT = +(process.env.DB_PORT ?? '5432')
+export const DB_USER = process.env.DB_USER ?? 'devuser'
+export const DB_PASS = process.env.DB_PASS ?? 'devpass'
+export const DB_NAME = process.env.DB_NAME ?? 'devdatabase'
+
 // export const LOG_LEVEL = process.env.LOG_LEVEL || 'warn'
 // export const LOG_NS = process.env.LOG_NS || 'server'
 

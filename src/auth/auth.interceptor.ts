@@ -33,6 +33,5 @@ export class AuthInterceptor implements NestInterceptor {
     } catch (e) {
       throw new UnauthorizedException()
     }
-
   }
 }

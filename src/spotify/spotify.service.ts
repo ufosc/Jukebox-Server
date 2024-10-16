@@ -1,8 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
 import { SpotifyApi } from '@spotify/web-api-ts-sdk'
 import { Axios } from 'axios'
-import { Model } from 'mongoose'
 import { stringify } from 'querystring'
 import {
   SPOTIFY_CLIENT_ID,
@@ -10,19 +8,24 @@ import {
   SPOTIFY_REDIRECT_URI,
   SPOTIFY_SCOPES,
 } from 'src/config'
+import { DataSource, Repository } from 'typeorm'
 import { CreateSpotifyLinkDto, UpdateSpotifyLinkDto } from './dto/spotify-link.dto'
 import { SpotifyTokensDto } from './dto/spotify-tokens.dto'
-import { SpotifyLink } from './schemas/spotify-link.schema'
+import { SpotifyLinkEntity } from './entities/spotify-link.entity'
 
 @Injectable()
 export class SpotifyService {
+  private repo: Repository<SpotifyLinkEntity>
   constructor(
-    @InjectModel(SpotifyLink.name) private spotifyLinkModel: Model<SpotifyLink>,
+    // @InjectModel(SpotifyLink.name) private spotifyLinkModel: Model<SpotifyLink>,
+    private datasource: DataSource,
     protected axios: Axios,
-  ) {}
+  ) {
+    this.repo = this.datasource.getRepository(SpotifyLinkEntity)
+  }
 
   private getSdk(tokens: SpotifyTokensDto) {
-    return SpotifyApi.withAccessToken(SPOTIFY_CLIENT_ID, tokens.getSnakeCase())
+    return SpotifyApi.withAccessToken(SPOTIFY_CLIENT_ID, tokens)
   }
 
   private async authenticateSpotify(code: string): Promise<SpotifyTokensDto> {
@@ -48,7 +51,14 @@ export class SpotifyService {
       throw new BadRequestException('Unable to authenticate with Spotify')
     }
 
-    return new SpotifyTokensDto(res.data)
+    const tokens: SpotifyTokensDto = {
+      access_token: res.data.access_token,
+      expires_in: res.data.expires_in,
+      refresh_token: res.data.refresh_token,
+      token_type: res.data.token_type,
+    }
+
+    return tokens
   }
 
   public getSpotifyRedirectUri(userId: string, finalRedirect?: string) {
@@ -77,28 +87,30 @@ export class SpotifyService {
   }
 
   public async findUserLinks(userId: string) {
-    return this.spotifyLinkModel.find({ userId }).exec()
+    // return this.spotifyLinkRepo.find({ userId }).exec()
+    return this.repo.findBy({ user_id: userId })
   }
 
   public async findOneUserLink(userId: string, spotifyEmail: string) {
-    return this.spotifyLinkModel.findOne({ userId, spotifyEmail }).exec()
+    return this.repo.findOneBy({ user_id: userId, spotify_email: spotifyEmail })
   }
 
-  private async createLink(attrs: CreateSpotifyLinkDto) {
-    const { userId, spotifyEmail, tokens } = attrs
-    const link = new this.spotifyLinkModel({
-      userId,
-      spotifyEmail,
-      ...tokens,
-    })
+  private async createLink(createSpotifyLinkDto: CreateSpotifyLinkDto) {
+    const { user_id: userId, spotify_email: spotifyEmail, tokens } = createSpotifyLinkDto
+    const link = this.repo.create({ user_id: userId, spotify_email: spotifyEmail, ...tokens })
+
     link.syncExpiresAt()
-    await link.save()
+    await this.repo.save(link)
 
     return link
   }
 
-  private async updateLink(id: string, attrs: UpdateSpotifyLinkDto) {
-    const link = this.spotifyLinkModel.findByIdAndUpdate(id, attrs, { new: true }).exec()
+  private async updateLink(id: number, updateSpotifyLInkDto: UpdateSpotifyLinkDto) {
+    const link = await this.repo.findOneBy({ id })
+
+    Object.assign(link, updateSpotifyLInkDto)
+
+    await this.repo.save(link)
 
     if (!link) {
       throw new BadRequestException(`Cannot find preexisting spotify account link with id ${id}`)
@@ -108,14 +120,14 @@ export class SpotifyService {
   }
 
   private async updateOrCreateLink(userId: string, spotifyEmail: string, tokens: SpotifyTokensDto) {
-    const existing = await this.spotifyLinkModel.findOne({ userId, spotifyEmail })
+    const existing = await this.repo.findOneBy({ user_id: userId, spotify_email: spotifyEmail })
 
     if (!existing) {
-      await this.createLink({ userId, spotifyEmail, tokens })
+      await this.createLink({ user_id: userId, spotify_email: spotifyEmail, tokens })
     } else {
-      await this.updateLink(existing._id.toString(), {
-        accessToken: tokens.accessToken,
-        expiresIn: tokens.expiresIn,
+      await this.updateLink(existing.id, {
+        access_token: tokens.access_token,
+        expires_in: tokens.expires_in,
       })
     }
   }

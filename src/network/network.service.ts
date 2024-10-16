@@ -23,24 +23,23 @@ export class NetworkService {
       await sleep(1000)
     }
 
-    const res = await this.axios
-      .request({
-        method: method || 'GET',
-        url,
-        headers: {
-          Authorization: `Token ${this.token}`,
-          'Content-Type': 'application/json',
+    const res = await this.axios.request({
+      method: method || 'GET',
+      url,
+      headers: {
+        Authorization: `Token ${this.token}`,
+        'Content-Type': 'application/json',
 
-          ...config?.headers,
-        },
-        data: body,
-        ...config,
-      })
-      // .catch((error) => {
-      //   console.log('caught error:', error)
-      //   throw new
-      //   // return error.response
-      // })
+        ...config?.headers,
+      },
+      data: body,
+      ...config,
+    })
+    // .catch((error) => {
+    //   console.log('caught error:', error)
+    //   throw new
+    //   // return error.response
+    // })
 
     return {
       status: res.status,
@@ -55,9 +54,9 @@ export class NetworkService {
 
   async fetchUser(): Promise<IUser> {
     const res = await this.sendRequest(this.routes.getUser)
-    
+
     if (res.status > 299) {
-      throw new Error("Error fetching data from network")
+      throw new Error('Error fetching data from network')
     }
 
     return {

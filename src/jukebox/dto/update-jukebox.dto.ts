@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger'
-import { SpotifyLinkDto } from 'src/spotify/dto/spotify-link.dto'
+import { SpotifyLinkNestedDto } from 'src/spotify/dto/spotify-link.dto'
 import { CreateJukeboxDto } from './create-jukebox.dto'
 
 export class UpdateJukeboxDto extends PartialType(CreateJukeboxDto) {
@@ -7,5 +7,5 @@ export class UpdateJukeboxDto extends PartialType(CreateJukeboxDto) {
   name: string
 
   @ApiProperty()
-  activeSpotifyLink: SpotifyLinkDto
+  activeSpotifyLink: SpotifyLinkNestedDto
 }

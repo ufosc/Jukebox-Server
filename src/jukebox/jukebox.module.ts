@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common'
-import { MongooseModule } from '@nestjs/mongoose'
+import { TypeOrmModule } from '@nestjs/typeorm'
 import { SpotifyModule } from '../spotify/spotify.module'
+import { Jukebox, JukeboxSpotifyLinkAssignment } from './entities/jukebox.entity'
 import { JukeboxController } from './jukebox.controller'
 import { JukeboxService } from './jukebox.service'
-import { Jukebox, JukeboxSchema } from './schemas/jukebox.schema'
 
 @Module({
   controllers: [JukeboxController],
   providers: [JukeboxService],
   imports: [
-    MongooseModule.forFeature([{ name: Jukebox.name, schema: JukeboxSchema }]),
+    // MongooseModule.forFeature([{ name: Jukebox.name, schema: JukeboxSchema }]),
+    TypeOrmModule.forFeature([Jukebox, JukeboxSpotifyLinkAssignment]),
     SpotifyModule,
   ],
 })

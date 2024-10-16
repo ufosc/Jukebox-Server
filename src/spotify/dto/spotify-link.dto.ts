@@ -1,71 +1,64 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger'
 import { Expose } from 'class-transformer'
+import { BaseDto } from 'src/config/dtos'
 import { SpotifyTokensDto } from './spotify-tokens.dto'
 
-export class CreateSpotifyLinkDto {
-  userId: string
-  spotifyEmail: string
+export class CreateSpotifyLinkDto{
+  user_id: string
+  spotify_email: string
   tokens: SpotifyTokensDto
 }
 
 export class UpdateSpotifyLinkDto {
-  accessToken: string
-  expiresIn: number
+  access_token: string
+  expires_in: number
 }
 
-export class SpotifyLinkDto {
-  @Expose()
-  id: string
-
-  @Expose()
-  accessToken: string
-
-  @Expose()
-  refreshToken: string
-
-  @Expose()
-  userId: string
-
-  @Expose()
-  spotifyEmail: string
-
-  @Expose()
-  expiresIn: number
-
-  @Expose()
-  expiresAt: Date
-
-  @Expose()
-  tokenType: string
+export class SpotifyLinkDto extends BaseDto {
+  @ApiProperty()
+  access_token: string
+  
+  // @ApiProperty()
+  // refresh_token: string
+  
+  @ApiProperty()
+  user_id: string
+  
+  @ApiProperty()
+  spotify_email: string
+  
+  // @ApiProperty()
+  // expires_in: number
+  
+  @ApiProperty()
+  expires_at: Date
+  
+  @ApiProperty()
+  token_type: string
 }
 
-export class SpotifyLinkSummaryDto extends PartialType(SpotifyLinkDto) {
-  
-  @Expose()
-  @ApiProperty()
-  id: string
-  
-  @Expose()
-  @ApiProperty()
-  accessToken: string
+// export class SpotifyLinkSummaryDto extends PartialType(SpotifyLinkDto) {
+//   @ApiProperty()
+//   access_token: string
 
-  @Expose()
-  @ApiProperty()
-  userId: string
+//   @ApiProperty()
+//   user_id: string
 
-  @Expose()
-  @ApiProperty()
-  spotifyEmail: string
+//   @ApiProperty()
+//   spotify_email: string
 
-  @Expose()
-  @ApiProperty()
-  expiresIn: number
+//   @ApiProperty()
+//   expires_in: number
 
-  @Expose()
-  @ApiProperty()
-  expiresAt: Date
+//   @ApiProperty()
+//   expires_at: Date
 
+//   @ApiProperty()
+//   token_type: string
+// }
+
+export class SpotifyLinkNestedDto {
   @Expose()
   @ApiProperty()
-  tokenType: string
+  spotify_email: string
 }

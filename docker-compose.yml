@@ -20,27 +20,42 @@ services:
       - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
       - LOG_LEVEL=debug
+      - DB_HOST=jbx-dev-db
+      - DB_PORT=5432
+      - DB_USER=devuser
+      - DB_PASS=devpass
+      - DB_NAME=devdatabase
     ports:
       - 8000:8000
     depends_on:
-      - mongodb
+      - postgres
     volumes:
       - ./src:/app/src
       - ./package.json:/app/package.json
     command: npm run start:dev
 
-  mongodb:
-    image: mongo:6.0.9
-    restart: always
-    container_name: mongo-jbx
-    ports:
-      - 27017:27017
+  # mongodb:
+  #   image: mongo:6.0.9
+  #   restart: always
+  #   container_name: mongo-jbx
+  #   ports:
+  #     - 27017:27017
+  #   volumes:
+  #     - data:/data/db
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=root
+  #     - MONGO_INITDB_ROOT_PASSWORD=changeme
+  #   command: mongod --quiet --logpath /dev/null --bind_ip_all
+    
+  postgres:
+    image: postgres:13-alpine
+    container_name: jbx-dev-db
     volumes:
-      - data:/data/db
+      - jukebox-pg-data:/var/lib/postgresql/data
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=changeme
-    command: mongod --quiet --logpath /dev/null --bind_ip_all
+      - POSTGRES_DB=devdatabase
+      - POSTGRES_USER=devuser
+      - POSTGRES_PASSWORD=devpass
 
 volumes:
-  data:
+  jukebox-pg-data:

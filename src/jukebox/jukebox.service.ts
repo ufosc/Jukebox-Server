@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { SpotifyLinkEntity } from '../spotify/entities/spotify-link.entity'
+import { SpotifyLink } from '../spotify/entities/spotify-link.entity'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { Jukebox, JukeboxSpotifyLinkAssignment } from './entities/jukebox.entity'
@@ -71,7 +71,7 @@ export class JukeboxService {
     return jukebox.spotify_link_assignments.map((assignments) => assignments.spotify_link)
   }
 
-  async addSpotifyLinkToJukebox(jukeboxId: number, spotifyLink: SpotifyLinkEntity) {
+  async addSpotifyLinkToJukebox(jukeboxId: number, spotifyLink: SpotifyLink) {
     const jukebox = await this.findOne(jukeboxId)
 
     this.assignmentRepo.create({ jukebox, spotify_link: spotifyLink })

@@ -10,8 +10,9 @@ import { JukeboxService } from './jukebox.service'
   providers: [JukeboxService],
   imports: [
     // MongooseModule.forFeature([{ name: Jukebox.name, schema: JukeboxSchema }]),
-    TypeOrmModule.forFeature([Jukebox, JukeboxSpotifyLinkAssignment]),
+    // TypeOrmModule.forFeature([Jukebox, JukeboxSpotifyLinkAssignment]),
     SpotifyModule,
   ],
+  exports: [JukeboxService]
 })
 export class JukeboxModule {}

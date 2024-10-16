@@ -1,14 +1,9 @@
 import { Module } from '@nestjs/common'
-import Axios from 'axios'
+import { AxiosProvider } from 'src/utils/providers/axios.provider'
 import { NetworkService } from './network.service'
 
 @Module({
-  providers: [
-    NetworkService,
-    {
-      provide: Axios.Axios,
-      useValue: Axios.create(),
-    },
-  ],
+  providers: [NetworkService, AxiosProvider],
+  exports: [NetworkService],
 })
 export class NetworkModule {}

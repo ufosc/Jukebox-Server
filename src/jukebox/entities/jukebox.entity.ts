@@ -1,5 +1,5 @@
 import { BaseEntity } from 'src/config/entities'
-import { SpotifyLinkEntity } from 'src/spotify/entities/spotify-link.entity'
+import { SpotifyLink } from 'src/spotify/entities/spotify-link.entity'
 import {
   Column,
   Entity,
@@ -37,9 +37,9 @@ export class JukeboxSpotifyLinkAssignment extends BaseEntity {
   @PrimaryColumn({ name: 'spotify_link_id' })
   spotify_link_id: number
 
-  @ManyToOne(() => SpotifyLinkEntity, (link) => link.jukebox_assignments)
+  @ManyToOne(() => SpotifyLink, (link) => link.jukebox_assignments)
   @JoinColumn({ name: 'spotify_link_id' })
-  spotify_link: SpotifyLinkEntity
+  spotify_link: SpotifyLink
 
   @Column({ default: false })
   active: boolean

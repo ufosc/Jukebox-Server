@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
 import { SpotifyApi } from '@spotify/web-api-ts-sdk'
 import { Axios } from 'axios'
 import { stringify } from 'querystring'
@@ -8,21 +9,25 @@ import {
   SPOTIFY_REDIRECT_URI,
   SPOTIFY_SCOPES,
 } from 'src/config'
-import { DataSource, Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { CreateSpotifyLinkDto, UpdateSpotifyLinkDto } from './dto/spotify-link.dto'
 import { SpotifyTokensDto } from './dto/spotify-tokens.dto'
-import { SpotifyLinkEntity } from './entities/spotify-link.entity'
+import { SpotifyLink } from './entities/spotify-link.entity'
 
 @Injectable()
 export class SpotifyService {
-  private repo: Repository<SpotifyLinkEntity>
+  // private repo: Repository<SpotifyLink>
+  // constructor(
+  //   // @InjectModel(SpotifyLink.name) private spotifyLinkModel: Model<SpotifyLink>,
+  //   private datasource: DataSource,
+  //   protected axios: Axios,
+  // ) {
+  //   this.repo = this.datasource.getRepository(SpotifyLink)
+  // }
   constructor(
-    // @InjectModel(SpotifyLink.name) private spotifyLinkModel: Model<SpotifyLink>,
-    private datasource: DataSource,
+    @InjectRepository(SpotifyLink) private repo: Repository<SpotifyLink>,
     protected axios: Axios,
-  ) {
-    this.repo = this.datasource.getRepository(SpotifyLinkEntity)
-  }
+  ) {}
 
   private getSdk(tokens: SpotifyTokensDto) {
     return SpotifyApi.withAccessToken(SPOTIFY_CLIENT_ID, tokens)

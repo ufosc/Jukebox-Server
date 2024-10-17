@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { SpotifyApi } from '@spotify/web-api-ts-sdk'
 import { Axios } from 'axios'
@@ -105,19 +105,39 @@ export class SpotifyService {
     link: { spotify_email: string } | SpotifyLink,
   ): Promise<SpotifyLink> {
     let spotifyLink: SpotifyLink
+
     if (!isSpotifyLink(link)) {
       spotifyLink = (await this.findLinkFromEmail(link.spotify_email)) as SpotifyLink
     } else {
       spotifyLink = link
     }
 
-    const sdk = this.getSdk(spotifyLink)
+    if (!spotifyLink.isExpired()) {
+      return spotifyLink
+    }
 
-    const tokens = await sdk.getAccessToken()
+    const body = new URLSearchParams({
+      grant_type: 'refresh_token',
+      refresh_token: spotifyLink.refresh_token,
+    })
+    const authBuffer = Buffer.from(SPOTIFY_CLIENT_ID + ':' + SPOTIFY_CLIENT_SECRET)
 
-    spotifyLink.access_token = tokens.access_token
-    spotifyLink.expires_in = tokens.expires_in
-    spotifyLink.expires_at = new Date(tokens.expires)
+    const res = await this.axios
+      .post('https://accounts.spotify.com/api/token', body, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: 'Basic ' + authBuffer.toString('base64'),
+        },
+      })
+      .catch((error) => {
+        console.log('Error from axios spotify:', error)
+        throw new BadRequestException(error?.response?.data?.error_description || error)
+      })
+
+    spotifyLink.access_token = res.data.access_token
+    spotifyLink.expires_in = res.data.expires_in
+    spotifyLink.syncExpiresAt()
+    Logger.debug('Refreshed spotify token.')
 
     await spotifyLink.save()
     return spotifyLink

@@ -15,6 +15,7 @@ coverage/
 _depricated/
 _deprecated/
 _deprecated_*/
+generated/
 
 ### Terraform ###
 # Local .terraform directories

@@ -13,3 +13,5 @@
 !packages/
 !src/
 !nest-cli.json
+!api/
+!proxy/

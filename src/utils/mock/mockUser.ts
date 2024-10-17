@@ -1,5 +1,5 @@
 export const mockUser: IUser = {
-  id: 'abc123',
+  id: 0,
   email: 'user@example.com',
   firstName: 'John',
   lastName: 'Doe',

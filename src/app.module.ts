@@ -1,23 +1,34 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
-import { MongooseModule } from '@nestjs/mongoose'
-import { AppController } from './app.controller'
+import { APP_INTERCEPTOR } from '@nestjs/core'
 import { AppGateway } from './app.gateway'
 import { AppService } from './app.service'
-import { MONGO_URI } from './config'
+import { AuthInterceptor } from './auth/auth.interceptor'
+import { DatabaseModule } from './config/database.module'
+import { JukeboxModule } from './jukebox/jukebox.module'
+import { NetworkModule } from './network/network.module'
 import { SpotifyModule } from './spotify/spotify.module'
 import { TrackQueueModule } from './track-queue/track-queue.module'
-import { JukeboxModule } from './jukebox/jukebox.module'
+import { AxiosProvider } from './utils/providers/axios.provider'
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(MONGO_URI),
+    // MongooseModule.forRoot(MONGO_URI),
+    // TypeOrmModule.forRoot(),
+    DatabaseModule,
     SpotifyModule,
     TrackQueueModule,
     JukeboxModule,
+    NetworkModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, AppGateway],
+  // controllers: [AppController],
+  providers: [
+    AppService,
+    AppGateway,
+    AxiosProvider,
+    // NetworkService,
+    { provide: APP_INTERCEPTOR, useClass: AuthInterceptor },
+  ],
 })
 export class AppModule {}

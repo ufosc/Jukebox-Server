@@ -7,11 +7,13 @@ upstream websocket {
   server "$WEBSOCKET_URI";
 }
 
+include /etc/nginx/conf.d/includes/club-admin.conf;
 
 server {
   listen 8080;
   
   add_header Access-Control-Allow-Origin *;
+  # proxy_set_header Access-Control-Allow-Origin *;
   add_header Access-Control-Allow-Headers *;
   add_header Access-Control-Allow-Methods *;
   add_header Cross-Origin-Opener-Policy "unsafe-none";
@@ -33,7 +35,7 @@ server {
     proxy_pass_header Authorization;
   }
   
-  location ~* ^/api/v[0-9]/docs/jukebox {
+  location ~* ^/api/v[0-9]/(docs|schema)/jukebox {
     proxy_pass http://apiserver;
     
     proxy_set_header Host "$host:$server_port";
@@ -66,7 +68,18 @@ server {
     include /etc/nginx/uwsgi_params;
   }
   
-
+  location /api/docs {
+    # index index.html;
+    # root /vol/apidoc;
+    alias /vol/apidoc;
+    
+    add_header Cache-Control no-cache;
+    expires 0;
+    
+    index index.html index.htm;
+    try_files $uri $uri/ index.html;
+    error_page 404 =200 /index.html;
+  }
   
   location /socket.io {
     # Basic config: https://socket.io/docs/v4/reverse-proxy/
@@ -87,7 +100,7 @@ server {
     root /vol/client;
     index index.html index.htm;
     
-    # try_files $uri $uri/ index.html;
+    try_files $uri $uri/ /index.html /vol/apidoc/;
     error_page 404 =200 /index.html;
   }
   

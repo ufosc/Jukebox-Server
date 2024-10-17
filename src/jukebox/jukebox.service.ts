@@ -8,14 +8,6 @@ import { Jukebox, JukeboxSpotifyLinkAssignment } from './entities/jukebox.entity
 
 @Injectable()
 export class JukeboxService {
-  // constructor(@InjectModel(Jukebox.name) private jukeboxModel: Model<Jukebox>) {}
-  // private repo: Repository<Jukebox>
-  // private assignmentRepo: Repository<JukeboxSpotifyLinkAssignment>
-
-  // constructor(private dataSource: DataSource) {
-  //   this.repo = this.dataSource.getRepository(Jukebox)
-  //   this.assignmentRepo = this.dataSource.getRepository(JukeboxSpotifyLinkAssignment)
-  // }
   constructor(
     @InjectRepository(Jukebox) private repo: Repository<Jukebox>,
     @InjectRepository(JukeboxSpotifyLinkAssignment)
@@ -28,11 +20,16 @@ export class JukeboxService {
   }
 
   findAll() {
-    return this.repo.find()
+    return this.repo.find({
+      relations: ['spotify_link_assignments', 'spotify_link_assignments.spotify_link'],
+    })
   }
 
   async findOne(id: number) {
-    const jukebox = await this.repo.findOneBy({ id })
+    const jukebox = await this.repo.findOne({
+      where: { id },
+      relations: ['spotify_link_assignments', 'spotify_link_assignments.spotify_link'],
+    })
     if (!jukebox) {
       throw new NotFoundException('Jukebox not found')
     }
@@ -42,12 +39,38 @@ export class JukeboxService {
 
   async update(id: number, updateJukeboxDto: UpdateJukeboxDto) {
     const jukebox = await this.findOne(id)
+    const spotifyEmail = updateJukeboxDto.active_spotify_link.spotify_email
 
     if (!jukebox) {
       throw new NotFoundException(`Jukebox with id ${id} not found`)
     }
 
-    Object.assign(jukebox, updateJukeboxDto)
+    if ('name' in updateJukeboxDto) {
+      jukebox.name = updateJukeboxDto.name
+    }
+
+    if ('active_spotify_link' in updateJukeboxDto) {
+      const assignment = jukebox.spotify_link_assignments.find(
+        (a) => a.spotify_link.spotify_email === spotifyEmail,
+      )
+
+      if (!assignment) {
+        throw new NotFoundException(
+          `Unable to find a linked Spotify account with email ${spotifyEmail}`,
+        )
+      }
+
+      const deactivateAssignments = jukebox.spotify_link_assignments.filter((a) => a.active)
+
+      for (const dAssignment of deactivateAssignments) {
+        dAssignment.active = false
+        await this.assignmentRepo.save(dAssignment)
+      }
+
+      assignment.active = true
+      this.assignmentRepo.save(assignment)
+    }
+
     this.repo.save(jukebox)
 
     return jukebox
@@ -74,8 +97,23 @@ export class JukeboxService {
   async addSpotifyLinkToJukebox(jukeboxId: number, spotifyLink: SpotifyLink) {
     const jukebox = await this.findOne(jukeboxId)
 
-    this.assignmentRepo.create({ jukebox, spotify_link: spotifyLink })
+    const assignment = this.assignmentRepo.create({
+      jukebox_id: jukebox.id,
+      spotify_link_id: spotifyLink.id,
+    })
+    await this.assignmentRepo.save(assignment)
 
     return jukebox
+  }
+
+  async getJukeboxActiveSpotifyLink(jukeboxId: number): Promise<SpotifyLink | undefined> {
+    const jukebox = await this.findOne(jukeboxId)
+    const assignment = jukebox.spotify_link_assignments.find((lnk) => lnk.active)
+
+    if (!assignment) {
+      return
+    }
+
+    return assignment.spotify_link
   }
 }

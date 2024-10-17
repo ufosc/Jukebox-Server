@@ -4,7 +4,7 @@ import { BaseDto } from 'src/config/dtos'
 import { SpotifyTokensDto } from './spotify-tokens.dto'
 
 export class CreateSpotifyLinkDto {
-  user_id: string
+  user_id: number
   spotify_email: string
   tokens: SpotifyTokensDto
 }
@@ -21,7 +21,7 @@ export class SpotifyLinkDto extends BaseDto {
 
   @Expose()
   @ApiProperty()
-  user_id: string
+  user_id: number
 
   @Expose()
   @ApiProperty()

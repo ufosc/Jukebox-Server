@@ -35,11 +35,6 @@ export class NetworkService {
       data: body,
       ...config,
     })
-    // .catch((error) => {
-    //   console.log('caught error:', error)
-    //   throw new
-    //   // return error.response
-    // })
 
     return {
       status: res.status,
@@ -60,9 +55,9 @@ export class NetworkService {
     }
 
     return {
+      id: +res.data.id,
       email: res.data.email ?? '',
       firstName: res.data.first_name,
-      id: res.data.id,
       lastName: res.data.last_name,
     }
   }

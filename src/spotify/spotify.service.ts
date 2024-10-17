@@ -12,25 +12,22 @@ import {
 import { Repository } from 'typeorm'
 import { CreateSpotifyLinkDto, UpdateSpotifyLinkDto } from './dto/spotify-link.dto'
 import { SpotifyTokensDto } from './dto/spotify-tokens.dto'
-import { SpotifyLink } from './entities/spotify-link.entity'
+import { isSpotifyLink, SpotifyLink } from './entities/spotify-link.entity'
 
 @Injectable()
 export class SpotifyService {
-  // private repo: Repository<SpotifyLink>
-  // constructor(
-  //   // @InjectModel(SpotifyLink.name) private spotifyLinkModel: Model<SpotifyLink>,
-  //   private datasource: DataSource,
-  //   protected axios: Axios,
-  // ) {
-  //   this.repo = this.datasource.getRepository(SpotifyLink)
-  // }
   constructor(
     @InjectRepository(SpotifyLink) private repo: Repository<SpotifyLink>,
     protected axios: Axios,
   ) {}
 
   private getSdk(tokens: SpotifyTokensDto) {
-    return SpotifyApi.withAccessToken(SPOTIFY_CLIENT_ID, tokens)
+    return SpotifyApi.withAccessToken(SPOTIFY_CLIENT_ID, {
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
+      expires_in: tokens.expires_in,
+      token_type: tokens.token_type,
+    })
   }
 
   private async authenticateSpotify(code: string): Promise<SpotifyTokensDto> {
@@ -66,7 +63,7 @@ export class SpotifyService {
     return tokens
   }
 
-  public getSpotifyRedirectUri(userId: string, finalRedirect?: string) {
+  public getSpotifyRedirectUri(userId: number, finalRedirect?: string) {
     const state = JSON.stringify({ userId, finalRedirect })
     const url =
       'https://accounts.spotify.com/authorize?' +
@@ -81,7 +78,7 @@ export class SpotifyService {
     return url
   }
 
-  public async handleAuthCode(userId: string, code: string) {
+  public async handleAuthCode(userId: number, code: string) {
     const tokens = await this.authenticateSpotify(code)
     const sdk = this.getSdk(tokens)
     const profile = await sdk.currentUser.profile()
@@ -91,13 +88,39 @@ export class SpotifyService {
     return profile
   }
 
-  public async findUserLinks(userId: string) {
-    // return this.spotifyLinkRepo.find({ userId }).exec()
-    return this.repo.findBy({ user_id: userId })
+  // TODO: Implement not found error, should be implemented in service or controller?
+  public async findUserLinks(userId: number) {
+    return await this.repo.findBy({ user_id: userId })
   }
 
-  public async findOneUserLink(userId: string, spotifyEmail: string) {
-    return this.repo.findOneBy({ user_id: userId, spotify_email: spotifyEmail })
+  public async findOneUserLink(userId: number, spotifyEmail: string) {
+    return await this.repo.findOneBy({ user_id: userId, spotify_email: spotifyEmail })
+  }
+
+  private async findLinkFromEmail(spotifyEmail: string) {
+    return await this.repo.findOneBy({ spotify_email: spotifyEmail })
+  }
+
+  public async refreshSpotifyLink(
+    link: { spotify_email: string } | SpotifyLink,
+  ): Promise<SpotifyLink> {
+    let spotifyLink: SpotifyLink
+    if (!isSpotifyLink(link)) {
+      spotifyLink = (await this.findLinkFromEmail(link.spotify_email)) as SpotifyLink
+    } else {
+      spotifyLink = link
+    }
+
+    const sdk = this.getSdk(spotifyLink)
+
+    const tokens = await sdk.getAccessToken()
+
+    spotifyLink.access_token = tokens.access_token
+    spotifyLink.expires_in = tokens.expires_in
+    spotifyLink.expires_at = new Date(tokens.expires)
+
+    await spotifyLink.save()
+    return spotifyLink
   }
 
   private async createLink(createSpotifyLinkDto: CreateSpotifyLinkDto) {
@@ -124,7 +147,7 @@ export class SpotifyService {
     return link
   }
 
-  private async updateOrCreateLink(userId: string, spotifyEmail: string, tokens: SpotifyTokensDto) {
+  private async updateOrCreateLink(userId: number, spotifyEmail: string, tokens: SpotifyTokensDto) {
     const existing = await this.repo.findOneBy({ user_id: userId, spotify_email: spotifyEmail })
 
     if (!existing) {
@@ -135,5 +158,12 @@ export class SpotifyService {
         expires_in: tokens.expires_in,
       })
     }
+  }
+
+  public async deleteLink(id: number) {
+    const link = await this.repo.findOneBy({ id })
+    await link.remove()
+
+    return link
   }
 }

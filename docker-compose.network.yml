@@ -28,6 +28,7 @@ services:
       - 9000:9000
     depends_on:
       - postgres
+      - pgadmin
       - kafka
     volumes:
       - ./src:/app/src
@@ -67,6 +68,24 @@ services:
       - POSTGRES_DB=devdatabase
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=devpass
+    networks:
+      - cluster
+      
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: jbx-netork-pgadmin
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=changeme
+      # - PGADMIN_SERVER_MODE=True
+      - PGADMIN_CONFIG_DATABASE_URI="postgresql://devuser:devpass@jbx-network-db:5432/devdatabase"
+      # - PGADMIN_SQLITE_PATH='/var/lib/sqlite'
+      
+    volumes:
+      - pgadmin-network-data:/var/lib/pgadmin
     networks:
       - cluster
 
@@ -124,6 +143,7 @@ volumes:
   jukebox-network-pg-data:
   club-static:
     name: club-static
+  pgadmin-network-data:
 
 networks:
   cluster:

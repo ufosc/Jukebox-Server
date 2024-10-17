@@ -14,7 +14,7 @@ export class SpotifyLink extends BaseEntity {
   refresh_token: string
 
   @Column()
-  user_id: string
+  user_id: number
 
   @Column()
   spotify_email: string
@@ -38,4 +38,8 @@ export class SpotifyLink extends BaseEntity {
   syncExpiresAt() {
     this.expires_at = new Date(Date.now() + this.expires_in * 1000)
   }
+}
+
+export const isSpotifyLink = (obj: any): obj is SpotifyLink => {
+  return Object.keys(obj).includes('id')
 }

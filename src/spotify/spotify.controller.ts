@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Res, UseInterceptors } from '@nestjs/common'
+import { Controller, Delete, Get, Param, Query, Res, UseInterceptors } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 import { AuthInterceptor } from 'src/auth/auth.interceptor'
@@ -38,5 +38,11 @@ export class SpotifyController {
   @Get('links/')
   async getSpotifyLinks(@CurrentUser() user: IUser) {
     return this.spotifyService.findUserLinks(user.id)
+  }
+
+  @Delete('links/:id/')
+  async deleteSpotifyLink(@CurrentUser() user: IUser, @Param('id') id: number) {
+    const link = await this.spotifyService.deleteLink(id)
+    return link
   }
 }

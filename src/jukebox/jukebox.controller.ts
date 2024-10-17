@@ -9,7 +9,6 @@ import {
   Post,
 } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
-import { Serialize } from 'src/utils'
 import { CurrentUser } from '../auth/current-user.decorator'
 import { SpotifyLinkDto } from '../spotify/dto/spotify-link.dto'
 import { SpotifyService } from '../spotify/spotify.service'
@@ -19,7 +18,6 @@ import { JukeboxDto } from './dto/jukebox.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { JukeboxService } from './jukebox.service'
 
-// @Serialize(JukeboxDto)
 @ApiTags('jukeboxes')
 @Controller('jukebox/')
 export class JukeboxController {
@@ -30,7 +28,6 @@ export class JukeboxController {
 
   @Post('jukeboxes/')
   async create(@Body() createJukeboxDto: CreateJukeboxDto): Promise<JukeboxDto> {
-    console.log('Create jbx body:', createJukeboxDto)
     const jbx = await this.jukeboxService.create(createJukeboxDto)
     return JukeboxDto.serialize(jbx)
   }
@@ -62,10 +59,10 @@ export class JukeboxController {
     return JukeboxDto.serialize(jbx)
   }
 
-  // @Get('/:jukeboxId/links')
-  // getJukeboxLinks(@Param('jukeboxId') jukeboxId: number): Promise<SpotifyLinkSummaryDto[]> {
-  //   return this.jukeboxService.getJukeboxSpotifyLinks(jukeboxId)
-  // }
+  @Get('/:jukebox_id/links/')
+  getJukeboxLinks(@Param('jukebox_id') jukeboxId: number): Promise<SpotifyLinkDto[]> {
+    return this.jukeboxService.getJukeboxSpotifyLinks(jukeboxId)
+  }
 
   @Post('/:jukebox_id/links/')
   async addLinkToJukebox(
@@ -81,8 +78,16 @@ export class JukeboxController {
       )
     }
 
-    this.jukeboxService.addSpotifyLinkToJukebox(jukeboxId, link)
+    await this.jukeboxService.addSpotifyLinkToJukebox(jukeboxId, link)
 
     return link
+  }
+
+  @Get('/:jukebox_id/active-link/')
+  async refreshActiveJukeboxLink(@Param('jukebox_id') jukeboxId: number) {
+    const link = await this.jukeboxService.getJukeboxActiveSpotifyLink(jukeboxId)
+    const refreshed = await this.spotifyService.refreshSpotifyLink(link)
+
+    return refreshed
   }
 }

@@ -27,7 +27,8 @@ module.exports = {
     '@typescript-eslint/space-before-function-paren': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'prefer-const': 'warn',
-    'prettier/prettier': 'warn',
+    // 'prettier/prettier': 'warn',
+    'prettier/prettier': ['warn', { endOfLine: 'auto' }],
     'prefer-arrow-functions/prefer-arrow-functions': [
       'warn',
       {

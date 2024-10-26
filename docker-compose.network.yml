@@ -3,9 +3,9 @@ services:
     restart: always
     build:
       context: .
-      # dockerfile: ./server.Dockerfile
-      dockerfile: ./server/Dockerfile
     container_name: server-jbx
+    networks:
+      - cluster
     environment:
       - NODE_ENV=network
       - PORT=9000
@@ -18,49 +18,77 @@ services:
       - BASE_URL=http://localhost:8080
       - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
+      - PROXY_URL=http://proxy:8080
+      - DB_HOST=jbx-network-db
+      - DB_PORT=5432
+      - DB_USER=devuser
+      - DB_PASS=devpass
+      - DB_NAME=devdatabase
     ports:
       - 9000:9000
     depends_on:
-      - mongodb
+      - postgres
+      - pgadmin
       - kafka
     volumes:
-      - ./server:/app/server
-      - ./packages:/app/packages
-    networks:
-      - cluster
-    command: npm run dev:server
+      - ./src:/app/src
+      - ./package.json:/app/package.json
+      - ./generated:/app/generated
+      # - api-spec:/app/generated
+    command: npm run start:network
 
   proxy:
     build:
       context: ./proxy/
     ports:
       - 8080:8080
+      - 8081:8081
     networks:
       - cluster
     depends_on:
       - server
+
     volumes:
       - client-dist:/vol/client
+      - club-static:/vol/static
+      - ./proxy/api:/vol/apispec
     environment:
       - SERVER_URI=server-jbx:9000
-      - WEBSOCKET_URI=websocket-jbx:9001
-    attach: false
+      - WEBSOCKET_URI=server-jbx:9000
+      - CLUB_MANAGER_URI=club-app-network:9000
 
-  mongodb:
-    image: mongo:6.0.9
-    restart: always
-    container_name: mongo-network-jbx
-    ports:
-      - 27017:27017
+    # attach: false
+
+  postgres:
+    image: postgres:13-alpine
+    container_name: jbx-network-db
     volumes:
-      - mongo-data:/data/db
+      - jukebox-network-pg-data:/var/lib/postgresql/data
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=changeme
-    command: mongod --quiet --logpath /dev/null --bind_ip_all
+      - POSTGRES_DB=devdatabase
+      - POSTGRES_USER=devuser
+      - POSTGRES_PASSWORD=devpass
     networks:
       - cluster
-  
+      
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: jbx-netork-pgadmin
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=changeme
+      # - PGADMIN_SERVER_MODE=True
+      - PGADMIN_CONFIG_DATABASE_URI="postgresql://devuser:devpass@jbx-network-db:5432/devdatabase"
+      # - PGADMIN_SQLITE_PATH='/var/lib/sqlite'
+      
+    volumes:
+      - pgadmin-network-data:/var/lib/pgadmin
+    networks:
+      - cluster
+
   ####################################
   # Kafka Config
   ####################################
@@ -96,7 +124,7 @@ services:
     networks:
       - cluster
     attach: false
-      
+
   kafka-api:
     image: 'docker-spring-boot-postgres:latest'
     build:
@@ -108,39 +136,14 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
     depends_on:
       - kafka
-  
-  ####################################
-  # Web Socket Config
-  ####################################
-  websocket:
-    build:
-      context: ./
-      dockerfile: ./websocket/Dockerfile
-    restart: always
-    ports:
-      - 9001:9001
-    container_name: websocket-jbx
-    volumes:
-      - ./websocket:/app/websocket
-      - ./packages:/app/packages
-      - ./package.json:/app/package.json
-    environment:
-      - HOST=0.0.0.0
-      - PORT=9001
-      - NODE_ENV=network
-      - LOG_LEVEL=debug
-      - KAFKA_BROKERS=kafka-jbx:9092
-      - KAFKA_GROUP_ID=websocket-jbx
-      - LOG_NS=websocket
-      # - BYPASS_AUTH=1
-    command: npm run dev:websocket
-    networks:
-      - cluster
 
 volumes:
   client-dist:
     name: client-dist
-  mongo-data:
+  jukebox-network-pg-data:
+  club-static:
+    name: club-static
+  pgadmin-network-data:
 
 networks:
   cluster:

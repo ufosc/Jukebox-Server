@@ -1,0 +1,43 @@
+# extends:
+#   - recommended
+
+apis:
+  core@v1:
+    root: ./output.swagger.yml
+    rules:
+      no-ambiguous-paths: error
+    theme:
+      openapi:
+        expandResponses: '200'
+        expandDefaultResponse: true
+    
+    # theme:
+    #   openapi:
+    #     hideLogo: true
+    #     hideTryItPanel: false
+    #     schemaExpansionLevel: 3
+    #     defaultSampleLanguage: JavaScript
+    #     showObjectSchemaExamples: true
+    #     # layout: stacked
+    #     generateCodeSamples:
+    #       skipOptionalParameters: true
+    #       languages:
+    #         - lang: curl
+    #         - lang: Python
+    #         - lang: JavaScript
+    #         - lang: "Node.js"
+
+
+# theme:
+#   openapi:
+#     schemaExpansionLevel: 3
+#     defaultSampleLanguage: JavaScript
+#     showObjectSchemaExamples: true
+#     # layout: stacked
+#     generateCodeSamples:
+#       skipOptionalParameters: true
+#       languages:
+#         - lang: curl
+#         - lang: Python
+#         - lang: JavaScript
+#         - lang: "Node.js"

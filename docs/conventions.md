@@ -1,10 +1,7 @@
 # Project Conventions
 
-## Objects, Models, Schemas
+## Objects, Entities, DTOs
 
-When handling objects in typescript, often it is useful to know if the object represents minimum fields required for creation, or the full list of fields given from the model serialization process. When differentiating between the two, stick with this convention:
-
-For some model named `Model`,
-
-- Use `IModel` to describe all possible fields, including the ID field
-- Use `IModelFields` to describe fields needed when creating the model.
+1. Data Transfer Objects (DTOs) dictate shape of data on server ingres/egress (api requests, responses, kafka events, websockets, etc). DTOs determine **inter-service** data contracts.
+2. Entities dictate shape of data within the server, between controllers, services, etc. Entities determine **intra-service** data contracts.
+3. Use `snake_case` for fields of data objects that are stored inside a database, or passed into/out of the API. This keeps consistency with patterns used across other technologies like Django, Postgres, etc.

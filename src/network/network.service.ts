@@ -57,8 +57,8 @@ export class NetworkService {
     return {
       id: +res.data.id,
       email: res.data.email ?? '',
-      firstName: res.data.first_name,
-      lastName: res.data.last_name,
+      first_name: res.data.first_name,
+      last_name: res.data.last_name,
     }
   }
 }

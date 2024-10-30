@@ -1,17 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
-import { SpotifyLink } from '../spotify/entities/spotify-link.entity'
+import { Not, Repository } from 'typeorm'
+import { SpotifyAccount } from '../spotify/entities/spotify-account.entity'
+import { AddJukeboxLinkDto } from './dto/add-jukebox-link.dto'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
+import { JukeboxLinkDto } from './dto/jukebox.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
-import { Jukebox, JukeboxSpotifyLinkAssignment } from './entities/jukebox.entity'
+import { Jukebox, JukeboxLinkAssignment } from './entities/jukebox.entity'
 
 @Injectable()
 export class JukeboxService {
   constructor(
     @InjectRepository(Jukebox) private repo: Repository<Jukebox>,
-    @InjectRepository(JukeboxSpotifyLinkAssignment)
-    private assignmentRepo: Repository<JukeboxSpotifyLinkAssignment>,
+    @InjectRepository(JukeboxLinkAssignment)
+    private assignmentRepo: Repository<JukeboxLinkAssignment>,
   ) {}
 
   create(createJukeboxDto: CreateJukeboxDto) {
@@ -21,14 +23,14 @@ export class JukeboxService {
 
   findAll() {
     return this.repo.find({
-      relations: ['spotify_link_assignments', 'spotify_link_assignments.spotify_link'],
+      relations: ['link_assignments', 'link_assignments.spotify_link'],
     })
   }
 
   async findOne(id: number) {
     const jukebox = await this.repo.findOne({
       where: { id },
-      relations: ['spotify_link_assignments', 'spotify_link_assignments.spotify_link'],
+      relations: ['link_assignments', 'link_assignments.spotify_link'],
     })
     if (!jukebox) {
       throw new NotFoundException('Jukebox not found')
@@ -39,7 +41,6 @@ export class JukeboxService {
 
   async update(id: number, updateJukeboxDto: UpdateJukeboxDto) {
     const jukebox = await this.findOne(id)
-    const spotifyEmail = updateJukeboxDto.active_spotify_link.spotify_email
 
     if (!jukebox) {
       throw new NotFoundException(`Jukebox with id ${id} not found`)
@@ -47,28 +48,6 @@ export class JukeboxService {
 
     if ('name' in updateJukeboxDto) {
       jukebox.name = updateJukeboxDto.name
-    }
-
-    if ('active_spotify_link' in updateJukeboxDto) {
-      const assignment = jukebox.spotify_link_assignments.find(
-        (a) => a.spotify_link.spotify_email === spotifyEmail,
-      )
-
-      if (!assignment) {
-        throw new NotFoundException(
-          `Unable to find a linked Spotify account with email ${spotifyEmail}`,
-        )
-      }
-
-      const deactivateAssignments = jukebox.spotify_link_assignments.filter((a) => a.active)
-
-      for (const dAssignment of deactivateAssignments) {
-        dAssignment.active = false
-        await this.assignmentRepo.save(dAssignment)
-      }
-
-      assignment.active = true
-      this.assignmentRepo.save(assignment)
     }
 
     this.repo.save(jukebox)
@@ -88,27 +67,77 @@ export class JukeboxService {
     return jukebox
   }
 
-  async getJukeboxSpotifyLinks(jukeboxId: number) {
+  async getJukeboxLinks(jukeboxId: number): Promise<JukeboxLinkDto[]> {
     const jukebox = await this.findOne(jukeboxId)
 
-    return jukebox.spotify_link_assignments.map((assignments) => assignments.spotify_link)
+    return jukebox.link_assignments.map((assignment) => assignment.serialize())
   }
 
-  async addSpotifyLinkToJukebox(jukeboxId: number, spotifyLink: SpotifyLink) {
+  async findJukeboxLink(jukeboxId: number, jukeboxLink: AddJukeboxLinkDto) {
+    const link = await this.assignmentRepo.findOne({
+      where: {
+        jukebox_id: jukeboxId,
+        spotify_link: { spotify_email: jukeboxLink.email },
+      },
+    })
+
+    if (!link) {
+      throw new NotFoundException(`Jukebox link not found with email ${jukeboxLink.email}.`)
+    }
+
+    return link
+  }
+
+  async removeJukeboxLink(jukeboxId: number, linkId: number) {
+    const link = await this.assignmentRepo.findOne({ where: { jukebox_id: jukeboxId, id: linkId } })
+    if (!link) {
+      throw new NotFoundException(`Jukebox link not found with id ${linkId}.`)
+    }
+
+    await this.assignmentRepo.delete({ jukebox_id: jukeboxId, id: linkId })
+
+    return link
+  }
+
+  async setActiveLink(jukeboxId: number, linkId: number) {
+    await this.assignmentRepo.update(
+      { jukebox_id: jukeboxId, active: true, id: Not(linkId) },
+      { active: false },
+    )
+    const assignment = await this.assignmentRepo.findOne({
+      where: { jukebox_id: jukeboxId, id: linkId },
+      relations: ['spotify_link'],
+    })
+
+    if (!assignment) {
+      throw new NotFoundException('Spotify assignment not found.')
+    }
+
+    assignment.active = true
+    await assignment.save()
+
+    return assignment
+  }
+
+  async addLinkToJukebox(jukeboxId: number, spotifyLink: SpotifyAccount): Promise<JukeboxLinkDto> {
     const jukebox = await this.findOne(jukeboxId)
 
     const assignment = this.assignmentRepo.create({
       jukebox_id: jukebox.id,
+      jukebox: jukebox,
       spotify_link_id: spotifyLink.id,
+      spotify_link: spotifyLink,
     })
-    await this.assignmentRepo.save(assignment)
 
-    return jukebox
+    const record = await this.assignmentRepo.save(assignment)
+    await this.setActiveLink(jukebox.id, record.id)
+
+    return assignment.serialize()
   }
 
-  async getJukeboxActiveSpotifyLink(jukeboxId: number): Promise<SpotifyLink | undefined> {
+  async getJukeboxActiveSpotifyLink(jukeboxId: number): Promise<SpotifyAccount | undefined> {
     const jukebox = await this.findOne(jukeboxId)
-    const assignment = jukebox.spotify_link_assignments.find((lnk) => lnk.active)
+    const assignment = jukebox.link_assignments.find((lnk) => lnk.active)
 
     if (!assignment) {
       return

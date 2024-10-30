@@ -1,10 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Expose } from 'class-transformer'
 import { BaseDto } from 'src/config/dtos'
-import { SpotifyLinkDto, SpotifyLinkNestedDto } from 'src/spotify/dto/spotify-link.dto'
-import { Jukebox } from '../entities/jukebox.entity'
 
-export class JukeboxDto extends BaseDto {
+export class JukeboxLinkDto implements IJukeboxLink {
+  @Expose()
+  @ApiProperty()
+  id: number
+
+  @Expose()
+  @ApiProperty()
+  type: JukeboxLinkType
+
+  @Expose()
+  @ApiProperty()
+  email: string
+
+  @Expose()
+  @ApiProperty()
+  active: boolean
+}
+
+export class JukeboxDto extends BaseDto implements IJukebox {
   @Expose()
   @ApiProperty()
   id: number
@@ -19,23 +35,19 @@ export class JukeboxDto extends BaseDto {
 
   @Expose()
   @ApiProperty()
-  spotify_links: SpotifyLinkNestedDto[]
+  links: JukeboxLinkDto[]
 
-  @Expose()
-  @ApiProperty()
-  active_spotify_link?: SpotifyLinkDto
-
-  static serialize(entity: Jukebox): JukeboxDto {
-    return {
-      ...super.serialize(entity),
-      name: entity.name,
-      club_id: entity.club_id,
-      spotify_links:
-        entity.spotify_link_assignments?.map((assignment) => ({
-          spotify_email: assignment.spotify_link.spotify_email,
-        })) ?? [],
-      active_spotify_link: entity.spotify_link_assignments?.find((assignment) => assignment.active)
-        ?.spotify_link,
-    }
-  }
+  // static serialize(entity: Jukebox): JukeboxDto {
+  //   return {
+  //     ...super.serialize(entity),
+  //     name: entity.name,
+  //     club_id: entity.club_id,
+  //     links:
+  //       entity.spotify_link_assignments?.map((assignment) => ({
+  //         type: 'spotify',
+  //         email: assignment.spotify_link.spotify_email,
+  //         active: assignment.active,
+  //       })) ?? [],
+  //   }
+  // }
 }

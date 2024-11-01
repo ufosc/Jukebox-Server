@@ -5,14 +5,19 @@ export class TrackQueueItem {
   constructor(public track: Track) {}
 }
 
-// @Injectable()
 export class TrackQueue {
+  private static queues: { [jukeboxId: number]: TrackQueue } = {}
   protected tracks: TrackQueueItem[] = []
-  // private groupId: string = '';
 
-  constructor(readonly groupId: string) {}
-  public setGroupId(groupId: string) {
-    // this.groupId = groupId;
+  private constructor(readonly jukeboxId: number) {}
+
+  public static getQueue(jukeboxId: number) {
+    if (!(jukeboxId in this.queues)) {
+      console.log('Creating new track queue...')
+      this.queues[jukeboxId] = new TrackQueue(jukeboxId)
+    }
+
+    return this.queues[jukeboxId]
   }
 
   // Pushes a track to the end of the queue and returns the new length
@@ -31,6 +36,10 @@ export class TrackQueue {
   public peek(): Track | undefined {
     const item = this.tracks[0] // Get the first item
     return item ? item.track : undefined // Return the track or undefined if the queue is empty
+  }
+
+  public list(): Track[] {
+    return this.tracks.map((item) => item.track)
   }
 
   // Moves a track to a new position in the queue
@@ -52,4 +61,24 @@ export class TrackQueue {
 }
 
 @Injectable()
-export class TrackQueueService {}
+export class TrackQueueService {
+  constructor() {}
+
+  private getQueue(jukeboxId) {
+    return TrackQueue.getQueue(jukeboxId)
+  }
+
+  public listTracks(jukeboxId: number) {
+    const queue = this.getQueue(jukeboxId)
+    return queue.list()
+  }
+
+  public queueTrack(jukeboxId: number, track: Track, position = -1) {
+    const queue = this.getQueue(jukeboxId)
+
+    queue.push(track)
+    if (position >= 0) {
+      queue.setPosition(track, position)
+    }
+  }
+}

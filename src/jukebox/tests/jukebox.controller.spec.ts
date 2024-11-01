@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing'
 import { getRepositoryToken } from '@nestjs/typeorm'
 import { NetworkModule } from 'src/network/network.module'
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
-import { SpotifyService } from 'src/spotify/spotify.service'
+import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import type { MockType } from 'src/utils'
 import { AxiosProvider } from 'src/utils/providers/axios.provider'
 import type { Repository } from 'typeorm'
@@ -26,7 +26,7 @@ describe('JukeboxController', () => {
       controllers: [JukeboxController],
       providers: [
         AxiosProvider,
-        SpotifyService,
+        SpotifyAuthService,
         JukeboxService,
         {
           provide: getRepositoryToken(Jukebox),

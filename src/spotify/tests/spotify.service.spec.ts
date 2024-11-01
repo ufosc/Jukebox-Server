@@ -7,16 +7,16 @@ import { Model } from 'mongoose'
 import type { MockType } from 'src/utils'
 import type { Repository } from 'typeorm'
 import { SpotifyAccount } from '../entities/spotify-account.entity'
-import { SpotifyService } from '../spotify.service'
+import { SpotifyAuthService } from '../spotify-auth.service'
 
 describe('SpotifyService', () => {
-  let service: SpotifyService
+  let service: SpotifyAuthService
 
   beforeEach(async () => {
     const mockSpotifyLinkRepo: () => MockType<Repository<SpotifyAccount>> = jest.fn(() => ({}))
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        SpotifyService,
+        SpotifyAuthService,
         { provide: getModelToken(SpotifyAccount.name), useValue: Model<SpotifyAccount> },
         {
           provide: Axios.Axios,
@@ -29,7 +29,7 @@ describe('SpotifyService', () => {
       ],
     }).compile()
 
-    service = module.get<SpotifyService>(SpotifyService)
+    service = module.get<SpotifyAuthService>(SpotifyAuthService)
   })
 
   it('should be defined', () => {

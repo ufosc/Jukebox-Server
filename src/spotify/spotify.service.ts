@@ -10,14 +10,14 @@ import {
   SPOTIFY_SCOPES,
 } from 'src/config'
 import { Repository } from 'typeorm'
-import { CreateSpotifyLinkDto, UpdateSpotifyLinkDto } from './dto/spotify-link.dto'
+import { CreateSpotifyAccountDto, UpdateSpotifyAccountDto } from './dto/spotify-account.dto'
 import { SpotifyTokensDto } from './dto/spotify-tokens.dto'
-import { isSpotifyLink, SpotifyLink } from './entities/spotify-link.entity'
+import { isSpotifyLink, SpotifyAccount } from './entities/spotify-account.entity'
 
 @Injectable()
 export class SpotifyService {
   constructor(
-    @InjectRepository(SpotifyLink) private repo: Repository<SpotifyLink>,
+    @InjectRepository(SpotifyAccount) private repo: Repository<SpotifyAccount>,
     protected axios: Axios,
   ) {}
 
@@ -102,12 +102,12 @@ export class SpotifyService {
   }
 
   public async refreshSpotifyLink(
-    link: { spotify_email: string } | SpotifyLink,
-  ): Promise<SpotifyLink> {
-    let spotifyLink: SpotifyLink
+    link: { spotify_email: string } | SpotifyAccount,
+  ): Promise<SpotifyAccount> {
+    let spotifyLink: SpotifyAccount
 
     if (!isSpotifyLink(link)) {
-      spotifyLink = (await this.findLinkFromEmail(link.spotify_email)) as SpotifyLink
+      spotifyLink = (await this.findLinkFromEmail(link.spotify_email)) as SpotifyAccount
     } else {
       spotifyLink = link
     }
@@ -143,7 +143,7 @@ export class SpotifyService {
     return spotifyLink
   }
 
-  private async createLink(createSpotifyLinkDto: CreateSpotifyLinkDto) {
+  private async createLink(createSpotifyLinkDto: CreateSpotifyAccountDto) {
     const { user_id: userId, spotify_email: spotifyEmail, tokens } = createSpotifyLinkDto
     const link = this.repo.create({ user_id: userId, spotify_email: spotifyEmail, ...tokens })
 
@@ -153,7 +153,7 @@ export class SpotifyService {
     return link
   }
 
-  private async updateLink(id: number, updateSpotifyLInkDto: UpdateSpotifyLinkDto) {
+  private async updateLink(id: number, updateSpotifyLInkDto: UpdateSpotifyAccountDto) {
     const link = await this.repo.findOneBy({ id })
 
     Object.assign(link, updateSpotifyLInkDto)

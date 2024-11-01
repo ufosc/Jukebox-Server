@@ -6,24 +6,24 @@ import Axios from 'axios'
 import { Model } from 'mongoose'
 import type { MockType } from 'src/utils'
 import type { Repository } from 'typeorm'
-import { SpotifyLink } from '../entities/spotify-link.entity'
+import { SpotifyAccount } from '../entities/spotify-account.entity'
 import { SpotifyService } from '../spotify.service'
 
 describe('SpotifyService', () => {
   let service: SpotifyService
 
   beforeEach(async () => {
-    const mockSpotifyLinkRepo: () => MockType<Repository<SpotifyLink>> = jest.fn(() => ({}))
+    const mockSpotifyLinkRepo: () => MockType<Repository<SpotifyAccount>> = jest.fn(() => ({}))
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SpotifyService,
-        { provide: getModelToken(SpotifyLink.name), useValue: Model<SpotifyLink> },
+        { provide: getModelToken(SpotifyAccount.name), useValue: Model<SpotifyAccount> },
         {
           provide: Axios.Axios,
           useValue: Axios.create(),
         },
         {
-          provide: getRepositoryToken(SpotifyLink),
+          provide: getRepositoryToken(SpotifyAccount),
           useFactory: mockSpotifyLinkRepo,
         },
       ],

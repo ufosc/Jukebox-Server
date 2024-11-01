@@ -646,7 +646,25 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/SpotifyLink'
+                  $ref: '#/components/schemas/SpotifyAccount'
+      tags:
+        - spotify
+  '/api/v1/spotify/links/{id}':
+    delete:
+      operationId: SpotifyController_deleteSpotifyLink
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpotifyAccount'
       tags:
         - spotify
   /api/v1/jukebox/jukeboxes:
@@ -741,6 +759,25 @@ paths:
       tags:
         - jukeboxes
   '/api/v1/jukebox/{jukebox_id}/links':
+    get:
+      operationId: JukeboxController_getJukeboxLinks
+      parameters:
+        - name: jukebox_id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JukeboxLinkDto'
+      tags:
+        - jukeboxes
     post:
       operationId: JukeboxController_addLinkToJukebox
       parameters:
@@ -761,7 +798,71 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SpotifyLinkDto'
+                $ref: '#/components/schemas/JukeboxLinkDto'
+      tags:
+        - jukeboxes
+  '/api/v1/jukebox/{jukebox_id}/links/{id}':
+    delete:
+      operationId: JukeboxController_deleteJukeboxLink
+      parameters:
+        - name: jukebox_id
+          required: true
+          in: path
+          schema:
+            type: number
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JukeboxLinkAssignment'
+      tags:
+        - jukeboxes
+  '/api/v1/jukebox/{jukebox_id}/active-link':
+    get:
+      operationId: JukeboxController_getActiveJukeboxLink
+      parameters:
+        - name: jukebox_id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpotifyAccount'
+      tags:
+        - jukeboxes
+    post:
+      operationId: JukeboxController_setActiveJukeboxLink
+      parameters:
+        - name: jukebox_id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddJukeboxLinkDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SpotifyAccount'
       tags:
         - jukeboxes
 components:
@@ -824,7 +925,7 @@ components:
           oneOf:
             - $ref: '#/components/schemas/RoleEnum'
             - $ref: '#/components/schemas/BlankEnum'
-        coins:
+        points:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
@@ -851,7 +952,7 @@ components:
             - $ref: '#/components/schemas/BlankEnum'
         owner:
           type: boolean
-        coins:
+        points:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
@@ -896,7 +997,7 @@ components:
             - $ref: '#/components/schemas/BlankEnum'
         owner:
           type: boolean
-        coins:
+        points:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
@@ -961,7 +1062,6 @@ components:
           items:
             $ref: '#/components/schemas/UserClubNested'
       required:
-        - clubs
         - email
         - id
         - password
@@ -991,16 +1091,16 @@ components:
           type: string
         club_id:
           type: number
-        spotify_link_assignments:
+        link_assignments:
           type: array
           items:
-            $ref: '#/components/schemas/JukeboxSpotifyLinkAssignment'
+            $ref: '#/components/schemas/JukeboxLinkAssignment'
       required:
         - id
         - name
         - club_id
-        - spotify_link_assignments
-    SpotifyLink:
+        - link_assignments
+    SpotifyAccount:
       type: object
       properties:
         id:
@@ -1010,7 +1110,7 @@ components:
         refresh_token:
           type: string
         user_id:
-          type: string
+          type: number
         spotify_email:
           type: string
         expires_in:
@@ -1023,7 +1123,7 @@ components:
         jukebox_assignments:
           type: array
           items:
-            $ref: '#/components/schemas/JukeboxSpotifyLinkAssignment'
+            $ref: '#/components/schemas/JukeboxLinkAssignment'
       required:
         - id
         - access_token
@@ -1034,7 +1134,7 @@ components:
         - expires_at
         - token_type
         - jukebox_assignments
-    JukeboxSpotifyLinkAssignment:
+    JukeboxLinkAssignment:
       type: object
       properties:
         jukebox_id:
@@ -1044,7 +1144,7 @@ components:
         spotify_link_id:
           type: number
         spotify_link:
-          $ref: '#/components/schemas/SpotifyLink'
+          $ref: '#/components/schemas/SpotifyAccount'
         active:
           type: boolean
       required:
@@ -1063,50 +1163,22 @@ components:
       required:
         - name
         - club_id
-    SpotifyLinkNestedDto:
-      type: object
-      properties:
-        spotify_email:
-          type: string
-      required:
-        - spotify_email
-    SpotifyLinkDto:
+    JukeboxLinkDto:
       type: object
       properties:
         id:
           type: number
-          readOnly: true
-        created_at:
-          format: date-time
+        type:
           type: string
-          readOnly: true
-        updated_at:
-          format: date-time
+        email:
           type: string
-          readOnly: true
-        access_token:
-          type: string
-        user_id:
-          type: string
-        spotify_email:
-          type: string
-        expires_at:
-          format: date-time
-          type: string
-        token_type:
-          type: string
-        expires_in:
-          type: number
+        active:
+          type: boolean
       required:
         - id
-        - created_at
-        - updated_at
-        - access_token
-        - user_id
-        - spotify_email
-        - expires_at
-        - token_type
-        - expires_in
+        - type
+        - email
+        - active
     JukeboxDto:
       type: object
       properties:
@@ -1125,33 +1197,32 @@ components:
           type: string
         club_id:
           type: number
-        spotify_links:
+        links:
           type: array
           items:
-            $ref: '#/components/schemas/SpotifyLinkNestedDto'
-        active_spotify_link:
-          $ref: '#/components/schemas/SpotifyLinkDto'
+            $ref: '#/components/schemas/JukeboxLinkDto'
       required:
         - id
         - created_at
         - updated_at
         - name
         - club_id
-        - spotify_links
+        - links
     UpdateJukeboxDto:
       type: object
       properties:
         name:
           type: string
-        active_spotify_link:
-          $ref: '#/components/schemas/SpotifyLinkNestedDto'
     AddJukeboxLinkDto:
       type: object
       properties:
-        spotifyEmail:
+        type:
+          type: string
+        email:
           type: string
       required:
-        - spotifyEmail
+        - type
+        - email
   securitySchemes:
     basicAuth:
       type: http

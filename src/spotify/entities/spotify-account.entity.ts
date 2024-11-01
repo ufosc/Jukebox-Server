@@ -1,9 +1,9 @@
 import { BaseEntity } from 'src/config/entities'
-import { JukeboxSpotifyLinkAssignment } from 'src/jukebox/entities/jukebox.entity'
+import { JukeboxLinkAssignment } from 'src/jukebox/entities/jukebox.entity'
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity('spotify_link')
-export class SpotifyLink extends BaseEntity {
+export class SpotifyAccount extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -28,8 +28,8 @@ export class SpotifyLink extends BaseEntity {
   @Column()
   token_type: string
 
-  @OneToMany(() => JukeboxSpotifyLinkAssignment, (assignment) => assignment.spotify_link)
-  jukebox_assignments: JukeboxSpotifyLinkAssignment[]
+  @OneToMany(() => JukeboxLinkAssignment, (assignment) => assignment.spotify_link)
+  jukebox_assignments: JukeboxLinkAssignment[]
 
   isExpired() {
     return this.expires_at.getTime() <= Date.now()
@@ -40,6 +40,6 @@ export class SpotifyLink extends BaseEntity {
   }
 }
 
-export const isSpotifyLink = (obj: any): obj is SpotifyLink => {
+export const isSpotifyLink = (obj: any): obj is SpotifyAccount => {
   return Object.keys(obj).includes('id')
 }

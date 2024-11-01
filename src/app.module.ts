@@ -8,7 +8,7 @@ import { DatabaseModule } from './config/database.module'
 import { JukeboxModule } from './jukebox/jukebox.module'
 import { NetworkModule } from './network/network.module'
 import { SpotifyModule } from './spotify/spotify.module'
-import { TrackQueueModule } from './track-queue/track-queue.module'
+import { TrackQueueModule } from './jukebox/track-queue/track-queue.module'
 import { AxiosProvider } from './utils/providers/axios.provider'
 
 @Module({

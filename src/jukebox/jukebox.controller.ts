@@ -9,6 +9,7 @@ import {
   Post,
 } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
+import { AppGateway } from 'src/app.gateway'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { CurrentUser } from '../auth/current-user.decorator'
 import { SpotifyAuthService } from '../spotify/spotify-auth.service'
@@ -28,6 +29,7 @@ export class JukeboxController {
     private spotifyAuthSvc: SpotifyAuthService,
     private spotifySvc: SpotifyService,
     private queueSvc: TrackQueueService,
+    private appGateway: AppGateway,
   ) {}
 
   @Post('jukeboxes/')
@@ -124,6 +126,13 @@ export class JukeboxController {
     const trackItem = await this.spotifySvc.getTrack(account, track.track_id)
 
     await this.queueSvc.queueTrack(jukeboxId, trackItem, track.position)
+    const nextTracks = await this.queueSvc.listTracks(jukeboxId)
+
+    if (nextTracks.length === 1) {
+      await this.spotifySvc.queueTrack(account, trackItem)
+    }
+
+    this.appGateway.emitTrackStateUpdate({ jukebox_id: jukeboxId, next_tracks: nextTracks })
 
     return trackItem
   }

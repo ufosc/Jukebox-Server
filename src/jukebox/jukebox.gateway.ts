@@ -1,7 +1,8 @@
 import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
-import { Track } from '@spotify/web-api-ts-sdk'
 import { Server, Socket } from 'socket.io'
+import { AppGateway } from 'src/app.gateway'
 import { SpotifyService } from 'src/spotify/spotify.service'
+import { PlayerUpdateDto } from './dto/track-player-state.dto'
 import { JukeboxService } from './jukebox.service'
 import { TrackQueueService } from './track-queue/track-queue.service'
 
@@ -11,31 +12,27 @@ export class JukeboxGateway {
     private queueSvc: TrackQueueService,
     private jukeboxSvc: JukeboxService,
     private spotifySvc: SpotifyService,
+    private appGateway: AppGateway,
   ) {}
 
   @WebSocketServer() server: Server
 
-  @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
-    return 'Hello world!'
-  }
+  @SubscribeMessage('player-update')
+  async handleQueueNextTrack(client: Socket, payload: PlayerUpdateDto) {
+    const { current_track, jukebox_id } = payload
 
-  @SubscribeMessage('track-state')
-  async handleQueueNextTrack(
-    client: Socket,
-    payload: { new_track: boolean; track: Track; jukebox_id: number },
-  ) {
-    const { new_track, track, jukebox_id } = payload
+    // Remove top track, either it's playing or was skipped
+    await this.queueSvc.popTrack(jukebox_id)
+    
+    // Look at the next track, queue it up in Spotify
+    const nextTrack = await this.queueSvc.peekTrack(jukebox_id)
+    const queuedTracks = await this.queueSvc.listTracks(jukebox_id)
 
-    if (!new_track) {
-      return
-    }
-
-    let nextTrack = await this.queueSvc.peekTrack(jukebox_id)
-    if (String(nextTrack?.name) === String(track.name)) {
-      await this.queueSvc.popTrack(jukebox_id)
-      nextTrack = await this.queueSvc.peekTrack(jukebox_id)
-    }
+    this.appGateway.emitTrackStateUpdate({
+      current_track,
+      next_tracks: queuedTracks,
+      jukebox_id,
+    })
 
     if (!nextTrack) {
       return

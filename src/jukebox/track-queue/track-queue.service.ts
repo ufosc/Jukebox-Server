@@ -104,7 +104,6 @@ export class TrackQueueService {
   public async popTrack(jukeboxId: number): Promise<Track | null> {
     const queue = await this.getQueue(jukeboxId)
     const track: Track | null = queue.pop() ?? null
-    console.log('New queue:', queue.list())
 
     this.commitQueue(jukeboxId, queue)
     return track

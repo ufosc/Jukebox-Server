@@ -5,10 +5,11 @@ import { Jukebox, JukeboxLinkAssignment } from './entities/jukebox.entity'
 import { JukeboxController } from './jukebox.controller'
 import { JukeboxService } from './jukebox.service'
 import { TrackQueueService } from './track-queue/track-queue.service'
+import { JukeboxGateway } from './jukebox.gateway';
 
 @Module({
   controllers: [JukeboxController],
-  providers: [JukeboxService, TrackQueueService],
+  providers: [JukeboxService, TrackQueueService, JukeboxGateway],
   imports: [
     TypeOrmModule.forFeature([Jukebox, JukeboxLinkAssignment]),
     SpotifyModule,

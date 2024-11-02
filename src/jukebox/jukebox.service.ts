@@ -135,7 +135,7 @@ export class JukeboxService {
     return assignment.serialize()
   }
 
-  async getJukeboxActiveSpotifyLink(jukeboxId: number): Promise<SpotifyAccount | undefined> {
+  async getActiveSpotifyAccount(jukeboxId: number): Promise<SpotifyAccount | undefined> {
     const jukebox = await this.findOne(jukeboxId)
     const assignment = jukebox.link_assignments.find((lnk) => lnk.active)
 

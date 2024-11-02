@@ -24,12 +24,15 @@ services:
       - DB_USER=devuser
       - DB_PASS=devpass
       - DB_NAME=devdatabase
+      - REDIS_HOST=jbx-network-redis
+      - REDIS_PORT=6379
     ports:
       - 9000:9000
     depends_on:
       - postgres
       - pgadmin
       - kafka
+      - redis
     volumes:
       - ./src:/app/src
       - ./package.json:/app/package.json
@@ -68,6 +71,14 @@ services:
       - POSTGRES_DB=devdatabase
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=devpass
+    networks:
+      - cluster
+      
+  redis:
+    image: redis:alpine
+    container_name: jbx-network-redis
+    ports:
+      - 6379:6379
     networks:
       - cluster
       

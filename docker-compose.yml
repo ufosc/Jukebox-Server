@@ -25,6 +25,8 @@ services:
       - DB_USER=devuser
       - DB_PASS=devpass
       - DB_NAME=devdatabase
+      - REDIS_HOST=jbx-redis
+      - REDIS_PORT=6379
     ports:
       - 8000:8000
     depends_on:
@@ -43,6 +45,12 @@ services:
       - POSTGRES_DB=devdatabase
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=devpass
+      
+  redis:
+    image: redis:alpine
+    container_name: jbx-redis
+    ports:
+      - 6379:6379
 
 volumes:
   jukebox-pg-data:

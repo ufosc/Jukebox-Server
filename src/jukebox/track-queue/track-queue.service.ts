@@ -1,24 +1,28 @@
-import { Injectable } from '@nestjs/common'
+import { CACHE_MANAGER } from '@nestjs/cache-manager'
+import { Inject, Injectable } from '@nestjs/common'
 import type { Track } from '@spotify/web-api-ts-sdk'
+import { Cache } from 'cache-manager'
 
 export class TrackQueueItem {
+  recommended_by: string
   constructor(public track: Track) {}
 }
 
 export class TrackQueue {
-  private static queues: { [jukeboxId: number]: TrackQueue } = {}
-  protected tracks: TrackQueueItem[] = []
+  // private static queues: { [jukeboxId: number]: TrackQueue } = {}
+  // protected tracks: TrackQueueItem[] = []
 
-  private constructor(readonly jukeboxId: number) {}
+  // private constructor(readonly jukeboxId: number) {}
+  constructor(readonly tracks: TrackQueueItem[]) {}
 
-  public static getQueue(jukeboxId: number) {
-    if (!(jukeboxId in this.queues)) {
-      console.log('Creating new track queue...')
-      this.queues[jukeboxId] = new TrackQueue(jukeboxId)
-    }
+  // public static getQueue(jukeboxId: number) {
+  //   if (!(jukeboxId in this.queues)) {
+  //     console.log('Creating new track queue...')
+  //     this.queues[jukeboxId] = new TrackQueue(jukeboxId)
+  //   }
 
-    return this.queues[jukeboxId]
-  }
+  //   return this.queues[jukeboxId]
+  // }
 
   // Pushes a track to the end of the queue and returns the new length
   public push(track: Track): number {
@@ -62,23 +66,54 @@ export class TrackQueue {
 
 @Injectable()
 export class TrackQueueService {
-  constructor() {}
+  constructor(@Inject(CACHE_MANAGER) private cache: Cache) {}
 
-  private getQueue(jukeboxId) {
-    return TrackQueue.getQueue(jukeboxId)
+  private getCacheKey(jukeboxId: number) {
+    return `queue-${jukeboxId}`
   }
 
-  public listTracks(jukeboxId: number) {
-    const queue = this.getQueue(jukeboxId)
+  private async getQueue(jukeboxId: number) {
+    const key = this.getCacheKey(jukeboxId)
+    const tracks = (await this.cache.get<TrackQueueItem[] | undefined>(key)) ?? []
+    return new TrackQueue(tracks)
+    // return TrackQueue.getQueue(jukeboxId)
+  }
+
+  private async commitQueue(jukeboxId: number, queue: TrackQueue) {
+    const key = this.getCacheKey(jukeboxId)
+    await this.cache.set(key, queue.tracks)
+  }
+
+  public async listTracks(jukeboxId: number) {
+    const queue = await this.getQueue(jukeboxId)
     return queue.list()
   }
 
-  public queueTrack(jukeboxId: number, track: Track, position = -1) {
-    const queue = this.getQueue(jukeboxId)
+  public async queueTrack(jukeboxId: number, track: Track, position = -1) {
+    const queue = await this.getQueue(jukeboxId)
 
     queue.push(track)
     if (position >= 0) {
       queue.setPosition(track, position)
     }
+
+    await this.commitQueue(jukeboxId, queue)
+    return track
+  }
+
+  public async popTrack(jukeboxId: number): Promise<Track | null> {
+    const queue = await this.getQueue(jukeboxId)
+    const track: Track | null = queue.pop() ?? null
+    console.log('New queue:', queue.list())
+
+    this.commitQueue(jukeboxId, queue)
+    return track
+  }
+
+  public async peekTrack(jukeboxId: number): Promise<Track | null> {
+    const queue = await this.getQueue(jukeboxId)
+    const track: Track | null = queue.peek() ?? null
+
+    return track
   }
 }

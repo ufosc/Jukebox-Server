@@ -17,6 +17,7 @@ import { CreateJukeboxDto } from './dto/create-jukebox.dto'
 import { JukeboxDto, JukeboxLinkDto } from './dto/jukebox.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { JukeboxService } from './jukebox.service'
+import { AddTrackToQueueDto } from './track-queue/dtos/track-queue.dto'
 import { TrackQueueService } from './track-queue/track-queue.service'
 
 @ApiTags('jukeboxes')
@@ -92,7 +93,7 @@ export class JukeboxController {
 
   @Get('/:jukebox_id/active-link/')
   async getActiveJukeboxLink(@Param('jukebox_id') jukeboxId: number) {
-    const link = await this.jukeboxSvc.getJukeboxActiveSpotifyLink(jukeboxId)
+    const link = await this.jukeboxSvc.getActiveSpotifyAccount(jukeboxId)
     if (!link) {
       return
     }
@@ -118,15 +119,23 @@ export class JukeboxController {
   }
 
   @Post('/:jukebox_id/tracks-queue')
-  async addTrackToQueue(
-    @Param('jukebox_id') jukeboxId: number,
-    @Body() track: { trackId: string; position?: number },
-  ) {
-    const account = await this.jukeboxSvc.getJukeboxActiveSpotifyLink(jukeboxId)
-    const trackItem = await this.spotifySvc.getTrack(account, track.trackId)
+  async addTrackToQueue(@Param('jukebox_id') jukeboxId: number, @Body() track: AddTrackToQueueDto) {
+    const account = await this.jukeboxSvc.getActiveSpotifyAccount(jukeboxId)
+    const trackItem = await this.spotifySvc.getTrack(account, track.track_id)
 
-    this.queueSvc.queueTrack(jukeboxId, trackItem, track.position)
+    await this.queueSvc.queueTrack(jukeboxId, trackItem, track.position)
 
     return trackItem
+  }
+
+  @Post('/:jukebox_id/connect/')
+  async connectJukeboxPlayer(
+    @Param('jukebox_id') jukeboxId: number,
+    @Body() body: { device_id: string },
+  ) {
+    const account = await this.jukeboxSvc.getActiveSpotifyAccount(jukeboxId)
+    await this.spotifySvc.setPlayerDevice(account, body.device_id)
+
+    return
   }
 }

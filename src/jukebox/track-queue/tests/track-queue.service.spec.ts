@@ -1,5 +1,6 @@
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
+import { mockCache } from 'src/utils'
 import { TrackQueueService } from '../track-queue.service'
 
 describe('TrackQueueService', () => {
@@ -7,7 +8,7 @@ describe('TrackQueueService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [TrackQueueService],
+      providers: [TrackQueueService, mockCache],
     }).compile()
 
     service = module.get<TrackQueueService>(TrackQueueService)

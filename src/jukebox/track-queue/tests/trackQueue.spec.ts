@@ -1,5 +1,5 @@
-import { TrackQueue } from '../track-queue.service'
 import type { Track } from '@spotify/web-api-ts-sdk'
+import { TrackQueue } from '../track-queue.service'
 
 // describe('TrackQueue Tests', () => {
 let queue: TrackQueue
@@ -72,7 +72,7 @@ const sometrack: Track = {
 }
 
 describe('Test TackQue', () => {
-  const queue = new TrackQueue('testid')
+  const queue = new TrackQueue([])
   // queue.setGroupId("testid")
   // queue.push(sometrack)
   it('should push to queue', () => {

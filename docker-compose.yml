@@ -9,22 +9,16 @@ services:
       - NODE_ENV=dev
       - PORT=8000
       - HOST=localhost
-      - JWT_SECRET_KEY=changeme
-      - TOKEN_HEADER_KEY=Authorization
-      - MONGO_HOST=mongo
-      - MONGO_PORT=27017
-      - MONGO_DB=db
-      - MONGO_USER=root
-      - MONGO_PASSWORD=changeme
-      - MONGO_URI=mongodb://root:changeme@mongo-jbx:27017
+      - LOG_LEVEL=debug
       - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
-      - LOG_LEVEL=debug
       - DB_HOST=jbx-dev-db
       - DB_PORT=5432
       - DB_USER=devuser
       - DB_PASS=devpass
       - DB_NAME=devdatabase
+      - REDIS_HOST=jbx-redis
+      - REDIS_PORT=6379
     ports:
       - 8000:8000
     depends_on:
@@ -43,6 +37,12 @@ services:
       - POSTGRES_DB=devdatabase
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=devpass
+      
+  redis:
+    image: redis:alpine
+    container_name: jbx-redis
+    ports:
+      - 6379:6379
 
 volumes:
   jukebox-pg-data:

@@ -3,12 +3,12 @@ import { ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 import { AuthInterceptor } from 'src/auth/auth.interceptor'
 import { CurrentUser } from 'src/auth/current-user.decorator'
-import { SpotifyService } from './spotify.service'
+import { SpotifyAuthService } from './spotify-auth.service'
 
 @ApiTags('spotify')
 @Controller('spotify/')
 export class SpotifyController {
-  constructor(protected spotifyService: SpotifyService) {}
+  constructor(protected spotifyService: SpotifyAuthService) {}
 
   @Get('login/')
   @UseInterceptors(AuthInterceptor)
@@ -37,12 +37,12 @@ export class SpotifyController {
 
   @Get('links/')
   async getSpotifyLinks(@CurrentUser() user: IUser) {
-    return this.spotifyService.findUserLinks(user.id)
+    return this.spotifyService.findUserAccounts(user.id)
   }
 
   @Delete('links/:id/')
   async deleteSpotifyLink(@CurrentUser() user: IUser, @Param('id') id: number) {
-    const link = await this.spotifyService.deleteLink(id)
+    const link = await this.spotifyService.removeAccount(id)
     return link
   }
 }

@@ -16,9 +16,5 @@ jukebox-server/
     |   |   |-- [model].dto.ts      <-- Api input/output object structures
     |   |-- schemas/
     |   |   |-- [model].schema.ts   <-- Mongoose schemas
-    |-- spotify/
-    |   |-- *
-    |-- track-queue/
-    |   |-- *
 
 ```

@@ -28,7 +28,7 @@ services:
     depends_on:
       - postgres
       - pgadmin
-      - kafka
+      # - kafka
       - redis
     volumes:
       - ./src:/app/src

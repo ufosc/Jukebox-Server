@@ -1,8 +1,9 @@
+import { jest } from '@jest/globals'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Repository } from 'typeorm'
 
 export type MockType<T> = {
-  [P in keyof T]?: jest.Mock<object>
+  [P in keyof T]?: jest.Mock<any>
 }
 
 export const mockCache = {

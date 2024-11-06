@@ -10,9 +10,6 @@ services:
       - NODE_ENV=network
       - PORT=9000
       - HOST=localhost
-      - JWT_SECRET_KEY=changeme
-      - TOKEN_HEADER_KEY=Authorization
-      - MONGO_URI=mongodb://root:changeme@mongo-network-jbx:27017
       - LOG_LEVEL=debug
       - KAFKA_BROKERS=kafka-jbx:9092
       - BASE_URL=http://localhost:8080
@@ -103,50 +100,50 @@ services:
   ####################################
   # Kafka Config
   ####################################
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    container_name: zookeeper-jbx
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - 2181:2181
-    networks:
-      - cluster
-    attach: false
+  # zookeeper:
+  #   image: confluentinc/cp-zookeeper:latest
+  #   container_name: zookeeper-jbx
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+  #   ports:
+  #     - 2181:2181
+  #   networks:
+  #     - cluster
+  #   attach: false
 
-  kafka:
-    image: confluentinc/cp-kafka:latest
-    container_name: kafka-jbx
-    depends_on:
-      - zookeeper
-    ports:
-      - 9092:9092
-      - 29092:29092
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper-jbx:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-jbx:9092,PLAINTEXT_HOST://localhost:29092
-      # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
-    networks:
-      - cluster
-    attach: false
+  # kafka:
+  #   image: confluentinc/cp-kafka:latest
+  #   container_name: kafka-jbx
+  #   depends_on:
+  #     - zookeeper
+  #   ports:
+  #     - 9092:9092
+  #     - 29092:29092
+  #   environment:
+  #     KAFKA_BROKER_ID: 1
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper-jbx:2181
+  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-jbx:9092,PLAINTEXT_HOST://localhost:29092
+  #     # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
+  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+  #     KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #     KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
+  #   networks:
+  #     - cluster
+  #   attach: false
 
-  kafka-api:
-    image: 'docker-spring-boot-postgres:latest'
-    build:
-      context: ./kafka-api
-    container_name: kafka-api-jbx
-    ports:
-      - 9090:8080
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
-    depends_on:
-      - kafka
+  # kafka-api:
+  #   image: 'docker-spring-boot-postgres:latest'
+  #   build:
+  #     context: ./kafka-api
+  #   container_name: kafka-api-jbx
+  #   ports:
+  #     - 9090:8080
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=dev
+  #   depends_on:
+  #     - kafka
 
 volumes:
   client-dist:

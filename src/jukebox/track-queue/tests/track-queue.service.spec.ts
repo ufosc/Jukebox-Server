@@ -1,6 +1,6 @@
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
-import { mockCache } from 'src/utils'
+import { mockCache } from 'src/utils/testing'
 import { TrackQueueService } from '../track-queue.service'
 
 describe('TrackQueueService', () => {

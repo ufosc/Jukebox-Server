@@ -865,6 +865,63 @@ paths:
                 $ref: '#/components/schemas/SpotifyAccount'
       tags:
         - jukeboxes
+  '/api/v1/jukebox/{jukebox_id}/tracks-queue':
+    get:
+      operationId: JukeboxController_getTracksQueue
+      parameters:
+        - name: jukebox_id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+      tags:
+        - jukeboxes
+    post:
+      operationId: JukeboxController_addTrackToQueue
+      parameters:
+        - name: jukebox_id
+          required: true
+          in: path
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddTrackToQueueDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+      tags:
+        - jukeboxes
+  '/api/v1/jukebox/{jukebox_id}/connect':
+    post:
+      operationId: JukeboxController_connectJukeboxPlayer
+      parameters:
+        - name: jukebox_id
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        '201':
+          description: ''
+      tags:
+        - jukeboxes
 components:
   schemas:
     AuthToken:
@@ -1223,6 +1280,15 @@ components:
       required:
         - type
         - email
+    AddTrackToQueueDto:
+      type: object
+      properties:
+        track_id:
+          type: string
+        position:
+          type: number
+      required:
+        - track_id
   securitySchemes:
     basicAuth:
       type: http

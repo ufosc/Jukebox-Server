@@ -3,11 +3,11 @@ import { Test } from '@nestjs/testing'
 import { getRepositoryToken } from '@nestjs/typeorm'
 import Axios from 'axios'
 import { NetworkModule } from 'src/network/network.module'
-import type { MockType } from 'src/utils'
+import type { MockType } from 'src/utils/testing'
 import type { Repository } from 'typeorm'
 import { SpotifyAccount } from '../entities/spotify-account.entity'
+import { SpotifyAuthService } from '../spotify-auth.service'
 import { SpotifyController } from '../spotify.controller'
-import { SpotifyService } from '../spotify.service'
 
 describe('SpotifyController', () => {
   let controller: SpotifyController
@@ -18,7 +18,7 @@ describe('SpotifyController', () => {
       imports: [NetworkModule],
       controllers: [SpotifyController],
       providers: [
-        SpotifyService,
+        SpotifyAuthService,
         {
           provide: Axios.Axios,
           useValue: Axios.create(),

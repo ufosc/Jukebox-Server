@@ -6,6 +6,7 @@ node_modules/
 dist/
 playground/
 .DS_Store
+_README.md
 
 # Misc
 notes.md
@@ -16,6 +17,7 @@ _depricated/
 _deprecated/
 _deprecated_*/
 generated/
+_*/
 
 ### Terraform ###
 # Local .terraform directories

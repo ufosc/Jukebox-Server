@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jukebox-server
+  namespace: main
+spec:
+  selector:
+    matchLabels:
+      app: jukebox-server
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jukebox-server
+    spec:
+      containers:
+        - name: jukebox-server-api
+          image: ikehunter5/jukebox-server:latest
+          envFrom:
+            - configMapRef:
+                name: jukebox-server-config

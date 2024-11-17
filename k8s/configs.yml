@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jukebox-server-config
+  namespace: main
+data:
+  NODE_ENV: 'production'
+  PORT: '9000'
+  HOST: 'localhost'
+  LOG_LEVEL: 'debug'
+  BASE_URL: 'http://localhost:30080'
+  PROXY_URL: 'http://proxy:8080'
+  DB_HOST: 'postgres-postgresql.postgres.svc.cluster.local'
+  DB_PORT: '5432'
+  DB_USER: 'testuser'
+  DB_PASS: 'testpass'
+  DB_NAME: 'testdb'
+  REDIS_HOST: 'redis-master.redis.svc.cluster.local'
+  REDIS_PORT: '6379'
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: proxy-config
+  namespace: main
+data:
+  SERVER_URI: 'jukebox-service:9000'
+  CLUB_MANAGER_URI: 'club-service:9000'
+  WEBSOCKET_URI: 'jukebox-service:9000'
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: club-manager-config
+  namespace: main
+data:
+  PORT: '9000'
+  DJANGO_ENV: 'production'
+  DB_HOST: 'postgres-postgresql.postgres.svc.cluster.local'
+  DB_USER: 'testuser'
+  DB_PASS: 'testpass'
+  DB_NAME: 'testdb'
+  DEBUG: '1'
+  DJANGO_ALLOWED_HOSTS: '*'
+  S3_STORAGE_BACKEND: '0'
+  CREATE_SUPERUSER: '1'
+  DJANGO_SUPERUSER_EMAIL: 'admin@example.com'
+  DJANGO_SUPERUSER_PASS: 'changeme'

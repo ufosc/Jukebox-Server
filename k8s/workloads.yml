@@ -19,3 +19,25 @@ spec:
           envFrom:
             - configMapRef:
                 name: jukebox-server-config
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy
+  namespace: main
+spec:
+  selector:
+    matchLabels:
+      app: proxy
+  template:
+    metadata:
+      labels:
+        app: proxy
+    spec:
+      containers:
+        - name: proxy
+          image: ikehunter5/jukebox-proxy:latest
+          envFrom:
+            - configMapRef:
+                name: proxy-config

@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy
+  namespace: main
+spec:
+  selector:
+    app: proxy
+  type: NodePort
+  ports:
+    - name: base
+      port: 8080
+    - name: club-admin
+      port: 8081
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jukebox-service
+  namespace: main
+spec:
+  selector:
+    app: jukebox-server
+  ports:
+    - name: http
+      port: 9000

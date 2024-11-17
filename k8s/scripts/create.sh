@@ -17,6 +17,5 @@ helm install redis ./charts/redis \
 kubectl create namespace main --dry-run=client -o yaml | kubectl apply -f -
 
 # Apply kubernetes files
-kubectl apply -f namespaces.yml
 kubectl apply -f .
 

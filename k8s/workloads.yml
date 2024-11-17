@@ -41,3 +41,25 @@ spec:
           envFrom:
             - configMapRef:
                 name: proxy-config
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: club-manager
+  namespace: main
+spec:
+  selector:
+    matchLabels:
+      app: club-manager
+  template:
+    metadata:
+      labels:
+        app: club-manager
+    spec:
+      containers:
+        - name: club-manager
+          image: ikehunter5/club-manager:latest
+          envFrom:
+            - configMapRef:
+                name: club-manager-config

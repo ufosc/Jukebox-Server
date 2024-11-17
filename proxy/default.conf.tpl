@@ -96,12 +96,22 @@ server {
     proxy_set_header Connection "upgrade";
   }
   
-  location / {
-    root /vol/client;
-    index index.html index.htm;
+  # location /api/docs {
+  #   root /vol/client;
+  #   index index.html index.htm;
     
-    try_files $uri $uri/ /index.html /vol/apidoc/;
-    error_page 404 =200 /index.html;
+  #   try_files $uri $uri/ /index.html /vol/apidoc/;
+  #   error_page 404 =200 /index.html;
+  # }
+  
+  location / {
+    proxy_intercept_errors on;
+    proxy_redirect off;
+    proxy_hide_header X-Amz-Id-2;
+    proxy_hide_header X-Amz-Request-Id;
+    
+    error_page 400 403 404 500 =200 /index.html;
+    proxy_pass "http://$PUBLIC_STATIC_URI/jukebox-client/";
   }
   
 }

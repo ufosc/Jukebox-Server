@@ -1,3 +1,6 @@
+#############################
+## Jukebox Server Workload ##
+#############################
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,6 +23,9 @@ spec:
             - configMapRef:
                 name: jukebox-server-config
 
+############################
+## Reverse Proxy Workload ##
+############################
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -42,6 +48,9 @@ spec:
             - configMapRef:
                 name: proxy-config
 
+##################################
+## Club Manager Server Workload ##
+##################################
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -63,3 +72,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: club-manager-config
+      volumes:
+        - name: club-static
+          persistentVolumeClaim:
+            claimName: club-static-pvc

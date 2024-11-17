@@ -33,3 +33,29 @@
    ```sh
    minikube dashboard
    ```
+
+### Accessing Cluster
+
+The general way to access a nodeport is via the following command:
+
+```sh
+kubectl port-forward svc/service-name host-port:service-port --namespace namespace
+```
+
+Running this command will start a long-running process in that terminal tab. You would start a new terminal instance for each port you forward.
+
+#### Forwarding Base Routes
+
+Run this command to open up the base 8080 port onto 30080 on your local machine:
+
+```sh
+kubectl port-forward svc/proxy 30080:8080 --namespace main
+```
+
+#### Forwarding Club Manager Admin
+
+Use this command to forward the port 8081, used for the club manager site/admin, onto 30081 of your local machine:
+
+```sh
+kubectl port-forward svc/proxy 30081:8081 --namespace main
+```

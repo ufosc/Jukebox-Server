@@ -10,10 +10,11 @@
 
 ### Running cluster
 
-1. In root project directory, navigate to the `k8s` directory:
+1. In root project directory, navigate to the `k8s` directory and make sure the scripts are setup as executables:
 
    ```sh
    cd k8s
+   chmod -R +x ./scripts
    ```
 
 2. Start Minikube:
@@ -25,13 +26,19 @@
 3. Apply the cluster:
 
    ```sh
-   kubectl apply -f .
+   ./scripts/create.sh
    ```
 
 4. Optionally, start up the minikube dashboard:
 
    ```sh
    minikube dashboard
+   ```
+
+5. When you are finished, destroy the local cluster:
+
+   ```sh
+   ./scripts/destroy.sh
    ```
 
 ### Accessing Cluster
@@ -52,6 +59,8 @@ Run this command to open up the base 8080 port onto 30080 on your local machine:
 kubectl port-forward svc/proxy 30080:8080 --namespace main
 ```
 
+You can test that it's working by going to <http://localhost:30080/api/docs/>
+
 #### Forwarding Club Manager Admin
 
 Use this command to forward the port 8081, used for the club manager site/admin, onto 30081 of your local machine:
@@ -59,3 +68,5 @@ Use this command to forward the port 8081, used for the club manager site/admin,
 ```sh
 kubectl port-forward svc/proxy 30081:8081 --namespace main
 ```
+
+You can test that it's working by going to <http://localhost:30081/>

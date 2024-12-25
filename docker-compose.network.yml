@@ -56,6 +56,7 @@ services:
       - SERVER_URI=server-jbx:9000
       - WEBSOCKET_URI=server-jbx:9000
       - CLUB_MANAGER_URI=club-app-network:9000
+      - PUBLIC_STATIC_URI=jukebox-client-631bab280a434e28995fd3fcafd1fa5a.s3-website-us-east-1.amazonaws.com
 
     # attach: false
 

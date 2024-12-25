@@ -127,6 +127,7 @@ export class JukeboxService {
       jukebox: jukebox,
       spotify_link_id: spotifyLink.id,
       spotify_link: spotifyLink,
+      active: true,
     })
 
     const record = await this.assignmentRepo.save(assignment)

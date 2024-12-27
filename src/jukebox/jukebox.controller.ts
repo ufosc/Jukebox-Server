@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import { AppGateway } from 'src/app.gateway'
@@ -120,7 +121,7 @@ export class JukeboxController {
     return this.queueSvc.listTracks(jukeboxId)
   }
 
-  @Post('/:jukebox_id/tracks-queue')
+  @Post('/:jukebox_id/tracks-queue/')
   async addTrackToQueue(@Param('jukebox_id') jukeboxId: number, @Body() track: AddTrackToQueueDto) {
     const account = await this.jukeboxSvc.getActiveSpotifyAccount(jukeboxId)
     const trackItem = await this.spotifySvc.getTrack(account, track.track_id)

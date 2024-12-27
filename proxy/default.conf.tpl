@@ -12,7 +12,7 @@ include /etc/nginx/conf.d/includes/club-admin.conf;
 server {
   listen 8080;
   
-  add_header Access-Control-Allow-Origin *;
+  # add_header Access-Control-Allow-Origin *;
   # proxy_set_header Access-Control-Allow-Origin *;
   add_header Access-Control-Allow-Headers *;
   add_header Access-Control-Allow-Methods *;
@@ -55,6 +55,8 @@ server {
     
     client_max_body_size    32M;
     include /etc/nginx/uwsgi_params;
+    
+    
   }
   
   location ~* ^/api/v[0-9]/(docs|schema)/club-manager {

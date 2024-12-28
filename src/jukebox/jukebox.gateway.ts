@@ -2,7 +2,7 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { Server, Socket } from 'socket.io'
 import { AppGateway } from 'src/app.gateway'
 import { SpotifyService } from 'src/spotify/spotify.service'
-import { PlayerUpdateDto } from './dto/track-player-state.dto'
+import { PlayerAuxUpdateDto } from './dto/track-player-state.dto'
 import { JukeboxService } from './jukebox.service'
 import { TrackQueueService } from './track-queue/track-queue.service'
 
@@ -17,28 +17,30 @@ export class JukeboxGateway {
 
   @WebSocketServer() server: Server
 
-  @SubscribeMessage('player-update')
-  async handleQueueNextTrack(client: Socket, payload: PlayerUpdateDto) {
-    const { current_track, jukebox_id } = payload
+  public async emitPlayerUpdate(jukebox_id: number) {
+    const state = await this.queueSvc.getPlayerState(jukebox_id)
+    this.server.emit('player-update', state)
+  }
+  
+  public async emitTrackQueueUpdate(jukebox_id: number) {
+    // TODO: Emit track queue with updated track
+  }
 
-    // Remove top track, either it's playing or was skipped
-    await this.queueSvc.popTrack(jukebox_id)
-    
-    // Look at the next track, queue it up in Spotify
-    const nextTrack = await this.queueSvc.peekTrack(jukebox_id)
-    const queuedTracks = await this.queueSvc.listTracks(jukebox_id)
+  @SubscribeMessage('player-aux-update')
+  async handlePlayerAuxUpdate(client: Socket, payload: PlayerAuxUpdateDto) {
+    const { current_track, jukebox_id, is_playing, default_next_tracks, position } = payload
+    console.log('Received current track:', current_track)
 
-    this.appGateway.emitTrackStateUpdate({
-      current_track,
-      next_tracks: queuedTracks,
+    // Set current player state
+    this.queueSvc.setPlayerState(jukebox_id, {
       jukebox_id,
+      current_track: current_track,
+      is_playing,
+      position,
+      default_next_tracks,
     })
 
-    if (!nextTrack) {
-      return
-    }
-
-    const account = await this.jukeboxSvc.getActiveSpotifyAccount(jukebox_id)
-    this.spotifySvc.queueTrack(account, nextTrack)
+    // Broadcast new player state
+    this.emitPlayerUpdate(jukebox_id)
   }
 }

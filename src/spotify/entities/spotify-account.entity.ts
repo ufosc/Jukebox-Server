@@ -3,7 +3,7 @@ import { JukeboxLinkAssignment } from 'src/jukebox/entities/jukebox.entity'
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity('spotify_link')
-export class SpotifyAccount extends BaseEntity {
+export class SpotifyAccount extends BaseEntity implements ISpotifyAccount {
   @PrimaryGeneratedColumn()
   id: number
 

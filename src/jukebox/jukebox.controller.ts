@@ -7,17 +7,18 @@ import {
   Param,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
-import { AppGateway } from 'src/app.gateway'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { CurrentUser } from '../auth/current-user.decorator'
 import { SpotifyAuthService } from '../spotify/spotify-auth.service'
 import { AddJukeboxLinkDto } from './dto/add-jukebox-link.dto'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
-import { JukeboxDto, JukeboxLinkDto } from './dto/jukebox.dto'
+import { JukeboxLinkDto } from './dto/jukebox-link.dto'
+import { JukeboxDto } from './dto/jukebox.dto'
+import { PlayerStateDto } from './dto/player-state.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
+import { JukeboxGateway } from './jukebox.gateway'
 import { JukeboxService } from './jukebox.service'
 import { AddTrackToQueueDto } from './track-queue/dtos/track-queue.dto'
 import { TrackQueueService } from './track-queue/track-queue.service'
@@ -30,7 +31,8 @@ export class JukeboxController {
     private spotifyAuthSvc: SpotifyAuthService,
     private spotifySvc: SpotifyService,
     private queueSvc: TrackQueueService,
-    private appGateway: AppGateway,
+    // private appGateway: AppGateway,
+    private jbxGateway: JukeboxGateway,
   ) {}
 
   @Post('jukeboxes/')
@@ -97,12 +99,9 @@ export class JukeboxController {
   @Get('/:jukebox_id/active-link/')
   async getActiveJukeboxLink(@Param('jukebox_id') jukeboxId: number) {
     const link = await this.jukeboxSvc.getActiveSpotifyAccount(jukeboxId)
-    if (!link) {
-      return
-    }
+    if (!link) return
 
-    const refreshed = await this.spotifyAuthSvc.refreshSpotifyAccount(link)
-    return refreshed
+    return await this.spotifyAuthSvc.refreshSpotifyAccount(link)
   }
 
   @Post('/:jukebox_id/active-link/')
@@ -118,7 +117,7 @@ export class JukeboxController {
 
   @Get('/:jukebox_id/tracks-queue/')
   async getTracksQueue(@Param('jukebox_id') jukeboxId: number) {
-    return this.queueSvc.listTracks(jukeboxId)
+    return this.queueSvc.listNextTracks(jukeboxId)
   }
 
   @Post('/:jukebox_id/tracks-queue/')
@@ -127,13 +126,13 @@ export class JukeboxController {
     const trackItem = await this.spotifySvc.getTrack(account, track.track_id)
 
     await this.queueSvc.queueTrack(jukeboxId, trackItem, track.position)
-    const nextTracks = await this.queueSvc.listTracks(jukeboxId)
+    const nextTracks = await this.queueSvc.listNextTracks(jukeboxId)
 
     if (nextTracks.length === 1) {
       await this.spotifySvc.queueTrack(account, trackItem)
     }
 
-    this.appGateway.emitTrackStateUpdate({ jukebox_id: jukeboxId, next_tracks: nextTracks })
+    this.jbxGateway.emitTrackQueueUpdate(jukeboxId)
 
     return trackItem
   }
@@ -147,5 +146,18 @@ export class JukeboxController {
     await this.spotifySvc.setPlayerDevice(account, body.device_id)
 
     return
+  }
+
+  @Get('/:jukebox_id/player-state/')
+  async getCurrentTrack(@Param('jukebox_id') jukeboxId: number): Promise<PlayerStateDto> {
+    console.log('current player state:', await this.queueSvc.getPlayerState(jukeboxId))
+    console.log('queue:', await this.queueSvc.listNextTracks(jukeboxId))
+
+    return await this.queueSvc.getPlayerState(jukeboxId)
+  }
+
+  @Get('/:jukebox_id/next-tracks/')
+  async getNextTracks(@Param('jukebox_id') jukeboxId: number) {
+    return this.queueSvc.listNextTracks(jukeboxId)
   }
 }

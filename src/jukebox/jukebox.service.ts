@@ -4,7 +4,7 @@ import { Not, Repository } from 'typeorm'
 import { SpotifyAccount } from '../spotify/entities/spotify-account.entity'
 import { AddJukeboxLinkDto } from './dto/add-jukebox-link.dto'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
-import { JukeboxLinkDto } from './dto/jukebox.dto'
+import { JukeboxLinkDto } from './dto/jukebox-link.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { Jukebox, JukeboxLinkAssignment } from './entities/jukebox.entity'
 
@@ -117,6 +117,17 @@ export class JukeboxService {
     await assignment.save()
 
     return assignment
+  }
+
+  async getActiveLink(jukeboxId: number): Promise<JukeboxLinkDto | null> {
+    const jukebox = await this.findOne(jukeboxId)
+    const assignment = jukebox.link_assignments.find((lnk) => lnk.active)
+
+    if (!assignment) {
+      return
+    }
+
+    return assignment.serialize()
   }
 
   async addLinkToJukebox(jukeboxId: number, spotifyLink: SpotifyAccount): Promise<JukeboxLinkDto> {

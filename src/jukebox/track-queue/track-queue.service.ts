@@ -2,6 +2,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Inject, Injectable } from '@nestjs/common'
 import type { Track } from '@spotify/web-api-ts-sdk'
 import { Cache } from 'cache-manager'
+import { PlayerMetaStateDto, PlayerStateDto } from '../dto/player-state.dto'
 
 export class TrackQueueItem {
   recommended_by: string
@@ -9,20 +10,7 @@ export class TrackQueueItem {
 }
 
 export class TrackQueue {
-  // private static queues: { [jukeboxId: number]: TrackQueue } = {}
-  // protected tracks: TrackQueueItem[] = []
-
-  // private constructor(readonly jukeboxId: number) {}
   constructor(readonly tracks: TrackQueueItem[]) {}
-
-  // public static getQueue(jukeboxId: number) {
-  //   if (!(jukeboxId in this.queues)) {
-  //     console.log('Creating new track queue...')
-  //     this.queues[jukeboxId] = new TrackQueue(jukeboxId)
-  //   }
-
-  //   return this.queues[jukeboxId]
-  // }
 
   // Pushes a track to the end of the queue and returns the new length
   public push(track: Track): number {
@@ -37,8 +25,8 @@ export class TrackQueue {
   }
 
   // Peeks at the track at the front of the queue without removing it
-  public peek(): Track | undefined {
-    const item = this.tracks[0] // Get the first item
+  public peek(offset = 0): Track | undefined {
+    const item = this.tracks[offset]
     return item ? item.track : undefined // Return the track or undefined if the queue is empty
   }
 
@@ -68,23 +56,34 @@ export class TrackQueue {
 export class TrackQueueService {
   constructor(@Inject(CACHE_MANAGER) private cache: Cache) {}
 
-  private getCacheKey(jukeboxId: number) {
-    return `queue-${jukeboxId}`
+  private getCacheKey(jukeboxId: number, label: 'queue' | 'currently-playing') {
+    return `${label}-${jukeboxId}`
   }
 
   private async getQueue(jukeboxId: number) {
-    const key = this.getCacheKey(jukeboxId)
+    const key = this.getCacheKey(jukeboxId, 'queue')
     const tracks = (await this.cache.get<TrackQueueItem[] | undefined>(key)) ?? []
     return new TrackQueue(tracks)
-    // return TrackQueue.getQueue(jukeboxId)
   }
 
   private async commitQueue(jukeboxId: number, queue: TrackQueue) {
-    const key = this.getCacheKey(jukeboxId)
+    const key = this.getCacheKey(jukeboxId, 'queue')
     await this.cache.set(key, queue.tracks)
   }
 
-  public async listTracks(jukeboxId: number) {
+  private async getCurrentlyPlaying(jukeboxId: number): Promise<PlayerStateDto | null> {
+    const key = this.getCacheKey(jukeboxId, 'currently-playing')
+    const playing = await this.cache.get<PlayerStateDto | undefined>(key)
+
+    return playing ?? null
+  }
+
+  private async setCurrentlyPlaying(jukeboxId: number, playerState: PlayerMetaStateDto) {
+    const key = this.getCacheKey(jukeboxId, 'currently-playing')
+    await this.cache.set(key, playerState)
+  }
+
+  public async listNextTracks(jukeboxId: number) {
     const queue = await this.getQueue(jukeboxId)
     return queue.list()
   }
@@ -109,10 +108,32 @@ export class TrackQueueService {
     return track
   }
 
-  public async peekTrack(jukeboxId: number): Promise<Track | null> {
+  public async peekNextTrack(jukeboxId: number): Promise<Track | null> {
     const queue = await this.getQueue(jukeboxId)
-    const track: Track | null = queue.peek() ?? null
-
-    return track
+    return queue.peek()
   }
+
+  public async queueIsEmpty(jukeboxId: number): Promise<boolean> {
+    const queue = await this.getQueue(jukeboxId)
+    return queue.list().length === 0
+  }
+
+  public async getPlayerState(jukeboxId: number): Promise<PlayerStateDto | null> {
+    return await this.getCurrentlyPlaying(jukeboxId)
+  }
+
+  public async setPlayerState(jukeboxId: number, playerState: PlayerMetaStateDto | null) {
+    return await this.setCurrentlyPlaying(jukeboxId, playerState)
+  }
+
+  // public async getFirstQueuedTrack(jukeboxId: number): Promise<Track | null> {
+  //   const queue = await this.getQueue(jukeboxId)
+
+  //   return queue.peek(1)
+  // }
+
+  // public async getNextTracks(jukeboxId: number): Promise<Track[]> {
+  //   const queue = await this.getQueue(jukeboxId)
+  //   return [...queue.list()].slice(1)
+  // }
 }

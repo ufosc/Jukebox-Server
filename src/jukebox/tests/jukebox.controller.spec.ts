@@ -11,7 +11,7 @@ import { mockCache, mockRepo } from 'src/utils/testing'
 import { Jukebox, JukeboxLinkAssignment } from '../entities/jukebox.entity'
 import { JukeboxController } from '../jukebox.controller'
 import { JukeboxService } from '../jukebox.service'
-import { TrackQueueService } from '../track-queue/track-queue.service'
+import { TrackQueueService } from '../track-queue/queue.service'
 
 describe('JukeboxController', () => {
   let controller: JukeboxController

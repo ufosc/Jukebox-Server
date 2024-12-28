@@ -13,3 +13,46 @@ declare interface IJukeboxLink {
   email: string
   active: boolean
 }
+
+declare interface ISpotifyAccount {
+  id: number
+  access_token: string
+  refresh_token: string
+  user_id: number
+  spotify_email: string
+  expires_in: number
+  expires_at: Date
+  token_type: string
+}
+
+declare interface IJukeboxLinkAccount extends IJukeboxLink {
+  account: ISpotifyAccount
+}
+
+/**
+ * State of the current player stored in Redis
+ */
+declare interface IPlayerMetaState {
+  jukebox_id: number
+  current_track?: ITrack
+  position: number
+  is_playing: boolean
+
+  /** Next up in Spotify's queue */
+  default_next_tracks: ITrack[]
+}
+
+/**
+ * The state of the player broadcast to socket subscribers
+ */
+declare interface IPlayerState {
+  jukebox_id: number
+  current_track?: ITrack
+  position: number
+  is_playing: boolean
+
+  next_tracks: ITrack[]
+}
+
+declare interface IPlayerAuxUpdate extends IPlayerMetaState {}
+declare interface IPlayerUpdate extends IPlayerState {}

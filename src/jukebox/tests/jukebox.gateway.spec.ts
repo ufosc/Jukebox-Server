@@ -6,7 +6,7 @@ import { mockCache, mockRepo } from 'src/utils/testing'
 import { Jukebox, JukeboxLinkAssignment } from '../entities/jukebox.entity'
 import { JukeboxGateway } from '../jukebox.gateway'
 import { JukeboxService } from '../jukebox.service'
-import { TrackQueueService } from '../track-queue/track-queue.service'
+import { TrackQueueService } from '../track-queue/queue.service'
 
 describe('JukeboxGateway', () => {
   let gateway: JukeboxGateway

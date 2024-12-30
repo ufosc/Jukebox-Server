@@ -16,7 +16,7 @@ import { AddJukeboxLinkDto } from './dto/add-jukebox-link.dto'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
 import { JukeboxLinkDto } from './dto/jukebox-link.dto'
 import { JukeboxDto } from './dto/jukebox.dto'
-import { PlayerStateDto } from './dto/player-state.dto'
+import { PlayerQueueStateDto } from './dto/player-state.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { JukeboxGateway } from './jukebox.gateway'
 import { JukeboxService } from './jukebox.service'
@@ -149,10 +149,7 @@ export class JukeboxController {
   }
 
   @Get('/:jukebox_id/player-state/')
-  async getCurrentTrack(@Param('jukebox_id') jukeboxId: number): Promise<PlayerStateDto> {
-    console.log('current player state:', await this.queueSvc.getPlayerState(jukeboxId))
-    console.log('queue:', await this.queueSvc.listNextTracks(jukeboxId))
-
+  async getCurrentTrack(@Param('jukebox_id') jukeboxId: number): Promise<PlayerQueueStateDto> {
     return await this.queueSvc.getPlayerState(jukeboxId)
   }
 

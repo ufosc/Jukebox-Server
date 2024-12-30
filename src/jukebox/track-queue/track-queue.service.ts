@@ -2,7 +2,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Inject, Injectable } from '@nestjs/common'
 import type { Track } from '@spotify/web-api-ts-sdk'
 import { Cache } from 'cache-manager'
-import { PlayerMetaStateDto, PlayerStateDto } from '../dto/player-state.dto'
+import { PlayerMetaStateDto, PlayerQueueStateDto } from '../dto/player-state.dto'
 
 export class TrackQueueItem {
   recommended_by: string
@@ -71,9 +71,9 @@ export class TrackQueueService {
     await this.cache.set(key, queue.tracks)
   }
 
-  private async getCurrentlyPlaying(jukeboxId: number): Promise<PlayerStateDto | null> {
+  private async getCurrentlyPlaying(jukeboxId: number): Promise<PlayerQueueStateDto | null> {
     const key = this.getCacheKey(jukeboxId, 'currently-playing')
-    const playing = await this.cache.get<PlayerStateDto | undefined>(key)
+    const playing = await this.cache.get<PlayerQueueStateDto | undefined>(key)
 
     return playing ?? null
   }
@@ -118,7 +118,7 @@ export class TrackQueueService {
     return queue.list().length === 0
   }
 
-  public async getPlayerState(jukeboxId: number): Promise<PlayerStateDto | null> {
+  public async getPlayerState(jukeboxId: number): Promise<PlayerQueueStateDto | null> {
     return await this.getCurrentlyPlaying(jukeboxId)
   }
 

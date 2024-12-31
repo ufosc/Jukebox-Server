@@ -1,1 +1,1 @@
-declare type ITrack = Spotify.Track
+declare type ITrack = Track

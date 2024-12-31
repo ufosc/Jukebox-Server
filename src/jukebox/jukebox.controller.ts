@@ -16,7 +16,7 @@ import { AddJukeboxLinkDto } from './dto/add-jukebox-link.dto'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
 import { JukeboxLinkDto } from './dto/jukebox-link.dto'
 import { JukeboxDto } from './dto/jukebox.dto'
-import { PlayerQueueStateDto } from './dto/player-state.dto'
+import { PlayerStateDto } from './dto/player-state.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { JukeboxGateway } from './jukebox.gateway'
 import { JukeboxService } from './jukebox.service'
@@ -117,7 +117,7 @@ export class JukeboxController {
 
   @Get('/:jukebox_id/tracks-queue/')
   async getTracksQueue(@Param('jukebox_id') jukeboxId: number) {
-    return this.queueSvc.listNextTracks(jukeboxId)
+    return this.queueSvc.getTrackQueue(jukeboxId)
   }
 
   @Post('/:jukebox_id/tracks-queue/')
@@ -126,7 +126,7 @@ export class JukeboxController {
     const trackItem = await this.spotifySvc.getTrack(account, track.track_id)
 
     await this.queueSvc.queueTrack(jukeboxId, trackItem, track.position)
-    const nextTracks = await this.queueSvc.listNextTracks(jukeboxId)
+    const nextTracks = await this.queueSvc.getTrackQueue(jukeboxId)
 
     if (nextTracks.length === 1) {
       await this.spotifySvc.queueTrack(account, trackItem)
@@ -149,12 +149,12 @@ export class JukeboxController {
   }
 
   @Get('/:jukebox_id/player-state/')
-  async getCurrentTrack(@Param('jukebox_id') jukeboxId: number): Promise<PlayerQueueStateDto> {
+  async getCurrentTrack(@Param('jukebox_id') jukeboxId: number): Promise<PlayerStateDto> {
     return await this.queueSvc.getPlayerState(jukeboxId)
   }
 
   @Get('/:jukebox_id/next-tracks/')
   async getNextTracks(@Param('jukebox_id') jukeboxId: number) {
-    return this.queueSvc.listNextTracks(jukeboxId)
+    return this.queueSvc.getTrackQueueOrDefaults(jukeboxId)
   }
 }

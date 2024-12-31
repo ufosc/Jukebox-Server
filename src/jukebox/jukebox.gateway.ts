@@ -23,26 +23,27 @@ export class JukeboxGateway {
   }
 
   public async emitTrackQueueUpdate(jukebox_id: number) {
-    // TODO: Emit track queue with updated track
+    const nextTracks = await this.queueSvc.getTrackQueueOrDefaults(jukebox_id)
+    this.server.emit('track-queue-update', nextTracks)
   }
 
   @SubscribeMessage('player-aux-update')
   async handlePlayerAuxUpdate(client: Socket, payload: PlayerAuxUpdateDto) {
-    const {
-      current_track,
-      jukebox_id,
-      is_playing,
-      default_next_tracks,
-      progress: position,
-    } = payload
-    console.log('Received current track:', current_track)
+    const { current_track, jukebox_id, is_playing, default_next_tracks, progress } = payload
+
+    const currentPlayerState = await this.queueSvc.getPlayerState(jukebox_id)
+
+    if (current_track.uid !== currentPlayerState?.current_track.uid) {
+      this.queueSvc.popTrack(jukebox_id)
+      this.emitTrackQueueUpdate(jukebox_id)
+    }
 
     // Set current player state
     this.queueSvc.setPlayerState(jukebox_id, {
       jukebox_id,
-      current_track: current_track,
+      current_track,
       is_playing,
-      progress: position,
+      progress,
       default_next_tracks,
     })
 

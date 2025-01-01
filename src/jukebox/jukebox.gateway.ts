@@ -29,17 +29,12 @@ export class JukeboxGateway {
 
   @SubscribeMessage('player-aux-update')
   async handlePlayerAuxUpdate(client: Socket, payload: PlayerAuxUpdateDto) {
-    const { current_track, jukebox_id, is_playing, default_next_tracks, progress } = payload
-
-    const currentPlayerState = await this.queueSvc.getPlayerState(jukebox_id)
-
-    if (current_track.uid !== currentPlayerState?.current_track.uid) {
-      this.queueSvc.popTrack(jukebox_id)
-      this.emitTrackQueueUpdate(jukebox_id)
-    }
+    const { current_track, jukebox_id, is_playing, default_next_tracks, progress, changed_tracks } =
+      payload
+    const prevNextTracks = await this.queueSvc.getTrackQueue(jukebox_id)
 
     // Set current player state
-    this.queueSvc.setPlayerState(jukebox_id, {
+    await this.queueSvc.setPlayerState(jukebox_id, {
       jukebox_id,
       current_track,
       is_playing,
@@ -48,6 +43,22 @@ export class JukeboxGateway {
     })
 
     // Broadcast new player state
-    this.emitPlayerUpdate(jukebox_id)
+    await this.emitPlayerUpdate(jukebox_id)
+
+    if (current_track === undefined) return
+    const currTrackWasNext = prevNextTracks.length > 0 && prevNextTracks[0]?.id === current_track.id
+
+    if (changed_tracks) {
+      if (currTrackWasNext) {
+        // The current track was next in queue
+        await this.queueSvc.popTrack(jukebox_id)
+        await this.jukeboxSvc.queueUpNextTrack(jukebox_id)
+      } else {
+        // Current track was not next in queue
+        await this.jukeboxSvc.queueUpNextTrack(jukebox_id, true)
+      }
+
+      await this.emitTrackQueueUpdate(jukebox_id)
+    }
   }
 }

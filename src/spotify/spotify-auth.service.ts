@@ -96,6 +96,7 @@ export class SpotifyAuthService extends SpotifyBaseService {
 
   public async refreshSpotifyAccount(
     account: { spotify_email: string } | SpotifyAccount,
+    force=false,
   ): Promise<SpotifyAccount> {
     let spotifyAccount: SpotifyAccount
 
@@ -105,7 +106,7 @@ export class SpotifyAuthService extends SpotifyBaseService {
       spotifyAccount = account
     }
 
-    if (!spotifyAccount.isExpired()) {
+    if (!spotifyAccount.isExpired() && !force) {
       return spotifyAccount
     }
 

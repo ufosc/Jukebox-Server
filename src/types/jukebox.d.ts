@@ -5,6 +5,8 @@ declare interface IJukebox {
   links: IJukeboxLink[]
 }
 
+
+
 declare type JukeboxLinkType = 'spotify'
 
 declare interface IJukeboxLink {
@@ -51,5 +53,7 @@ declare interface IPlayerQueueState extends IPlayerState {
   next_tracks: ITrack[]
 }
 
-declare interface IPlayerAuxUpdate extends IPlayerMetaState {}
+declare interface IPlayerAuxUpdate extends IPlayerMetaState {
+  changed_tracks?: boolean
+}
 declare interface IPlayerUpdate extends IPlayerQueueState {}

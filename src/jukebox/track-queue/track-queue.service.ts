@@ -4,12 +4,12 @@ import { Cache } from 'cache-manager'
 import { randomUUID } from 'crypto'
 import { PlayerMetaStateDto } from '../dto/player-state.dto'
 
-export class QueueItem<T> {
+export class QueueItem<T = unknown> {
   recommended_by: string
   constructor(public item: T) {}
 }
 
-export class Queue<T> {
+export class Queue<T = unknown> {
   constructor(readonly items: QueueItem<T>[]) {}
 
   // Pushes a track to the end of the queue and returns the new length
@@ -188,7 +188,7 @@ export class TrackQueueService {
     const playerState = await this.getPlayerState(jukeboxId)
     const updatedState = cb(playerState)
     await this.commitPlayerState(jukeboxId, updatedState)
-    
+
     return updatedState
   }
 }

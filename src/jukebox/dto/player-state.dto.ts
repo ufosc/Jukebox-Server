@@ -1,4 +1,4 @@
-import { TrackMetaDto } from './track.dto'
+import type { TrackMetaDto } from './track.dto'
 
 export class PlayerStateDto implements IPlayerState {
   jukebox_id: number

@@ -42,7 +42,7 @@ export class JukeboxGateway {
 
     if (changed_tracks) {
       prevState = {
-        current_track: null
+        current_track: null,
       }
     }
 
@@ -50,7 +50,7 @@ export class JukeboxGateway {
     await this.queueSvc.setPlayerState(jukebox_id, {
       ...prevState,
       jukebox_id,
-      current_track: {...(prevState?.current_track || {}), ...current_track},
+      current_track: { ...(prevState?.current_track || {}), ...current_track },
       is_playing,
       progress,
       default_next_tracks,

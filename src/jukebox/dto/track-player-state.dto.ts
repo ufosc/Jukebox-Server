@@ -12,5 +12,5 @@ export class PlayerAuxUpdateDto implements IPlayerAuxUpdate {
   progress: number
   is_playing: boolean
   default_next_tracks: ITrack[]
-  changed_tracks?: boolean;
+  changed_tracks?: boolean
 }

@@ -3,5 +3,5 @@ export const mockUser: IUser = {
   email: 'user@example.com',
   first_name: 'John',
   last_name: 'Doe',
-  username: 'JohnDoe52'
+  username: 'JohnDoe52',
 }

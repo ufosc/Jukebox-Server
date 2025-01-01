@@ -14,7 +14,7 @@ export class UpdateSpotifyAccountDto {
   expires_in: number
 }
 
-export class SpotifyAccountDto extends BaseDto implements ISpotifyAccount {
+export class SpotifyAccountDto extends BaseDto implements Partial<ISpotifyAccount> {
   @Expose()
   id: number
 

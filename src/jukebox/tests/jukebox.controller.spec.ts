@@ -7,11 +7,12 @@ import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { AxiosProvider } from 'src/utils/providers/axios.provider'
-import { mockCache, mockRepo } from 'src/utils/testing'
+import { CacheMockProvider, mockRepo } from 'src/utils/testing'
 import { Jukebox, JukeboxLinkAssignment } from '../entities/jukebox.entity'
 import { JukeboxController } from '../jukebox.controller'
 import { JukeboxService } from '../jukebox.service'
 import { TrackQueueService } from '../track-queue/track-queue.service'
+import { JukeboxGateway } from '../jukebox.gateway'
 
 describe('JukeboxController', () => {
   let controller: JukeboxController
@@ -22,12 +23,13 @@ describe('JukeboxController', () => {
       controllers: [JukeboxController],
       providers: [
         AxiosProvider,
+        CacheMockProvider,
         SpotifyAuthService,
         JukeboxService,
         SpotifyService,
         TrackQueueService,
+        JukeboxGateway,
         AppGateway,
-        mockCache,
         {
           provide: getRepositoryToken(Jukebox),
           useFactory: mockRepo<Jukebox>,

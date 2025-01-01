@@ -2,7 +2,8 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { Server, Socket } from 'socket.io'
 import { AppGateway } from 'src/app.gateway'
 import { SpotifyService } from 'src/spotify/spotify.service'
-import { PlayerUpdateDto } from './dto/track-player-state.dto'
+import { PlayerMetaStateDto, PlayerStateActionDto } from './dto/player-state.dto'
+import { PlayerAuxUpdateDto, PlayerUpdateDto } from './dto/track-player-state.dto'
 import { JukeboxService } from './jukebox.service'
 import { TrackQueueService } from './track-queue/track-queue.service'
 
@@ -17,28 +18,61 @@ export class JukeboxGateway {
 
   @WebSocketServer() server: Server
 
-  @SubscribeMessage('player-update')
-  async handleQueueNextTrack(client: Socket, payload: PlayerUpdateDto) {
-    const { current_track, jukebox_id } = payload
+  public async emitPlayerUpdate(jukebox_id: number) {
+    const state = await this.queueSvc.getPlayerState(jukebox_id)
+    this.server.emit('player-update', state)
+  }
 
-    // Remove top track, either it's playing or was skipped
-    await this.queueSvc.popTrack(jukebox_id)
-    
-    // Look at the next track, queue it up in Spotify
-    const nextTrack = await this.queueSvc.peekTrack(jukebox_id)
-    const queuedTracks = await this.queueSvc.listTracks(jukebox_id)
+  public async emitPlayerAction(jukebox_id: number, payload: PlayerStateActionDto) {
+    const state = await this.queueSvc.getPlayerState(jukebox_id)
+    this.server.emit('player-action', state)
+  }
 
-    this.appGateway.emitTrackStateUpdate({
-      current_track,
-      next_tracks: queuedTracks,
-      jukebox_id,
-    })
+  public async emitTrackQueueUpdate(jukebox_id: number) {
+    const nextTracks = await this.queueSvc.getTrackQueueOrDefaults(jukebox_id)
+    this.server.emit('track-queue-update', nextTracks)
+  }
 
-    if (!nextTrack) {
-      return
+  @SubscribeMessage('player-aux-update')
+  async handlePlayerAuxUpdate(client: Socket, payload: PlayerAuxUpdateDto) {
+    const { current_track, jukebox_id, is_playing, default_next_tracks, progress, changed_tracks } =
+      payload
+    const prevNextTracks = await this.queueSvc.getTrackQueue(jukebox_id)
+    let prevState: Partial<PlayerMetaStateDto> = await this.queueSvc.getPlayerState(jukebox_id)
+
+    if (changed_tracks) {
+      prevState = {
+        current_track: null,
+      }
     }
 
-    const account = await this.jukeboxSvc.getActiveSpotifyAccount(jukebox_id)
-    this.spotifySvc.queueTrack(account, nextTrack)
+    // Set current player state
+    await this.queueSvc.setPlayerState(jukebox_id, {
+      ...prevState,
+      jukebox_id,
+      current_track: { ...(prevState?.current_track || {}), ...current_track },
+      is_playing,
+      progress,
+      default_next_tracks,
+    })
+
+    // Broadcast new player state
+    await this.emitPlayerUpdate(jukebox_id)
+
+    if (current_track === undefined) return
+    const currTrackWasNext = prevNextTracks.length > 0 && prevNextTracks[0]?.id === current_track.id
+
+    if (changed_tracks) {
+      if (currTrackWasNext) {
+        // The current track was next in queue
+        await this.queueSvc.popTrack(jukebox_id)
+        await this.jukeboxSvc.queueUpNextTrack(jukebox_id)
+      } else {
+        // Current track was not next in queue
+        await this.jukeboxSvc.queueUpNextTrack(jukebox_id, true)
+      }
+
+      await this.emitTrackQueueUpdate(jukebox_id)
+    }
   }
 }

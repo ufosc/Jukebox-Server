@@ -1,22 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Expose } from 'class-transformer'
-import { BaseDto } from 'src/config/dtos'
-import { JukeboxLinkDto } from './jukebox-link.dto'
 
-export class JukeboxDto extends BaseDto implements IJukebox {
+export class JukeboxLinkDto implements IJukeboxLink {
   @Expose()
   @ApiProperty()
   id: number
 
   @Expose()
   @ApiProperty()
-  name: string
+  type: JukeboxLinkType
 
   @Expose()
   @ApiProperty()
-  club_id: number
+  email: string
 
   @Expose()
   @ApiProperty()
-  links: JukeboxLinkDto[]
+  active: boolean
 }
+
+// export class JukeboxLinkCreds implements IJukeboxLinkCreds

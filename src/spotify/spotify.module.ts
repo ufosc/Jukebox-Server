@@ -11,7 +11,7 @@ import { SpotifyService } from './spotify.service'
 @Module({
   imports: [NetworkModule, TypeOrmModule.forFeature([SpotifyAccount])],
   controllers: [SpotifyController],
-  providers: [SpotifyAuthService, AxiosProvider, NetworkService, SpotifyService],
+  providers: [AxiosProvider, SpotifyAuthService, NetworkService, SpotifyService],
   exports: [SpotifyAuthService, SpotifyService],
 })
 export class SpotifyModule {}

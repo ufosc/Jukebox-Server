@@ -1,12 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing'
+import type { TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing'
 import { getRepositoryToken } from '@nestjs/typeorm'
 import { AppGateway } from 'src/app.gateway'
 import { SpotifyService } from 'src/spotify/spotify.service'
-import { mockCache, mockRepo } from 'src/utils/testing'
+import { CacheMockProvider, mockRepo } from 'src/utils/testing'
 import { Jukebox, JukeboxLinkAssignment } from '../entities/jukebox.entity'
 import { JukeboxGateway } from '../jukebox.gateway'
 import { JukeboxService } from '../jukebox.service'
 import { TrackQueueService } from '../track-queue/track-queue.service'
+import { AxiosMockProvider } from 'src/utils'
 
 describe('JukeboxGateway', () => {
   let gateway: JukeboxGateway
@@ -14,12 +16,13 @@ describe('JukeboxGateway', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        CacheMockProvider,
+        AxiosMockProvider,
         JukeboxGateway,
         TrackQueueService,
         JukeboxService,
         SpotifyService,
         AppGateway,
-        mockCache,
         {
           provide: getRepositoryToken(Jukebox),
           useFactory: mockRepo<Jukebox>,

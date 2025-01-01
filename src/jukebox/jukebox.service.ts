@@ -1,12 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { SpotifyService } from 'src/spotify/spotify.service'
 import { Not, Repository } from 'typeorm'
 import { SpotifyAccount } from '../spotify/entities/spotify-account.entity'
 import { AddJukeboxLinkDto } from './dto/add-jukebox-link.dto'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
-import { JukeboxLinkDto } from './dto/jukebox.dto'
+import { JukeboxLinkDto } from './dto/jukebox-link.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { Jukebox, JukeboxLinkAssignment } from './entities/jukebox.entity'
+import { TrackQueueService } from './track-queue/track-queue.service'
 
 @Injectable()
 export class JukeboxService {
@@ -14,6 +16,8 @@ export class JukeboxService {
     @InjectRepository(Jukebox) private repo: Repository<Jukebox>,
     @InjectRepository(JukeboxLinkAssignment)
     private assignmentRepo: Repository<JukeboxLinkAssignment>,
+    private spotifySvc: SpotifyService,
+    private queueSvc: TrackQueueService,
   ) {}
 
   create(createJukeboxDto: CreateJukeboxDto) {
@@ -119,6 +123,17 @@ export class JukeboxService {
     return assignment
   }
 
+  async getActiveLink(jukeboxId: number): Promise<JukeboxLinkDto | null> {
+    const jukebox = await this.findOne(jukeboxId)
+    const assignment = jukebox.link_assignments.find((lnk) => lnk.active)
+
+    if (!assignment) {
+      return
+    }
+
+    return assignment.serialize()
+  }
+
   async addLinkToJukebox(jukeboxId: number, spotifyLink: SpotifyAccount): Promise<JukeboxLinkDto> {
     const jukebox = await this.findOne(jukeboxId)
 
@@ -145,5 +160,41 @@ export class JukeboxService {
     }
 
     return assignment.spotify_link
+  }
+
+  /**
+   * Add next track in our queue to Spotify's queue.
+   */
+  async queueUpNextTrack(jukebox_id: number, force = false) {
+    const nextTrack = await this.queueSvc.peekNextTrack(jukebox_id)
+
+    // Unless overridden, check if track was already queued
+    if (!nextTrack || (!force && nextTrack.spotify_queued)) return
+
+    const activeLink = await this.getActiveLink(jukebox_id)
+    if (activeLink.type !== 'spotify') throw new Error('Cannot handle non-spotify links')
+
+    const account = await this.getActiveSpotifyAccount(jukebox_id)
+    await this.spotifySvc.queueTrack(account, nextTrack)
+    await this.queueSvc.flagNextTrackAsQueued(jukebox_id)
+  }
+
+  async likeCurrentTrack(user: IUser, jukebox_id: number) {
+    return await this.queueSvc.updatePlayerState(jukebox_id, (state) => ({
+      ...state,
+      current_track: state.current_track && {
+        ...state.current_track,
+        likes: (state.current_track.likes || 0) + 1,
+      },
+    }))
+  }
+  async dislikeCurrentTrack(user: IUser, jukebox_id: number) {
+    return await this.queueSvc.updatePlayerState(jukebox_id, (state) => ({
+      ...state,
+      current_track: state.current_track && {
+        ...state.current_track,
+        dislikes: (state.current_track.dislikes || 0) + 1,
+      },
+    }))
   }
 }

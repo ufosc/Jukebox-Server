@@ -26,6 +26,7 @@ module.exports = {
     '@typescript-eslint/no-redeclare': 'off',
     '@typescript-eslint/space-before-function-paren': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-empty-object-type': 'off',
     'prefer-const': 'warn',
     // 'prettier/prettier': 'warn',
     'prettier/prettier': ['warn', { endOfLine: 'auto' }],

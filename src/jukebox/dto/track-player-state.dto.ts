@@ -1,11 +1,16 @@
-export class TrackStateUpdateDto implements ITrackStateUpdate {
-  current_track?: ITrack
-  next_tracks?: ITrack[]
+export class PlayerUpdateDto implements IPlayerUpdate {
   jukebox_id: number
+  current_track?: ITrackMeta
+  progress: number
+  is_playing: boolean
+  next_tracks: ITrack[]
 }
 
-export class PlayerUpdateDto implements IPlayerUpdate {
-  
-  current_track?: ITrack
+export class PlayerAuxUpdateDto implements IPlayerAuxUpdate {
   jukebox_id: number
+  current_track: ITrackMeta
+  progress: number
+  is_playing: boolean
+  default_next_tracks: ITrack[]
+  changed_tracks?: boolean
 }

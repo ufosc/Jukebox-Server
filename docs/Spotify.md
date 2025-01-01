@@ -66,6 +66,7 @@ In the project, `/api/v1/spotify/login/` has implemented Spotify's access token 
 
 - Dashboard: <https://developer.spotify.com/dashboard>
 - How spotify authorization works: <https://developer.spotify.com/documentation/web-api/tutorials/code-flow>
+- Spotify's GitHub: <https://github.com/spotify>
 
 ### Web Playback SDK
 

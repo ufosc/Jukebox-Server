@@ -2,7 +2,8 @@ import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/web
 import { Server, Socket } from 'socket.io'
 import { AppGateway } from 'src/app.gateway'
 import { SpotifyService } from 'src/spotify/spotify.service'
-import { PlayerAuxUpdateDto } from './dto/track-player-state.dto'
+import { PlayerMetaStateDto, PlayerStateActionDto } from './dto/player-state.dto'
+import { PlayerAuxUpdateDto, PlayerUpdateDto } from './dto/track-player-state.dto'
 import { JukeboxService } from './jukebox.service'
 import { TrackQueueService } from './track-queue/track-queue.service'
 
@@ -22,6 +23,11 @@ export class JukeboxGateway {
     this.server.emit('player-update', state)
   }
 
+  public async emitPlayerAction(jukebox_id: number, payload: PlayerStateActionDto) {
+    const state = await this.queueSvc.getPlayerState(jukebox_id)
+    this.server.emit('player-action', state)
+  }
+
   public async emitTrackQueueUpdate(jukebox_id: number) {
     const nextTracks = await this.queueSvc.getTrackQueueOrDefaults(jukebox_id)
     this.server.emit('track-queue-update', nextTracks)
@@ -32,11 +38,19 @@ export class JukeboxGateway {
     const { current_track, jukebox_id, is_playing, default_next_tracks, progress, changed_tracks } =
       payload
     const prevNextTracks = await this.queueSvc.getTrackQueue(jukebox_id)
+    let prevState: Partial<PlayerMetaStateDto> = await this.queueSvc.getPlayerState(jukebox_id)
+
+    if (changed_tracks) {
+      prevState = {
+        current_track: null
+      }
+    }
 
     // Set current player state
     await this.queueSvc.setPlayerState(jukebox_id, {
+      ...prevState,
       jukebox_id,
-      current_track,
+      current_track: {...(prevState?.current_track || {}), ...current_track},
       is_playing,
       progress,
       default_next_tracks,

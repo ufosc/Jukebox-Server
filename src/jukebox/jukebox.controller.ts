@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -19,7 +20,7 @@ import { AddJukeboxLinkDto } from './dto/add-jukebox-link.dto'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
 import { JukeboxLinkDto } from './dto/jukebox-link.dto'
 import { JukeboxDto } from './dto/jukebox.dto'
-import { PlayerStateDto } from './dto/player-state.dto'
+import { PlayerMetaStateDto, PlayerStateDto } from './dto/player-state.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { JukeboxGateway } from './jukebox.gateway'
 import { JukeboxService } from './jukebox.service'
@@ -168,5 +169,32 @@ export class JukeboxController {
   @Get('/:jukebox_id/player-state/')
   async getCurrentTrack(@Param('jukebox_id') jukeboxId: number): Promise<PlayerStateDto> {
     return await this.queueSvc.getPlayerState(jukeboxId)
+  }
+
+  @Post('/:jukebox_id/player-state/')
+  async currentTrackActions(
+    @CurrentUser() user: IUser,
+    @Param('jukebox_id') jukeboxId: number,
+    @Query('action') action: string,
+  ) {
+    let state: PlayerMetaStateDto
+
+    switch (action) {
+      case 'like':
+        console.log('liking current track...')
+        state = await this.jukeboxSvc.likeCurrentTrack(user, jukeboxId)
+        break
+      case 'dislike':
+        state = await this.jukeboxSvc.dislikeCurrentTrack(user, jukeboxId)
+        break
+      default:
+        throw new BadRequestException(`No action exists for ${action}`)
+    }
+    await this.jbxGateway.emitPlayerAction(jukeboxId, {
+      jukebox_id: jukeboxId,
+      current_track: { likes: state.current_track.likes, dislikes: state.current_track.dislikes },
+    })
+
+    return state
   }
 }

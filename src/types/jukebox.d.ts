@@ -5,8 +5,6 @@ declare interface IJukebox {
   links: IJukeboxLink[]
 }
 
-
-
 declare type JukeboxLinkType = 'spotify'
 
 declare interface IJukeboxLink {
@@ -33,7 +31,7 @@ declare interface IJukeboxLinkAccount extends IJukeboxLink {
 
 declare interface IPlayerState {
   jukebox_id: number
-  current_track?: ITrack
+  current_track?: ITrackMeta
   progress: number
   is_playing: boolean
 }
@@ -57,3 +55,7 @@ declare interface IPlayerAuxUpdate extends IPlayerMetaState {
   changed_tracks?: boolean
 }
 declare interface IPlayerUpdate extends IPlayerQueueState {}
+
+declare interface IPlayerAction extends Partial<IPlayerState> {
+  current_track?: Partial<ITrackMeta>
+}

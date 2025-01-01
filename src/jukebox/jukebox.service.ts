@@ -178,4 +178,23 @@ export class JukeboxService {
     await this.spotifySvc.queueTrack(account, nextTrack)
     await this.queueSvc.flagNextTrackAsQueued(jukebox_id)
   }
+
+  async likeCurrentTrack(user: IUser, jukebox_id: number) {
+    return await this.queueSvc.updatePlayerState(jukebox_id, (state) => ({
+      ...state,
+      current_track: state.current_track && {
+        ...state.current_track,
+        likes: (state.current_track.likes || 0) + 1,
+      },
+    }))
+  }
+  async dislikeCurrentTrack(user: IUser, jukebox_id: number) {
+    return await this.queueSvc.updatePlayerState(jukebox_id, (state) => ({
+      ...state,
+      current_track: state.current_track && {
+        ...state.current_track,
+        dislikes: (state.current_track.dislikes || 0) + 1,
+      },
+    }))
+  }
 }

@@ -158,7 +158,7 @@ export class TrackQueueService {
     if (queued && queued.length === 0) {
       const playerState = await this.getPlayerState(jukeboxId)
 
-      queued = playerState.default_next_tracks.map((track) => ({
+      queued = playerState?.default_next_tracks.map((track) => ({
         ...track,
         queue_id: randomUUID(),
       }))

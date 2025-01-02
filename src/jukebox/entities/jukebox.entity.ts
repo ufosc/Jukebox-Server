@@ -9,7 +9,8 @@ import {
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm'
-import { JukeboxDto, JukeboxLinkDto } from '../dto/jukebox.dto'
+import { JukeboxLinkDto } from '../dto/jukebox-link.dto'
+import { JukeboxDto } from '../dto/jukebox.dto'
 
 @Entity('jukebox')
 export class Jukebox extends BaseEntity {

@@ -13,7 +13,7 @@ const bootstrap = async () => {
   app.setGlobalPrefix('api/v1')
   app.useGlobalFilters(new HttpExceptionFilter())
 
-  app.enableCors({ origin: [] })
+  app.enableCors({ origin: ['http://localhost:3000'], credentials: true })
   const document = generateSwaggerDocument(app)
 
   SwaggerModule.setup('/api/docs/', app, document, { yamlDocumentUrl: '/api/v1/schema/jukebox/' })

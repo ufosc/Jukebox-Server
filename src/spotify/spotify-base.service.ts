@@ -1,6 +1,7 @@
 import { SpotifyApi } from '@spotify/web-api-ts-sdk'
 import { SPOTIFY_CLIENT_ID } from 'src/config'
-import { SpotifyTokensDto } from './dto/spotify-tokens.dto'
+import type { SpotifyTokensDto } from './dto/spotify-tokens.dto'
+import { Axios } from 'axios'
 
 export class SpotifyBaseService {
   protected getSdk(tokens: SpotifyTokensDto) {

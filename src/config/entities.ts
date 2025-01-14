@@ -22,4 +22,12 @@ export class BaseEntity extends TypeormBase {
 
   @DeleteDateColumn({ nullable: true })
   deleted_on: Date
+  
+  serialize() {
+    return {
+      id: this.id,
+      created_at: this.created_at,
+      updated_at: this.updated_at,
+    }
+  }
 }

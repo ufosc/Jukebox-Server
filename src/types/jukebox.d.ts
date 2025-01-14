@@ -1,5 +1,4 @@
-declare interface IJukebox {
-  id: number
+declare interface IJukebox extends IModel {
   name: string
   club_id: number
   links: IJukeboxLink[]
@@ -7,8 +6,7 @@ declare interface IJukebox {
 
 declare type JukeboxLinkType = 'spotify'
 
-declare interface IJukeboxLink {
-  id: number
+declare interface IJukeboxLink extends IModel {
   type: JukeboxLinkType
   email: string
   active: boolean

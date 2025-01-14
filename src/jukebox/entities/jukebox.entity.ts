@@ -28,12 +28,10 @@ export class Jukebox extends BaseEntity {
 
   serialize(): JukeboxDto {
     return {
-      id: this.id,
+      ...super.serialize(),
       name: this.name,
       club_id: this.club_id,
       links: this.link_assignments?.map((assignment) => assignment.serialize()) ?? [],
-      created_at: this.created_at,
-      updated_at: this.updated_at,
     }
   }
 }
@@ -59,7 +57,7 @@ export class JukeboxLinkAssignment extends BaseEntity {
 
   serialize(): JukeboxLinkDto {
     return {
-      id: this.id,
+      ...super.serialize(),
       type: 'spotify',
       email: this.spotify_link.spotify_email,
       active: this.active,

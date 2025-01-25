@@ -1,10 +1,14 @@
 {
-  "name": "jukebox-server",
+  "name": "@ufosc/jukebox-server",
   "version": "0.0.1",
   "description": "",
   "author": "",
   "private": true,
-  "license": "UNLICENSED",
+  "repository": "https://github.com/ufosc/Jukebox-Server",
+  "publishConfig": {
+    "@ufosc:registry": "https://npm.pkg.github.com"
+  },
+  "license": "GPL-3.0-only",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -62,6 +66,7 @@
     "@types/supertest": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
+    "@ufosc/jukebox-types": "^1.0.0",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prefer-arrow-functions": "^3.4.1",
@@ -102,5 +107,8 @@
     "modulePaths": [
       "."
     ]
-  }
+  },
+  "workspaces": [
+    "packages/jukebox-types"
+  ]
 }

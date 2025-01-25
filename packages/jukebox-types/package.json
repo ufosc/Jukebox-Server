@@ -1,0 +1,17 @@
+{
+  "name": "@ufosc/jukebox-types",
+  "version": "0.0.2",
+  "description": "Types for Jukebox",
+  "repository": "https://github.com/ufosc/Jukebox-Server",
+  "main": "",
+  "types": "index.d.ts",
+  "publishConfig": {
+    "@ufosc:registry": "https://npm.pkg.github.com"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Isaac Hunter",
+  "license": "ISC"
+}

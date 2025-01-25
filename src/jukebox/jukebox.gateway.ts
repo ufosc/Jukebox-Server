@@ -3,11 +3,15 @@ import { Server, Socket } from 'socket.io'
 import { AppGateway } from 'src/app.gateway'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { PlayerMetaStateDto, PlayerStateActionDto } from './dto/player-state.dto'
-import { PlayerAuxUpdateDto, PlayerUpdateDto } from './dto/track-player-state.dto'
+import { PlayerAuxUpdateDto } from './dto/track-player-state.dto'
 import { JukeboxService } from './jukebox.service'
 import { TrackQueueService } from './track-queue/track-queue.service'
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
 export class JukeboxGateway {
   constructor(
     private queueSvc: TrackQueueService,

@@ -1,3 +1,6 @@
+network:
+	docker-compose -f docker-compose.network.yml up
+	
 network-server: ./Dockerfile
 	docker-compose -f docker-compose.network.yml up server
 

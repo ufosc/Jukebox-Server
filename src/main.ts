@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common'
+import { Logger, ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { SwaggerModule } from '@nestjs/swagger'
 import { AppModule } from './app.module'
@@ -15,6 +15,8 @@ const bootstrap = async () => {
 
   app.enableCors({ origin: ['http://localhost:3000'], credentials: true })
   const document = generateSwaggerDocument(app)
+  Logger.error("Starting app 1...")
+  
 
   SwaggerModule.setup('/api/docs/', app, document, { yamlDocumentUrl: '/api/v1/schema/jukebox/' })
 

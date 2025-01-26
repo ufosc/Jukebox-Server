@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { randomUUID } from 'crypto'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { Not, Repository } from 'typeorm'
 import { SpotifyAccount } from '../spotify/entities/spotify-account.entity'
@@ -175,7 +176,7 @@ export class JukeboxService {
     if (activeLink.type !== 'spotify') throw new Error('Cannot handle non-spotify links')
 
     const account = await this.getActiveSpotifyAccount(jukebox_id)
-    await this.spotifySvc.queueTrack(account, nextTrack)
+    await this.spotifySvc.queueTrack(account, nextTrack.track.id)
     await this.queueSvc.flagNextTrackAsQueued(jukebox_id)
   }
 
@@ -196,5 +197,25 @@ export class JukeboxService {
         dislikes: (state.current_track.dislikes || 0) + 1,
       },
     }))
+  }
+
+  async getTrackQueueOrDefaults(jukeboxId: number): Promise<IQueuedTrack[]> {
+    let queue = await this.queueSvc.getTrackQueue(jukeboxId)
+
+    if (queue.length === 0) {
+      const account = await this.getActiveSpotifyAccount(jukeboxId)
+      const defaultQueue = await this.spotifySvc.getQueue(account)
+
+      queue = defaultQueue.queue.map((track) => ({
+        track: track as ITrackDetails,
+        queue_id: randomUUID(),
+        interactions: {
+          likes: 0,
+          dislikes: 0,
+        },
+      }))
+    }
+
+    return queue
   }
 }

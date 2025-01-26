@@ -20,7 +20,7 @@ import { AddJukeboxLinkDto } from './dto/add-jukebox-link.dto'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
 import { JukeboxLinkDto } from './dto/jukebox-link.dto'
 import { JukeboxDto } from './dto/jukebox.dto'
-import { PlayerMetaStateDto, PlayerStateDto } from './dto/player-state.dto'
+import { PlayerStateDto } from './dto/player-state.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { JukeboxGateway } from './jukebox.gateway'
 import { JukeboxService } from './jukebox.service'
@@ -123,7 +123,7 @@ export class JukeboxController {
 
   @Get('/:jukebox_id/tracks-queue/')
   async getTracksQueue(@Param('jukebox_id') jukeboxId: number) {
-    return this.queueSvc.getTrackQueueOrDefaults(jukeboxId)
+    return this.jukeboxSvc.getTrackQueueOrDefaults(jukeboxId)
   }
 
   @Post('/:jukebox_id/tracks-queue/')
@@ -177,7 +177,7 @@ export class JukeboxController {
     @Param('jukebox_id') jukeboxId: number,
     @Query('action') action: string,
   ) {
-    let state: PlayerMetaStateDto
+    let state: PlayerStateDto
 
     switch (action) {
       case 'like':

@@ -2,7 +2,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Inject, Injectable } from '@nestjs/common'
 import { Cache } from 'cache-manager'
 import { randomUUID } from 'crypto'
-import { PlayerMetaStateDto } from '../dto/player-state.dto'
+import { PlayerStateDto } from '../dto/player-state.dto'
 
 export class QueueItem<T = unknown> {
   recommended_by: string
@@ -59,8 +59,8 @@ export class Queue<T = unknown> {
     return this.items[pos]
   }
 }
-type TrackQueue = Queue<ITrackMeta>
-type TrackQueueItem = QueueItem<ITrackMeta>
+type TrackQueue = Queue<IQueuedTrack>
+type TrackQueueItem = QueueItem<IQueuedTrack>
 
 @Injectable()
 export class TrackQueueService {
@@ -83,14 +83,14 @@ export class TrackQueueService {
     await this.cache.set(key, queue.items, this.cacheTtlSec)
   }
 
-  private async getCachedPlayerState(jukeboxId: number): Promise<PlayerMetaStateDto | null> {
+  private async getCachedPlayerState(jukeboxId: number): Promise<PlayerStateDto | null> {
     const key = this.getCacheKey(jukeboxId, 'currently-playing')
-    const playing = await this.cache.get<PlayerMetaStateDto | undefined>(key)
+    const playing = await this.cache.get<PlayerStateDto | undefined>(key)
 
     return playing ?? null
   }
 
-  private async commitPlayerState(jukeboxId: number, playerState: PlayerMetaStateDto) {
+  private async commitPlayerState(jukeboxId: number, playerState: PlayerStateDto) {
     const key = this.getCacheKey(jukeboxId, 'currently-playing')
     await this.cache.set(key, playerState, this.cacheTtlSec)
   }
@@ -105,12 +105,18 @@ export class TrackQueueService {
 
   public async queueTrack(
     jukeboxId: number,
-    track: ITrack,
+    track: ITrackDetails,
     recommended_by?: string,
     position = -1,
   ) {
     const queue = await this.getCachedQueue(jukeboxId)
-    const updatedTrack = { ...track, queue_id: randomUUID(), recommended_by }
+    const updatedTrack: IQueuedTrack = {
+      track,
+      queue_id: randomUUID(),
+      recommended_by,
+      spotify_queued: false,
+      interactions: { likes: 0, dislikes: 0 },
+    }
 
     queue.push(updatedTrack)
     if (position >= 0) {
@@ -121,15 +127,15 @@ export class TrackQueueService {
     return track
   }
 
-  public async popTrack(jukeboxId: number): Promise<ITrackMeta | null> {
+  public async popTrack(jukeboxId: number): Promise<IQueuedTrack | null> {
     const queue = await this.getCachedQueue(jukeboxId)
-    const track: ITrackMeta | null = queue.pop() ?? null
+    const track: IQueuedTrack | null = queue.pop() ?? null
 
     this.commitQueue(jukeboxId, queue)
     return track
   }
 
-  public async peekNextTrack(jukeboxId: number): Promise<ITrackMeta | null> {
+  public async peekNextTrack(jukeboxId: number): Promise<IQueuedTrack | null> {
     const queue = await this.getCachedQueue(jukeboxId)
     return queue.peek()
   }
@@ -139,33 +145,33 @@ export class TrackQueueService {
     return queue.list().length === 0
   }
 
-  public async getPlayerState(jukeboxId: number): Promise<PlayerMetaStateDto | null> {
+  public async getPlayerState(jukeboxId: number): Promise<PlayerStateDto | null> {
     return await this.getCachedPlayerState(jukeboxId)
   }
 
-  public async setPlayerState(jukeboxId: number, playerState: PlayerMetaStateDto | null) {
+  public async setPlayerState(jukeboxId: number, playerState: PlayerStateDto | null) {
     return await this.commitPlayerState(jukeboxId, playerState)
   }
 
-  /**
-   * Get track queue.
-   * If empty, returns default next tracks defined
-   * in the current player state, which represents what's
-   * automatically next up in Spotify's queue.
-   */
-  public async getTrackQueueOrDefaults(jukeboxId: number) {
-    let queued: ITrackMeta[] = await this.getTrackQueue(jukeboxId)
-    if (queued && queued.length === 0) {
-      const playerState = await this.getPlayerState(jukeboxId)
+  // /**
+  //  * Get track queue.
+  //  * If empty, returns default next tracks defined
+  //  * in the current player state, which represents what's
+  //  * automatically next up in Spotify's queue.
+  //  */
+  // public async getTrackQueueOrDefaults(jukeboxId: number) {
+  //   let queued: IQueuedTrack[] = await this.getTrackQueue(jukeboxId)
+  //   if (queued && queued.length === 0) {
+  //     const playerState = await this.getPlayerState(jukeboxId)
 
-      queued = playerState?.default_next_tracks.map((track) => ({
-        ...track,
-        queue_id: randomUUID(),
-      }))
-    }
+  //     queued = playerState?.default_next_tracks.map((track) => ({
+  //       ...track,
+  //       queue_id: randomUUID(),
+  //     }))
+  //   }
 
-    return queued || []
-  }
+  //   return queued || []
+  // }
 
   public async flagNextTrackAsQueued(jukeboxId: number) {
     const nextTrack = await this.peekNextTrack(jukeboxId)
@@ -177,14 +183,11 @@ export class TrackQueueService {
   }
 
   public async clearQueue(jukeboxId: number) {
-    const queue = new Queue<ITrackMeta>([])
+    const queue = new Queue<IQueuedTrack>([])
     await this.commitQueue(jukeboxId, queue)
   }
 
-  public async updatePlayerState(
-    jukeboxId: number,
-    cb: (state: PlayerMetaStateDto) => PlayerMetaStateDto,
-  ) {
+  public async updatePlayerState(jukeboxId: number, cb: (state: PlayerStateDto) => PlayerStateDto) {
     const playerState = await this.getPlayerState(jukeboxId)
     const updatedState = cb(playerState)
     await this.commitPlayerState(jukeboxId, updatedState)

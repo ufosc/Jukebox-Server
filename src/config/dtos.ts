@@ -5,12 +5,12 @@ export class BaseDto {
   id: number
 
   @ApiProperty({ readOnly: true })
-  created_at: Date
+  created_at: string
 
   @ApiProperty({ readOnly: true })
-  updated_at: Date
+  updated_at: string
 
-  static serialize(entity: { id: number; created_at: Date; updated_at: Date }) {
+  static serialize(entity: { id: number; created_at: string; updated_at: string }) {
     return { id: entity.id, created_at: entity.created_at, updated_at: entity.updated_at }
   }
 }

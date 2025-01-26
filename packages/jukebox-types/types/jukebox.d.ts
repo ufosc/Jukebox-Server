@@ -8,6 +8,25 @@ declare interface IJukebox extends IModel {
 }
 
 /**
+ * Fields required to create a new jukebox.
+ *
+ * @see {@link IJukebox}
+ */
+declare interface IJukeboxCreate extends ICreate<IJukebox> {
+  name: string
+  club_id: number
+}
+
+/**
+ * Fields used for updating a jukebox.
+ *
+ * @see {@link IJukebox}
+ */
+declare interface IJukeboxUpdate extends IUpdate<IJukebox> {
+  name: string
+}
+
+/**
  * The type of music app that is linked to the jukebox.
  *
  * In the future, we may support apps like Apple Music, Amazon Music, etc.
@@ -25,6 +44,28 @@ declare interface IJukeboxLink extends IModel {
   type: JukeboxLinkType
   email: string
   active: boolean
+}
+
+/**
+ * Fields required to create a new jukebox link.
+ *
+ * @see {@link IJukeboxLink}
+ */
+declare interface IJukeboxLinkCreate extends ICreate<IJukeboxLink> {
+  type: JukeboxLinkType
+  email: string
+  active: boolean
+}
+
+/**
+ * Fields used for updating a jukebox link.
+ *
+ * @see {@link IJukeboxLink}
+ */
+declare interface IJukeboxLinkUpdate extends IUpdate<IJukeboxLink> {
+  active: boolean
+  email: never
+  type: never
 }
 
 /**
@@ -54,13 +95,19 @@ declare interface IPlayerState {
 
 /**
  * Information passed to socket subscribers when the player state changes.
+ * Contains minimal information when needed to send frequently.
+ *
+ * @see {@link IPlayerState}
  */
 declare interface IPlayerUpdate extends Partial<IPlayerState> {
   current_track?: Partial<ITrackMeta>
 }
 
 /**
- * The state of the player broadcast to socket subscribers
+ * Full state of the player, including the track queue.
+ * Used if needed to reduce the number of requests.
+ *
+ * @see {@link IPlayerState}
  */
 declare interface IPlayerQueueState extends IPlayerState {
   next_tracks: ITrack[]
@@ -68,6 +115,10 @@ declare interface IPlayerQueueState extends IPlayerState {
 
 /**
  * Updates sent to the server from the player.
+ * Contains additional information to tell the server
+ * what actions it should take upon update, if any.
+ *
+ * @see {@link IPlayerState}
  */
 declare interface IPlayerAuxUpdate extends IPlayerState {
   changed_tracks?: boolean

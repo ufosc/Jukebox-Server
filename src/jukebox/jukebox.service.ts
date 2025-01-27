@@ -184,7 +184,7 @@ export class JukeboxService {
 
   private async setPlayerState(jukeboxId: number, playerState: PlayerStateDto) {
     const key = this.getCacheKey(jukeboxId, 'player-state')
-    await this.cache.set(key, playerState, this.cacheTtlMs)
+    await this.cache.set(key, playerState)
   }
 
   async getPlayerState(jukeboxId: number): Promise<PlayerStateDto | null> {
@@ -229,7 +229,7 @@ export class JukeboxService {
       queuedTrack = await this.convertToQueuedTrack(jukeboxId, track)
     }
 
-    this.updatePlayerState(jukeboxId, {
+    await this.updatePlayerState(jukeboxId, {
       current_track: queuedTrack,
       is_playing: false,
       progress: 0,
@@ -247,7 +247,7 @@ export class JukeboxService {
         is_playing: false,
       }
     }
-
+    
     Object.assign(nextState, payload)
     await this.setPlayerState(jukeboxId, nextState)
 

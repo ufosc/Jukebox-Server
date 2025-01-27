@@ -123,7 +123,7 @@ export class JukeboxController {
 
   @Get('/:jukebox_id/tracks-queue/')
   async getTracksQueue(@Param('jukebox_id') jukeboxId: number) {
-    return this.jukeboxSvc.getTrackQueue(jukeboxId)
+    return this.jukeboxSvc.getTrackQueue(jukeboxId, true)
   }
 
   @Post('/:jukebox_id/tracks-queue/')

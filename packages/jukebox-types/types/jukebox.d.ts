@@ -72,14 +72,13 @@ declare interface IJukeboxLinkUpdate extends IUpdate<IJukeboxLink> {
  * Spotify credentials needed to authenticate with the Spotify API
  * and the Spotify Web Player.
  */
-declare interface ISpotifyAccount {
-  id: number
+declare interface ISpotifyAccount extends IModel {
   access_token: string
   refresh_token: string
   user_id: number
   spotify_email: string
   expires_in: number
-  expires_at: Date
+  expires_at: string
   token_type: string
 }
 
@@ -100,7 +99,8 @@ declare interface IPlayerState {
  * @see {@link IPlayerState}
  */
 declare interface IPlayerUpdate extends Partial<IPlayerState> {
-  current_track?: Partial<ITrackMeta>
+  jukebox_id: number
+  current_track?: Partial<IQueuedTrack>
 }
 
 /**
@@ -110,7 +110,16 @@ declare interface IPlayerUpdate extends Partial<IPlayerState> {
  * @see {@link IPlayerState}
  */
 declare interface IPlayerQueueState extends IPlayerState {
-  next_tracks: ITrack[]
+  next_tracks: IQueuedTrack[]
+}
+
+/**
+ * Represents the state of the spotify web player.
+ *
+ * @see {@link IPlayerState}
+ */
+declare interface IPlayerAuxState extends IPlayerState {
+  current_track?: IPlayerTrack | null
 }
 
 /**
@@ -120,6 +129,28 @@ declare interface IPlayerQueueState extends IPlayerState {
  *
  * @see {@link IPlayerState}
  */
-declare interface IPlayerAuxUpdate extends IPlayerState {
+declare interface IPlayerAuxUpdate extends IPlayerAuxState {
   changed_tracks?: boolean
+}
+
+/**
+ * Fields needed for a user to interact with a jukebox.
+ *
+ * @see {@link IJukeboxInteraction}
+ */
+declare interface IJukeboxInteractionCreate {
+  action: 'like' | 'dislike'
+  location: 'player' | 'queue'
+  queue_index?: number
+}
+
+/**
+ * Fields used to represent a user interaction with a
+ * track in the jukebox - whether in the queue or
+ * in the current player.
+ */
+
+declare interface IJukeboxInteraction extends IJukeboxInteractionCreate {
+  jukebox_id: number
+  user: IUser
 }

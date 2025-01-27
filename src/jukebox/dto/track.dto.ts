@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger'
 
 class TrackImageDto implements ITrackImage {
-  height: number
   url: string
-  width: number
+  height?: number | null
+  width?: number | null
 }
 
 class AlbumInlineDto implements IAlbumInlineDetails {
@@ -11,7 +11,7 @@ class AlbumInlineDto implements IAlbumInlineDetails {
   album_type: 'album'
   artists: IArtistInlineDetails[]
   available_markets: string[]
-  external_urls: { spotify: string }
+  external_urls?: { spotify: string }
   href: string
   release_date: string
   release_date_precision: 'day'
@@ -24,7 +24,7 @@ class AlbumInlineDto implements IAlbumInlineDetails {
 class ArtistInlineDto implements IArtistInlineDetails {
   id: string
   type: 'artist'
-  external_urls: { spotify: string }
+  external_urls?: { spotify: string }
   href: string
   name: string
   uri: string
@@ -38,7 +38,7 @@ export class TrackDetailsDto implements ITrackDetails {
   artists: ArtistInlineDto[]
 
   @ApiProperty({ oneOf: [{ type: 'string', enum: ['track', 'episode', 'ad'] }] })
-  type: 'track'
+  type: 'track' | 'episode' | 'ad'
 
   uri: string
   name: string
@@ -47,10 +47,10 @@ export class TrackDetailsDto implements ITrackDetails {
   disc_number: number
   explicit: boolean
   popularity: number
-  preview_url: string
+  preview_url: string | null
   track_number: number
-  external_ids: { isrc: string }
-  external_urls: { spotify: string }
+  external_ids?: { isrc: string }
+  external_urls?: { spotify: string }
 }
 
 export class TrackInteractionDto implements ITrackInteractions {
@@ -64,6 +64,4 @@ export class QueuedTrackDto implements IQueuedTrack {
   queue_id: string
   recommended_by?: string
   spotify_queued?: boolean
-  likes?: number
-  dislikes?: number
 }

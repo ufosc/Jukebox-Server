@@ -26,8 +26,8 @@ export class BaseEntity extends TypeormBase {
   serialize() {
     return {
       id: this.id,
-      created_at: this.created_at,
-      updated_at: this.updated_at,
+      created_at: this.created_at.toISOString(),
+      updated_at: this.updated_at.toISOString(),
     }
   }
 }

@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
-import type { Repository } from 'typeorm'
+import type { ObjectLiteral, Repository } from 'typeorm'
 
 export type MockType<T> = {
   [P in keyof T]?: jest.Mock<any>
@@ -14,4 +14,4 @@ export const CacheMockProvider = {
   },
 }
 
-export const mockRepo: <T>() => MockType<Repository<T>> = jest.fn(() => ({}))
+export const mockRepo: <T extends ObjectLiteral>() => MockType<Repository<T>> = jest.fn(() => ({}))

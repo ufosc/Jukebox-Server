@@ -2,7 +2,6 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Inject, Injectable } from '@nestjs/common'
 import { Cache } from 'cache-manager'
 import { randomUUID } from 'crypto'
-import { PlayerStateDto } from '../dto/player-state.dto'
 
 export class QueueItem<T = unknown> {
   recommended_by: string
@@ -83,17 +82,17 @@ export class TrackQueueService {
     await this.cache.set(key, queue.items, this.cacheTtlSec)
   }
 
-  private async getCachedPlayerState(jukeboxId: number): Promise<PlayerStateDto | null> {
-    const key = this.getCacheKey(jukeboxId, 'currently-playing')
-    const playing = await this.cache.get<PlayerStateDto | undefined>(key)
+  // private async getCachedPlayerState(jukeboxId: number): Promise<PlayerStateDto | null> {
+  //   const key = this.getCacheKey(jukeboxId, 'currently-playing')
+  //   const playing = await this.cache.get<PlayerStateDto | undefined>(key)
 
-    return playing ?? null
-  }
+  //   return playing ?? null
+  // }
 
-  private async commitPlayerState(jukeboxId: number, playerState: PlayerStateDto) {
-    const key = this.getCacheKey(jukeboxId, 'currently-playing')
-    await this.cache.set(key, playerState, this.cacheTtlSec)
-  }
+  // private async commitPlayerState(jukeboxId: number, playerState: PlayerStateDto) {
+  //   const key = this.getCacheKey(jukeboxId, 'currently-playing')
+  //   await this.cache.set(key, playerState, this.cacheTtlSec)
+  // }
 
   /**
    * Get next tracks in queue, excludes current track
@@ -108,7 +107,7 @@ export class TrackQueueService {
     track: ITrackDetails,
     recommended_by?: string,
     position = -1,
-  ) {
+  ): Promise<IQueuedTrack> {
     const queue = await this.getCachedQueue(jukeboxId)
     const updatedTrack: IQueuedTrack = {
       track,
@@ -124,20 +123,20 @@ export class TrackQueueService {
     }
 
     await this.commitQueue(jukeboxId, queue)
-    return track
+    return updatedTrack
   }
 
   public async popTrack(jukeboxId: number): Promise<IQueuedTrack | null> {
     const queue = await this.getCachedQueue(jukeboxId)
     const track: IQueuedTrack | null = queue.pop() ?? null
 
-    this.commitQueue(jukeboxId, queue)
+    await this.commitQueue(jukeboxId, queue)
     return track
   }
 
   public async peekNextTrack(jukeboxId: number): Promise<IQueuedTrack | null> {
     const queue = await this.getCachedQueue(jukeboxId)
-    return queue.peek()
+    return queue.peek() ?? null
   }
 
   public async queueIsEmpty(jukeboxId: number): Promise<boolean> {
@@ -145,13 +144,32 @@ export class TrackQueueService {
     return queue.list().length === 0
   }
 
-  public async getPlayerState(jukeboxId: number): Promise<PlayerStateDto | null> {
-    return await this.getCachedPlayerState(jukeboxId)
+  public async getTrackAtPos(jukeboxId: number, pos: number) {
+    const queue = await this.getCachedQueue(jukeboxId)
+    if (queue.list().length <= pos) {
+      return null
+    }
+
+    return queue.list()[pos]
   }
 
-  public async setPlayerState(jukeboxId: number, playerState: PlayerStateDto | null) {
-    return await this.commitPlayerState(jukeboxId, playerState)
+  public async setTrackAtPos(jukeboxId: number, track: IQueuedTrack, pos: number) {
+    const queue = await this.getCachedQueue(jukeboxId)
+    if (queue.list().length <= pos) {
+      throw new Error(`Track queue pos out of bounds, pos ${pos} > length ${queue.list().length}`)
+    }
+
+    queue[pos] = track
+    await this.commitQueue(jukeboxId, queue)
   }
+
+  // public async getPlayerState(jukeboxId: number): Promise<PlayerStateDto | null> {
+  //   return await this.getCachedPlayerState(jukeboxId)
+  // }
+
+  // public async setPlayerState(jukeboxId: number, playerState: PlayerStateDto | null) {
+  //   return await this.commitPlayerState(jukeboxId, playerState)
+  // }
 
   // /**
   //  * Get track queue.
@@ -187,11 +205,11 @@ export class TrackQueueService {
     await this.commitQueue(jukeboxId, queue)
   }
 
-  public async updatePlayerState(jukeboxId: number, cb: (state: PlayerStateDto) => PlayerStateDto) {
-    const playerState = await this.getPlayerState(jukeboxId)
-    const updatedState = cb(playerState)
-    await this.commitPlayerState(jukeboxId, updatedState)
+  // public async updatePlayerState(jukeboxId: number, cb: (state: PlayerStateDto) => PlayerStateDto) {
+  //   const playerState = await this.getPlayerState(jukeboxId)
+  //   const updatedState = cb(playerState)
+  //   await this.commitPlayerState(jukeboxId, updatedState)
 
-    return updatedState
-  }
+  //   return updatedState
+  // }
 }

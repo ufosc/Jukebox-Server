@@ -1,7 +1,7 @@
 declare interface ITrackImage {
   url: string
-  height: number
-  width: number
+  height?: number | null
+  width?: number | null
 }
 
 /**
@@ -31,9 +31,9 @@ declare interface ITrack {
   id: string
   uri: string
   name: string
-  type: 'track'
+  type: 'track' | 'episode' | 'ad'
   duration_ms: number
-  album: IAlbumInline[]
+  album: IAlbumInline
   artists: IArtistInline[]
 }
 
@@ -42,13 +42,14 @@ declare interface ITrack {
  * the Spotify web player.
  */
 declare interface IPlayerTrack extends ITrack {
+  // id?: string | null
   uid: string
   linked_from: { uri: string | null; id: string | null }
-  media_type: 'audio'
-  track_type: 'audio'
-  content_type: 'music'
+  media_type: 'audio' | 'video'
+  track_type: 'audio' | 'video'
+  content_type?: 'music'
   is_playable: boolean
-  metadata: any
+  metadata?: any
 }
 
 /*
@@ -105,7 +106,7 @@ Sample response from player:
 declare interface IArtistInlineDetails extends IArtistInline {
   id: string
   type: 'artist'
-  external_urls: { spotify: string }
+  external_urls?: { spotify: string }
   href: string
 }
 
@@ -117,7 +118,7 @@ declare interface IAlbumInlineDetails extends IAlbumInline {
   album_type: 'album'
   artists: IArtistInlineDetails[]
   available_markets: string[]
-  external_urls: { spotify: string }
+  external_urls?: { spotify: string }
   href: string
   release_date: string
   release_date_precision: 'day'
@@ -136,8 +137,8 @@ declare interface ITrackDetails extends ITrack {
   popularity: number
   preview_url: string | null
   track_number: number
-  external_ids: { isrc: string }
-  external_urls: { spotify: string }
+  external_ids?: { isrc: string }
+  external_urls?: { spotify: string }
 }
 
 /**

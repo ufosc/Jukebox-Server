@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { Axios } from 'axios'
 import { SpotifyTokensDto } from './dto/spotify-tokens.dto'
 import { SpotifyBaseService } from './spotify-base.service'
+import { JukeboxSearchDto } from 'src/jukebox/dto/jukebox-search.dto'
 
 @Injectable()
 export class SpotifyService extends SpotifyBaseService {
@@ -40,5 +41,13 @@ export class SpotifyService extends SpotifyBaseService {
   public async getQueue(spotifyAuth: SpotifyTokensDto) {
     const sdk = this.getSdk(spotifyAuth)
     return sdk.player.getUsersQueue()
+  }
+
+  public async searchTracks(spotifyAuth: SpotifyTokensDto, searchQuery: JukeboxSearchDto) {
+    const sdk = this.getSdk(spotifyAuth)
+    return sdk.search(
+      `${searchQuery.trackQuery} artist:${searchQuery.artistQuery} album:${searchQuery.albumQuery}`,
+      ['track'],
+    )
   }
 }

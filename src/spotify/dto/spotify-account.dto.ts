@@ -34,7 +34,7 @@ export class SpotifyAccountDto extends BaseDto implements Partial<ISpotifyAccoun
 
   @Expose()
   @ApiProperty()
-  expires_at: Date
+  expires_at: string
 
   @ApiProperty()
   token_type: string

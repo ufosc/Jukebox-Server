@@ -1,21 +1,36 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { CACHE_MANAGER } from '@nestjs/cache-manager'
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  NotImplementedException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { Cache } from 'cache-manager'
+import { randomUUID } from 'crypto'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { Not, Repository } from 'typeorm'
 import { SpotifyAccount } from '../spotify/entities/spotify-account.entity'
 import { AddJukeboxLinkDto } from './dto/add-jukebox-link.dto'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
+import { CreateJukeboxInteractionDto, JukeboxInteractionDto } from './dto/jukebox-interaction.dto'
 import { JukeboxLinkDto } from './dto/jukebox-link.dto'
+import { PlayerStateDto, PlayerStateUpdateDto } from './dto/player-state.dto'
+import { QueuedTrackDto } from './dto/track.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { Jukebox, JukeboxLinkAssignment } from './entities/jukebox.entity'
 import { TrackQueueService } from './track-queue/track-queue.service'
 
 @Injectable()
 export class JukeboxService {
+  private cacheTtlMs = 60000
+
   constructor(
     @InjectRepository(Jukebox) private repo: Repository<Jukebox>,
     @InjectRepository(JukeboxLinkAssignment)
     private assignmentRepo: Repository<JukeboxLinkAssignment>,
+    @Inject(CACHE_MANAGER) private cache: Cache,
     private spotifySvc: SpotifyService,
     private queueSvc: TrackQueueService,
   ) {}
@@ -50,9 +65,7 @@ export class JukeboxService {
       throw new NotFoundException(`Jukebox with id ${id} not found`)
     }
 
-    if ('name' in updateJukeboxDto) {
-      jukebox.name = updateJukeboxDto.name
-    }
+    Object.assign(jukebox, updateJukeboxDto)
 
     this.repo.save(jukebox)
 
@@ -128,7 +141,7 @@ export class JukeboxService {
     const assignment = jukebox.link_assignments.find((lnk) => lnk.active)
 
     if (!assignment) {
-      return
+      return null
     }
 
     return assignment.serialize()
@@ -151,50 +164,244 @@ export class JukeboxService {
     return assignment.serialize()
   }
 
-  async getActiveSpotifyAccount(jukeboxId: number): Promise<SpotifyAccount | undefined> {
+  async getActiveSpotifyAccount(jukeboxId: number): Promise<SpotifyAccount> {
     const jukebox = await this.findOne(jukeboxId)
     const assignment = jukebox.link_assignments.find((lnk) => lnk.active)
 
+    // TODO: Handle non spotify accounts?
     if (!assignment) {
-      return
+      throw new BadRequestException('Cannot connect to spotify, no active linked accounts.')
     }
 
     return assignment.spotify_link
   }
+  // ================
+  // Player Methods
+  // ================
+  private getCacheKey(jukeboxId: number, label: 'player-state') {
+    return `${label}-${jukeboxId}`
+  }
+
+  private async setPlayerState(jukeboxId: number, playerState: PlayerStateDto) {
+    const key = this.getCacheKey(jukeboxId, 'player-state')
+    await this.cache.set(key, playerState)
+  }
+
+  async getPlayerState(jukeboxId: number): Promise<PlayerStateDto | null> {
+    const key = this.getCacheKey(jukeboxId, 'player-state')
+    const playerState = await this.cache.get<PlayerStateDto>(key)
+
+    return playerState ?? null
+  }
+
+  async convertToQueuedTrack(
+    jukeboxId: number,
+    track: ITrack | IPlayerTrack,
+  ): Promise<IQueuedTrack> {
+    const trackId = track.id ?? ('uid' in track ? track.uid : '')
+    const account = await this.getActiveSpotifyAccount(jukeboxId)
+
+    const fullTrack = await this.spotifySvc.getTrack(account, trackId)
+    const queuedTrack: IQueuedTrack = {
+      track: fullTrack,
+      queue_id: randomUUID(),
+      interactions: {
+        likes: 0,
+        dislikes: 0,
+      },
+    }
+
+    return queuedTrack
+  }
 
   /**
-   * Add next track in our queue to Spotify's queue.
+   * Set new track as currently playing.
+   * Reset player state attributes.
    */
-  async queueUpNextTrack(jukebox_id: number, force = false) {
-    const nextTrack = await this.queueSvc.peekNextTrack(jukebox_id)
+  async setCurrentTrack(jukeboxId: number, track: ITrack | IPlayerTrack | IQueuedTrack) {
+    let queuedTrack: IQueuedTrack
 
-    // Unless overridden, check if track was already queued
-    if (!nextTrack || (!force && nextTrack.spotify_queued)) return
+    if ('track' in track) {
+      // Track is already a QueuedTrack, only QueuedTracks have attribute 'track'
+      queuedTrack = track
+    } else {
+      // Otherwise, request data from spotify
+      queuedTrack = await this.convertToQueuedTrack(jukeboxId, track)
+    }
 
-    const activeLink = await this.getActiveLink(jukebox_id)
-    if (activeLink.type !== 'spotify') throw new Error('Cannot handle non-spotify links')
-
-    const account = await this.getActiveSpotifyAccount(jukebox_id)
-    await this.spotifySvc.queueTrack(account, nextTrack)
-    await this.queueSvc.flagNextTrackAsQueued(jukebox_id)
+    await this.updatePlayerState(jukeboxId, {
+      current_track: queuedTrack,
+      is_playing: false,
+      progress: 0,
+    })
   }
 
-  async likeCurrentTrack(user: IUser, jukebox_id: number) {
-    return await this.queueSvc.updatePlayerState(jukebox_id, (state) => ({
-      ...state,
-      current_track: state.current_track && {
-        ...state.current_track,
-        likes: (state.current_track.likes || 0) + 1,
-      },
-    }))
+  async updatePlayerState(jukeboxId: number, payload: Partial<PlayerStateUpdateDto>) {
+    const currentState = await this.getPlayerState(jukeboxId)
+    let nextState: IPlayerState | null = currentState
+
+    if (!nextState) {
+      nextState = {
+        jukebox_id: jukeboxId,
+        progress: 0,
+        is_playing: false,
+      }
+    }
+    
+    Object.assign(nextState, payload)
+    await this.setPlayerState(jukeboxId, nextState)
+
+    return nextState
   }
-  async dislikeCurrentTrack(user: IUser, jukebox_id: number) {
-    return await this.queueSvc.updatePlayerState(jukebox_id, (state) => ({
-      ...state,
-      current_track: state.current_track && {
-        ...state.current_track,
-        dislikes: (state.current_track.dislikes || 0) + 1,
-      },
-    }))
+
+  /**
+   * Record an interaction for a track in the queue, or in
+   * the currently player state.
+   */
+  async doInteraction(
+    jukeboxId,
+    user: IUser,
+    payload: CreateJukeboxInteractionDto,
+  ): Promise<JukeboxInteractionDto> {
+    const { action, location, queue_index } = payload
+
+    /** Helper function to handle interaction */
+    const interact = (track: QueuedTrackDto) => {
+      switch (action) {
+        case 'like':
+          track.interactions.likes += 1
+          break
+        case 'dislike':
+          track.interactions.dislikes += 1
+          break
+        default:
+          throw new NotImplementedException(`Interaction not implemented: ${action}`)
+      }
+
+      return track
+    }
+
+    if (location === 'player') {
+      // Modify currently player track
+      const state = await this.getPlayerState(jukeboxId)
+      if (!state?.current_track) {
+        throw new BadRequestException('Cannot like empty current track')
+      }
+      const updatedTrack = interact(state.current_track)
+      state.current_track = updatedTrack
+
+      await this.setPlayerState(jukeboxId, state)
+    } else {
+      // Modify track in queue
+      if (queue_index === undefined) {
+        throw new BadRequestException(
+          'Must include queue index if adding an interaction to the queue.',
+        )
+      }
+
+      const queuedTrack = await this.queueSvc.getTrackAtPos(jukeboxId, queue_index)
+      if (!queuedTrack) {
+        throw new BadRequestException(`Cannot like empty track in queue at position ${queue_index}`)
+      }
+
+      const updatedTrack = interact(queuedTrack)
+      await this.queueSvc.setTrackAtPos(jukeboxId, updatedTrack, queue_index)
+    }
+
+    return {
+      jukebox_id: jukeboxId,
+      user,
+      action,
+      location,
+      queue_index,
+    }
+  }
+
+  /**
+   * Pop top track in queue, add to player.
+   * Queue up next track in queue to spotify.
+   *
+   * Returns gracefully if there is no current track, or next track.
+   */
+  async shiftNextTrack(jukeboxId: number) {
+    // const playerState = await this.getPlayerState(jukeboxId)
+    const currentTrack = await this.queueSvc.popTrack(jukeboxId)
+    const nextTrack = await this.queueSvc.peekNextTrack(jukeboxId)
+
+    // Add current track to queue
+    if (!currentTrack) return
+    await this.setCurrentTrack(jukeboxId, currentTrack)
+
+    // Preload next track with spotify's queue
+    if (!nextTrack?.track) return
+    const account = await this.getActiveSpotifyAccount(jukeboxId)
+    await this.spotifySvc.queueTrack(account, nextTrack?.track.id)
+    await this.queueSvc.flagNextTrackAsQueued(jukeboxId)
+  }
+
+  /**
+   * Get track queue for a jukebox.
+   *
+   * @param fallbackUserQueue If our stored queue is empty, fetch the default user queue
+   * from spotify and return that instead.
+   */
+  async getTrackQueue(jukeboxId: number, fallbackUserQueue = false): Promise<IQueuedTrack[]> {
+    let queue = await this.queueSvc.getTrackQueue(jukeboxId)
+
+    if (queue.length === 0 && fallbackUserQueue) {
+      const account = await this.getActiveSpotifyAccount(jukeboxId)
+      const defaultQueue = await this.spotifySvc.getQueue(account)
+
+      queue = defaultQueue.queue.map((track) => ({
+        track: track as ITrackDetails,
+        queue_id: randomUUID(),
+        interactions: {
+          likes: 0,
+          dislikes: 0,
+        },
+      }))
+    }
+
+    return queue
+  }
+
+  async getNextQueuedTrack(jukeboxId: number): Promise<IQueuedTrack | null> {
+    const queue = await this.getTrackQueue(jukeboxId)
+    if (queue.length < 1) return null
+
+    return queue[0]
+  }
+
+  /**
+   * Peeks at the next track in the queue,
+   * and returns true if the player track id matches
+   * the next track.
+   */
+  async playerTrackIsNext(jukeboxId: number, track: IPlayerTrack): Promise<boolean> {
+    const nextTrack = await this.getNextQueuedTrack(jukeboxId)
+    return nextTrack?.track.id === track.id
+  }
+
+  /**
+   * Add track to queue.
+   *
+   * If queue is empty, then also queue up track with spotify.
+   */
+  async addTrackToQueue(
+    jukeboxId: number,
+    trackId: string,
+    meta: { username: string },
+  ): Promise<IQueuedTrack> {
+    const account = await this.getActiveSpotifyAccount(jukeboxId)
+    const track = await this.spotifySvc.getTrack(account, trackId)
+
+    const queuedTrack = await this.queueSvc.queueTrack(jukeboxId, track, meta.username)
+    const queue = await this.queueSvc.getTrackQueue(jukeboxId)
+
+    if (queue.length === 1) {
+      await this.spotifySvc.queueTrack(account, track.id)
+    }
+
+    return queuedTrack
   }
 }

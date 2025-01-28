@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { Track } from '@spotify/web-api-ts-sdk'
 import { Axios } from 'axios'
 import { SpotifyTokensDto } from './dto/spotify-tokens.dto'
 import { SpotifyBaseService } from './spotify-base.service'
@@ -10,40 +9,19 @@ export class SpotifyService extends SpotifyBaseService {
     super()
   }
 
-  /**
-   * Coerce Track to ITrack
-   *
-   * The type given in the web-api-ts-sdk is different from
-   * the track type given in the web player api. This function
-   * will resolve those discrepancies.
-   */
-  private toITrack(track: Track): ITrack {
-    return {
-      ...track,
-      artists: [...track.artists.map((artist) => ({ ...artist, url: artist.href }))],
-      uid: track.id,
-      media_type: 'audio',
-      track_type: 'audio',
-      is_playable: track.is_playable ?? true,
-      type: track.type as ITrack['type'],
-      linked_from: track.linked_from,
-    }
-  }
-
-  public async getTrack(spotifyAuth: SpotifyTokensDto, trackId: string): Promise<ITrack> {
+  public async getTrack(spotifyAuth: SpotifyTokensDto, trackId: string): Promise<ITrackDetails> {
     const sdk = this.getSdk(spotifyAuth)
     const track = await sdk.tracks.get(trackId)
 
-    // Coerce to global ITrack type
-    return this.toITrack(track)
+    return track as ITrackDetails
   }
 
-  public async queueTrack(spotifyAuth: SpotifyTokensDto, track: ITrack) {
+  public async queueTrack(spotifyAuth: SpotifyTokensDto, track_id: string) {
     // const sdk = this.getSdk(spotifyAuth)
     // await sdk.player.addItemToPlaybackQueue(track.uri)
     await this.axios
       .post(
-        `https://api.spotify.com/v1/me/player/queue?uri=${track.uri}`,
+        `https://api.spotify.com/v1/me/player/queue?id=${track_id}`,
         {},
         {
           headers: { Authorization: `Bearer ${spotifyAuth.access_token}` },
@@ -57,5 +35,10 @@ export class SpotifyService extends SpotifyBaseService {
   public async setPlayerDevice(spotifyAuth: SpotifyTokensDto, deviceId: string) {
     const sdk = this.getSdk(spotifyAuth)
     await sdk.player.transferPlayback([deviceId])
+  }
+
+  public async getQueue(spotifyAuth: SpotifyTokensDto) {
+    const sdk = this.getSdk(spotifyAuth)
+    return sdk.player.getUsersQueue()
   }
 }

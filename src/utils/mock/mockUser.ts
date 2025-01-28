@@ -4,4 +4,6 @@ export const mockUser: IUser = {
   first_name: 'John',
   last_name: 'Doe',
   username: 'JohnDoe52',
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
 }

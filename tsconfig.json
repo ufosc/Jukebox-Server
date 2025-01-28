@@ -14,12 +14,13 @@
     "rootDir": "./",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
+    "strictNullChecks": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "typeRoots": ["./node_modules/@types", "./src/types", "./node_modules/@spotify/node_modules/@spotify/web-api-ts-sdk/dist/mjs/"],
+    "types": ["@ufosc/jukebox-types", "./src/types", "@spotify/web-api-ts-sdk", "jest"],
+    // "typeRoots": ["./node_modules/@types", "./src/types", "./node_modules/@spotify/node_modules/@spotify/web-api-ts-sdk/dist/mjs/",],
     "paths": {
       "src/*": ["./src/*", "src/*"]
     }

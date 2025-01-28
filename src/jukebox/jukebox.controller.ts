@@ -26,6 +26,7 @@ import { JukeboxGateway } from './jukebox.gateway'
 import { JukeboxService } from './jukebox.service'
 import { AddTrackToQueueDto } from './track-queue/dtos/track-queue.dto'
 import { TrackQueueService } from './track-queue/track-queue.service'
+import { JukeboxSearchDto } from './dto/jukebox-search.dto'
 
 @ApiTags('jukeboxes')
 @Controller('jukebox/')
@@ -174,5 +175,14 @@ export class JukeboxController {
     await this.jbxGateway.emitPlayerInteraction(interaction)
 
     return interaction
+  }
+
+  @Post('/:jukebox_id/search/')
+  async searchJukeboxTracks(
+    @Param('jukebox_id') jukeboxId: number,
+    @Body() body: JukeboxSearchDto,
+  ) {
+    const account = await this.jukeboxSvc.getActiveSpotifyAccount(jukeboxId)
+    return this.spotifySvc.searchTracks(account, body)
   }
 }

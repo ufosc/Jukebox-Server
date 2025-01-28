@@ -150,13 +150,12 @@ export class SpotifyAuthService extends SpotifyBaseService {
   private async updateAccount(id: number, updateSpotifyLInkDto: UpdateSpotifyAccountDto) {
     const account = await this.repo.findOneBy({ id })
 
-    Object.assign(account, updateSpotifyLInkDto)
-
-    await this.repo.save(account)
-
     if (!account) {
       throw new BadRequestException(`Cannot find preexisting spotify account link with id ${id}`)
     }
+
+    Object.assign(account, updateSpotifyLInkDto)
+    await this.repo.save(account)
 
     return account
   }
@@ -180,7 +179,7 @@ export class SpotifyAuthService extends SpotifyBaseService {
 
   public async removeAccount(id: number) {
     const account = await this.repo.findOneBy({ id })
-    await account.remove()
+    await account?.remove() // TODO: Implement Not Found error for account
 
     return account
   }

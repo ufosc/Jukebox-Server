@@ -3,7 +3,7 @@ import { JukeboxLinkAssignment } from 'src/jukebox/entities/jukebox.entity'
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity('spotify_link')
-export class SpotifyAccount extends BaseEntity implements ISpotifyAccount {
+export class SpotifyAccount extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -23,7 +23,7 @@ export class SpotifyAccount extends BaseEntity implements ISpotifyAccount {
   expires_in: number
 
   @Column()
-  expires_at: Date
+  expires_at: string
 
   @Column()
   token_type: string
@@ -32,11 +32,11 @@ export class SpotifyAccount extends BaseEntity implements ISpotifyAccount {
   jukebox_assignments: JukeboxLinkAssignment[]
 
   isExpired() {
-    return this.expires_at.getTime() <= Date.now()
+    return new Date(this.expires_at).getTime() <= Date.now()
   }
 
   syncExpiresAt() {
-    this.expires_at = new Date(Date.now() + this.expires_in * 1000)
+    this.expires_at = new Date(Date.now() + this.expires_in * 1000).toISOString()
   }
 }
 

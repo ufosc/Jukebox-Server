@@ -32,9 +32,8 @@ services:
       - redis
     volumes:
       - ./src:/app/src
+      - ./packages:/app/packages
       - ./package.json:/app/package.json
-      - ./generated:/app/generated
-      # - api-spec:/app/generated
     command: npm run start:network
 
   proxy:

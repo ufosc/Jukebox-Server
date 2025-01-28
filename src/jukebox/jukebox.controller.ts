@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -18,14 +17,16 @@ import { CurrentUser } from '../auth/current-user.decorator'
 import { SpotifyAuthService } from '../spotify/spotify-auth.service'
 import { AddJukeboxLinkDto } from './dto/add-jukebox-link.dto'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
+import { CreateJukeboxInteractionDto, JukeboxInteractionDto } from './dto/jukebox-interaction.dto'
 import { JukeboxLinkDto } from './dto/jukebox-link.dto'
 import { JukeboxDto } from './dto/jukebox.dto'
-import { PlayerMetaStateDto, PlayerStateDto } from './dto/player-state.dto'
+import { PlayerStateDto } from './dto/player-state.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { JukeboxGateway } from './jukebox.gateway'
 import { JukeboxService } from './jukebox.service'
 import { AddTrackToQueueDto } from './track-queue/dtos/track-queue.dto'
 import { TrackQueueService } from './track-queue/track-queue.service'
+import { JukeboxSearchDto } from './dto/jukebox-search.dto'
 
 @ApiTags('jukeboxes')
 @Controller('jukebox/')
@@ -123,7 +124,7 @@ export class JukeboxController {
 
   @Get('/:jukebox_id/tracks-queue/')
   async getTracksQueue(@Param('jukebox_id') jukeboxId: number) {
-    return this.queueSvc.getTrackQueueOrDefaults(jukeboxId)
+    return this.jukeboxSvc.getTrackQueue(jukeboxId, true)
   }
 
   @Post('/:jukebox_id/tracks-queue/')
@@ -132,19 +133,12 @@ export class JukeboxController {
     @Param('jukebox_id') jukeboxId: number,
     @Body() track: AddTrackToQueueDto,
   ) {
-    const account = await this.jukeboxSvc.getActiveSpotifyAccount(jukeboxId)
-    const trackItem = await this.spotifySvc.getTrack(account, track.track_id)
-
-    await this.queueSvc.queueTrack(jukeboxId, trackItem, user.username, track.position)
-    const nextTracks = await this.queueSvc.getTrackQueue(jukeboxId)
-
-    if (nextTracks.length === 1) {
-      await this.jukeboxSvc.queueUpNextTrack(jukeboxId)
-    }
-
+    const queuedTrack = await this.jukeboxSvc.addTrackToQueue(jukeboxId, track.track_id, {
+      username: user.username,
+    })
     await this.jbxGateway.emitTrackQueueUpdate(jukeboxId)
 
-    return trackItem
+    return queuedTrack
   }
 
   @Delete('/:jukebox_id/tracks-queue/')
@@ -167,34 +161,28 @@ export class JukeboxController {
   }
 
   @Get('/:jukebox_id/player-state/')
-  async getCurrentTrack(@Param('jukebox_id') jukeboxId: number): Promise<PlayerStateDto> {
-    return await this.queueSvc.getPlayerState(jukeboxId)
+  async getCurrentTrack(@Param('jukebox_id') jukeboxId: number): Promise<PlayerStateDto | null> {
+    return await this.jukeboxSvc.getPlayerState(jukeboxId)
   }
 
-  @Post('/:jukebox_id/player-state/')
+  @Post('/:jukebox_id/interactions/')
   async currentTrackActions(
     @CurrentUser() user: IUser,
     @Param('jukebox_id') jukeboxId: number,
-    @Query('action') action: string,
+    @Body() body: CreateJukeboxInteractionDto,
+  ): Promise<JukeboxInteractionDto> {
+    const interaction = await this.jukeboxSvc.doInteraction(jukeboxId, user, body)
+    await this.jbxGateway.emitPlayerInteraction(interaction)
+
+    return interaction
+  }
+
+  @Post('/:jukebox_id/search/')
+  async searchJukeboxTracks(
+    @Param('jukebox_id') jukeboxId: number,
+    @Body() body: JukeboxSearchDto,
   ) {
-    let state: PlayerMetaStateDto
-
-    switch (action) {
-      case 'like':
-        console.log('liking current track...')
-        state = await this.jukeboxSvc.likeCurrentTrack(user, jukeboxId)
-        break
-      case 'dislike':
-        state = await this.jukeboxSvc.dislikeCurrentTrack(user, jukeboxId)
-        break
-      default:
-        throw new BadRequestException(`No action exists for ${action}`)
-    }
-    await this.jbxGateway.emitPlayerAction(jukeboxId, {
-      jukebox_id: jukeboxId,
-      current_track: { likes: state.current_track.likes, dislikes: state.current_track.dislikes },
-    })
-
-    return state
+    const account = await this.jukeboxSvc.getActiveSpotifyAccount(jukeboxId)
+    return this.spotifySvc.searchTracks(account, body)
   }
 }

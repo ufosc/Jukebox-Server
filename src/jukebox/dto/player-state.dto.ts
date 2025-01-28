@@ -1,22 +1,19 @@
-import type { TrackMetaDto } from './track.dto'
+import type { QueuedTrackDto } from './track.dto'
 
 export class PlayerStateDto implements IPlayerState {
   jukebox_id: number
-  current_track?: TrackMetaDto
+  current_track?: QueuedTrackDto
   progress: number
   is_playing: boolean
 }
-export class PlayerQueueStateDto extends PlayerStateDto implements IPlayerQueueState {
-  next_tracks: ITrack[]
-}
 
-export class PlayerMetaStateDto extends PlayerStateDto implements IPlayerMetaState {
-  default_next_tracks: ITrack[]
-}
+// export class PlayerMetaStateDto extends PlayerStateDto implements IPlayerMetaState {
+//   default_next_tracks: ITrack[]
+// }
 
-export class PlayerStateActionDto implements IPlayerAction {
+export class PlayerStateUpdateDto implements IPlayerUpdate {
   jukebox_id: number
-  current_track?: Partial<TrackMetaDto>
+  current_track?: Partial<QueuedTrackDto>
   progress?: number
   is_playing?: boolean
 }

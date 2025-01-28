@@ -12,3 +12,4 @@ publish-types-version:
 	
 	npm version $(v) --workspace @ufosc/jukebox-types
 	npm publish --workspace @ufosc/jukebox-types --access public
+	npm install @ufosc/jukebox-types@${v}

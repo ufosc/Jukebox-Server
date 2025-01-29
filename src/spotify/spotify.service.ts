@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { Axios } from 'axios'
+import { JukeboxSearchDto } from 'src/jukebox/dto/jukebox-search.dto'
 import { SpotifyTokensDto } from './dto/spotify-tokens.dto'
 import { SpotifyBaseService } from './spotify-base.service'
-import { JukeboxSearchDto } from 'src/jukebox/dto/jukebox-search.dto'
 
 @Injectable()
 export class SpotifyService extends SpotifyBaseService {
@@ -17,19 +17,21 @@ export class SpotifyService extends SpotifyBaseService {
     return track as ITrackDetails
   }
 
-  public async queueTrack(spotifyAuth: SpotifyTokensDto, track_id: string) {
+  public async queueTrack(spotifyAuth: SpotifyTokensDto, track_uri: string) {
     // const sdk = this.getSdk(spotifyAuth)
     // await sdk.player.addItemToPlaybackQueue(track.uri)
     await this.axios
       .post(
-        `https://api.spotify.com/v1/me/player/queue?id=${track_id}`,
+        `https://api.spotify.com/v1/me/player/queue?uri=${track_uri}`,
         {},
         {
           headers: { Authorization: `Bearer ${spotifyAuth.access_token}` },
         },
       )
       .catch((err) => {
-        Logger.error(`Received error from spotify queue track: ${err.response.data}`)
+        Logger.error('Received error from spotify queue track:')
+        console.log(err.response.data)
+        Logger.error(err)
       })
   }
 

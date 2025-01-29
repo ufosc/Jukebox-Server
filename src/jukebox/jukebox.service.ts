@@ -247,7 +247,7 @@ export class JukeboxService {
         is_playing: false,
       }
     }
-    
+
     Object.assign(nextState, payload)
     await this.setPlayerState(jukeboxId, nextState)
 
@@ -397,7 +397,7 @@ export class JukeboxService {
 
     const queuedTrack = await this.queueSvc.queueTrack(jukeboxId, track, meta.username)
     const queue = await this.queueSvc.getTrackQueue(jukeboxId)
-    console.log("queue:", queue)
+    console.log('queue:', queue)
 
     if (queue.length === 1) {
       await this.spotifySvc.queueTrack(account, track.uri)

@@ -5,7 +5,10 @@ export class CreateJukeboxInteractionDto implements IJukeboxInteractionCreate {
   queue_index?: number
 }
 
-export class JukeboxInteractionDto extends CreateJukeboxInteractionDto implements IJukeboxInteraction {
+export class JukeboxInteractionDto
+  extends CreateJukeboxInteractionDto
+  implements IJukeboxInteraction
+{
   jukebox_id: number
   user: IUser
 }

@@ -335,7 +335,7 @@ export class JukeboxService {
     // Preload next track with spotify's queue
     if (!nextTrack?.track) return
     const account = await this.getActiveSpotifyAccount(jukeboxId)
-    await this.spotifySvc.queueTrack(account, nextTrack?.track.id)
+    await this.spotifySvc.queueTrack(account, nextTrack?.track.uri)
     await this.queueSvc.flagNextTrackAsQueued(jukeboxId)
   }
 
@@ -397,9 +397,10 @@ export class JukeboxService {
 
     const queuedTrack = await this.queueSvc.queueTrack(jukeboxId, track, meta.username)
     const queue = await this.queueSvc.getTrackQueue(jukeboxId)
+    console.log("queue:", queue)
 
     if (queue.length === 1) {
-      await this.spotifySvc.queueTrack(account, track.id)
+      await this.spotifySvc.queueTrack(account, track.uri)
     }
 
     return queuedTrack

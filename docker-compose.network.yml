@@ -36,26 +36,26 @@ services:
       - ./package.json:/app/package.json
     command: npm run start:network
 
-  proxy:
-    build:
-      context: ./proxy/
-    ports:
-      - 8080:8080
-      - 8081:8081
-    networks:
-      - cluster
-    depends_on:
-      - server
+  # proxy:
+  #   build:
+  #     context: ./proxy/
+  #   ports:
+  #     - 8080:8080
+  #     - 8081:8081
+  #   networks:
+  #     - cluster
+  #   depends_on:
+  #     - server
 
-    volumes:
-      - client-dist:/vol/client
-      - club-static:/vol/static
-      - ./proxy/api:/vol/apispec
-    environment:
-      - SERVER_URI=server-jbx:9000
-      - WEBSOCKET_URI=server-jbx:9000
-      - CLUB_MANAGER_URI=club-app-network:9000
-      - PUBLIC_STATIC_URI=jukebox-client-631bab280a434e28995fd3fcafd1fa5a.s3-website-us-east-1.amazonaws.com
+  #   volumes:
+  #     - client-dist:/vol/client
+  #     - club-static:/vol/static
+  #     - ./proxy/api:/vol/apispec
+  #   environment:
+  #     - SERVER_URI=server-jbx:9000
+  #     - WEBSOCKET_URI=server-jbx:9000
+  #     - CLUB_MANAGER_URI=club-app-network:9000
+  #     - PUBLIC_STATIC_URI=jukebox-client-631bab280a434e28995fd3fcafd1fa5a.s3-website-us-east-1.amazonaws.com
 
     # attach: false
 

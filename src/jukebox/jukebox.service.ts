@@ -21,6 +21,8 @@ import { QueuedTrackDto } from './dto/track.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { Jukebox, JukeboxLinkAssignment } from './entities/jukebox.entity'
 import { TrackQueueService } from './track-queue/track-queue.service'
+import { TrackInteraction } from './dto/like-dislike-track.dto';
+
 
 @Injectable()
 export class JukeboxService {
@@ -405,4 +407,31 @@ export class JukeboxService {
 
     return queuedTrack
   }
+
+  async interactWithTrackInQueue(
+    jukeboxId: number,
+    queueIndex: number,
+    action: TrackInteraction
+  ): Promise<IQueuedTrack> {
+    // Get the track at the specified position
+    const track = await this.queueSvc.getTrackAtPos(jukeboxId, queueIndex);
+    
+    if (!track) {
+      throw new BadRequestException(`No track found at position ${queueIndex} in the queue.`);
+    }
+  
+    // Update likes or dislikes
+    if (action === TrackInteraction.LIKE) {
+      track.interactions.likes += 1;
+    } else if (action === TrackInteraction.DISLIKE) {
+      track.interactions.dislikes += 1;
+    }
+  
+    // Save the updated track back to the queue
+    await this.queueSvc.setTrackAtPos(jukeboxId, track, queueIndex);
+    
+    return track;
+  }
+  
+
 }

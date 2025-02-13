@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "steoates.autoimport",
+    "rvest.vs-code-prettier-eslint",
+    "michelemelluso.code-beautifier",
+    "naumovs.color-highlight",
+  ]
+}

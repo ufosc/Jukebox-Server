@@ -1,26 +1,29 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTrackDto } from './dto/create-track.dto';
-import { UpdateTrackDto } from './dto/update-track.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Track } from './entities/track.entity';
 
 @Injectable()
 export class TracksService {
-  create(createTrackDto: CreateTrackDto) {
-    return 'This action adds a new track';
+  constructor(
+    @InjectRepository(Track)
+    private trackRepository: Repository<Track>,
+  ) {}
+
+  async create(): Promise<Track> {
+    const newTrack = this.trackRepository.create();
+    return this.trackRepository.save(newTrack);
   }
 
-  findAll() {
-    return `This action returns all tracks`;
+  async findAll(): Promise<Track[]> {
+    return this.trackRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} track`;
+  async findOne(id: string): Promise<Track | null> {
+    return this.trackRepository.findOne({ where: { track_id: id } });
   }
 
-  update(id: number, updateTrackDto: UpdateTrackDto) {
-    return `This action updates a #${id} track`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} track`;
+  async remove(id: string): Promise<void> {
+    await this.trackRepository.delete(id);
   }
 }

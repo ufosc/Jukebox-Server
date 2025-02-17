@@ -27,6 +27,7 @@ import { JukeboxService } from './jukebox.service'
 import { AddTrackToQueueDto } from './track-queue/dtos/track-queue.dto'
 import { TrackQueueService } from './track-queue/track-queue.service'
 import { JukeboxSearchDto } from './dto/jukebox-search.dto'
+import { LikeDislikeTrackDto } from './dto/like-dislike-track.dto';
 
 @ApiTags('jukeboxes')
 @Controller('jukebox/')
@@ -185,4 +186,22 @@ export class JukeboxController {
     const account = await this.jukeboxSvc.getActiveSpotifyAccount(jukeboxId)
     return this.spotifySvc.searchTracks(account, body)
   }
+
+  @Post('/:jukebox_id/tracks-queue/like-dislike')
+async likeDislikeTrackInQueue(
+  @Param('jukebox_id') jukeboxId: number,
+  @Body() body: LikeDislikeTrackDto
+) {
+  const updatedTrack = await this.jukeboxSvc.interactWithTrackInQueue(
+    jukeboxId,
+    body.queue_index,
+    body.action
+  );
+
+  // Emit WebSocket event to update all clients
+  await this.jbxGateway.emitTrackQueueUpdate(jukeboxId);
+
+  return updatedTrack;
+}
+
 }

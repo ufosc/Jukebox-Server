@@ -3,9 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TrackQueueService } from '../track-queue.service';
 import { Cache } from 'cache-manager';
 import { randomUUID } from 'crypto';
+import { NotFoundException } from '@nestjs/common';
 
 const mockCacheManager = {
-  get: jest.fn().mockResolvedValue([]), 
+  get: jest.fn().mockResolvedValue([]),
   set: jest.fn().mockResolvedValue(undefined),
 };
 
@@ -95,8 +96,63 @@ describe('TrackQueueService', () => {
     expect(result).toBe(true);
   });
 
+  it('should check if the queue is not empty', async () => {
+    mockCacheManager.get.mockResolvedValueOnce([{ track, queue_id: randomUUID() }]);
+    const result = await service.queueIsEmpty(jukeboxId);
+    expect(result).toBe(false);
+  });
+
   it('should clear the queue', async () => {
     await service.clearQueue(jukeboxId);
     expect(mockCacheManager.set).toHaveBeenCalledWith('queue-1', [], expect.any(Number));
+  });
+
+  it('should handle empty queue when popping track', async () => {
+    mockCacheManager.get.mockResolvedValueOnce([]);
+    const result = await service.popTrack(jukeboxId);
+    expect(result).toBeNull();
+  });
+
+  it('should throw an error if queue retrieval fails', async () => {
+    mockCacheManager.get.mockRejectedValueOnce(new Error('Cache error'));
+    await expect(service.popTrack(jukeboxId)).rejects.toThrow('Cache error');
+  });
+
+  it('should throw NotFoundException if track queue is not found', async () => {
+    mockCacheManager.get.mockResolvedValueOnce(null);
+    await expect(service.peekNextTrack(jukeboxId)).rejects.toThrow(NotFoundException);
+  });
+
+  it('should queue multiple tracks and maintain order', async () => {
+    const track2: ITrackDetails = { ...track, id: '456', name: 'Second Track' };
+    mockCacheManager.get.mockResolvedValueOnce([]);
+    await service.queueTrack(jukeboxId, track);
+    await service.queueTrack(jukeboxId, track2);
+    mockCacheManager.get.mockResolvedValueOnce([
+      { track, queue_id: randomUUID() },
+      { track: track2, queue_id: randomUUID() },
+    ]);
+    const result = await service.peekNextTrack(jukeboxId);
+    expect(result?.track.id).toBe(track.id);
+  });
+
+  it('should not allow duplicate tracks in the queue', async () => {
+    mockCacheManager.get.mockResolvedValueOnce([{ track, queue_id: randomUUID() }]);
+    await service.queueTrack(jukeboxId, track);
+    expect(mockCacheManager.set).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return null when peeking an empty queue', async () => {
+    mockCacheManager.get.mockResolvedValueOnce([]);
+    const result = await service.peekNextTrack(jukeboxId);
+    expect(result).toBeNull();
+  });
+
+  it('should return null when trying to pop from a queue that was just cleared', async () => {
+    mockCacheManager.get.mockResolvedValueOnce([{ track, queue_id: randomUUID() }]);
+    await service.clearQueue(jukeboxId);
+    mockCacheManager.get.mockResolvedValueOnce([]);
+    const result = await service.popTrack(jukeboxId);
+    expect(result).toBeNull();
   });
 });

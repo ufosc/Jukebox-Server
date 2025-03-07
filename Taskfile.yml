@@ -1,0 +1,32 @@
+# Taskfile docs: https://taskfile.dev/
+version: '3'
+
+tasks:
+  #########################################
+  # Server Commands
+  #########################################
+  # TODO: Add commands
+
+  #########################################
+  # Jukebox-Types Package
+  #########################################
+  pkg-login:
+    summary: 'Login to GitHub package repo'
+    desc: |
+      Must create a personal access token that has write access to the package repo. 
+      When prompted to login, use the lowercase version of your github username (not email),
+      then provide the personal access token as the password.
+    cmds:
+      - npm login --scope=@ufosc --registry=https://npm.pkg.github.com
+
+  pkg-publish:
+    summary: 'Publish types package version to GitHub packages'
+    desc: |
+      Example usage: "task pkg-publish -- 1.0.0". Must login to a repo using "pkg-login".
+      This command writes a new version to the package.json.
+    vars:
+      V: '{{.CLI_ARGS}}'
+    cmds:
+      - npm version {{.V}} --workspace @ufosc/jukebox-types
+      - npm publish --workspace @ufosc/jukebox-types --access public
+      - npm install @ufosc/jukebox-types@{{.V}}

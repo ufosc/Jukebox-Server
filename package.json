@@ -39,6 +39,7 @@
     "@nestjs/websockets": "^10.4.4",
     "@redocly/cli": "^1.25.5",
     "@spotify/web-api-ts-sdk": "^1.2.0",
+    "@ufosc/jukebox-types": "^0.1.2",
     "axios": "^1.7.7",
     "cache-manager": "^5.7.6",
     "cache-manager-redis-store": "^3.0.1",

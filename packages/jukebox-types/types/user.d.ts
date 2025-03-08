@@ -16,5 +16,5 @@ declare interface IUser extends IModel {
  * @see {@link IUser}
  */
 declare interface IUserDetails extends IUser {
-  clubs: { id: number; name: string; role: string }[]
+  clubs: { id: number; name: string }[]
 }

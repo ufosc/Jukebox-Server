@@ -30,7 +30,7 @@ export const SPOTIFY_SCOPES = [
   'streaming',
 ]
 
-export const PROXY_URL = process.env.PROXY_URL ?? 'http://localhost:8080'
+export const CLUBS_URL = process.env.CLUBS_URL ?? 'http://localhost:8080'
 
 export const DB_HOST = process.env.DB_HOST
 export const DB_PORT = +(process.env.DB_PORT ?? '5432')

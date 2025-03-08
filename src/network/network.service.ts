@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { Axios, AxiosRequestConfig } from 'axios'
-import { NODE_ENV, PROXY_URL } from 'src/config'
+import { CLUBS_URL, NODE_ENV } from 'src/config'
 import { sleep } from 'src/utils'
 
 @Injectable()
 export class NetworkService {
   protected env = NODE_ENV
   protected routes = {
-    getUser: `${PROXY_URL}/api/v1/user/me/`,
+    getUser: `${CLUBS_URL}/api/v1/user/me/`,
   }
   private token = ''
 
@@ -49,6 +49,7 @@ export class NetworkService {
 
   async fetchUser(): Promise<IUser> {
     const res = await this.sendRequest(this.routes.getUser)
+    console.log('user res:', res)
 
     if (res.status > 299) {
       throw new Error('Error fetching data from network')

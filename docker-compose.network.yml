@@ -8,14 +8,14 @@ services:
       - cluster
     environment:
       - NODE_ENV=network
-      - PORT=9000
+      - PORT=8082
       - HOST=localhost
       - LOG_LEVEL=debug
       - KAFKA_BROKERS=kafka-jbx:9092
       - BASE_URL=http://localhost:8080
       - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
-      - PROXY_URL=http://proxy:8080
+      - CLUBS_URL=http://proxy:8080
       - DB_HOST=jbx-network-db
       - DB_PORT=5432
       - DB_USER=devuser
@@ -24,7 +24,7 @@ services:
       - REDIS_HOST=jbx-network-redis
       - REDIS_PORT=6379
     ports:
-      - 9000:9000
+      - 8082:8082
     depends_on:
       - postgres
       - pgadmin
@@ -35,29 +35,6 @@ services:
       - ./packages:/app/packages
       - ./package.json:/app/package.json
     command: npm run start:network
-
-  # proxy:
-  #   build:
-  #     context: ./proxy/
-  #   ports:
-  #     - 8080:8080
-  #     - 8081:8081
-  #   networks:
-  #     - cluster
-  #   depends_on:
-  #     - server
-
-  #   volumes:
-  #     - client-dist:/vol/client
-  #     - club-static:/vol/static
-  #     - ./proxy/api:/vol/apispec
-  #   environment:
-  #     - SERVER_URI=server-jbx:9000
-  #     - WEBSOCKET_URI=server-jbx:9000
-  #     - CLUB_MANAGER_URI=club-app-network:9000
-  #     - PUBLIC_STATIC_URI=jukebox-client-631bab280a434e28995fd3fcafd1fa5a.s3-website-us-east-1.amazonaws.com
-
-    # attach: false
 
   postgres:
     image: postgres:13-alpine
@@ -74,8 +51,6 @@ services:
   redis:
     image: redis:alpine
     container_name: jbx-network-redis
-    ports:
-      - 6379:6379
     networks:
       - cluster
       
@@ -88,72 +63,18 @@ services:
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@example.com
       - PGADMIN_DEFAULT_PASSWORD=changeme
-      # - PGADMIN_SERVER_MODE=True
       - PGADMIN_CONFIG_DATABASE_URI="postgresql://devuser:devpass@jbx-network-db:5432/devdatabase"
-      # - PGADMIN_SQLITE_PATH='/var/lib/sqlite'
       
     volumes:
       - pgadmin-network-data:/var/lib/pgadmin
     networks:
       - cluster
 
-  ####################################
-  # Kafka Config
-  ####################################
-  # zookeeper:
-  #   image: confluentinc/cp-zookeeper:latest
-  #   container_name: zookeeper-jbx
-  #   environment:
-  #     ZOOKEEPER_CLIENT_PORT: 2181
-  #     ZOOKEEPER_TICK_TIME: 2000
-  #   ports:
-  #     - 2181:2181
-  #   networks:
-  #     - cluster
-  #   attach: false
-
-  # kafka:
-  #   image: confluentinc/cp-kafka:latest
-  #   container_name: kafka-jbx
-  #   depends_on:
-  #     - zookeeper
-  #   ports:
-  #     - 9092:9092
-  #     - 29092:29092
-  #   environment:
-  #     KAFKA_BROKER_ID: 1
-  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper-jbx:2181
-  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-jbx:9092,PLAINTEXT_HOST://localhost:29092
-  #     # KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092
-  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-  #     KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-  #     KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
-  #   networks:
-  #     - cluster
-  #   attach: false
-
-  # kafka-api:
-  #   image: 'docker-spring-boot-postgres:latest'
-  #   build:
-  #     context: ./kafka-api
-  #   container_name: kafka-api-jbx
-  #   ports:
-  #     - 9090:8080
-  #   environment:
-  #     - SPRING_PROFILES_ACTIVE=dev
-  #   depends_on:
-  #     - kafka
-
 volumes:
-  client-dist:
-    name: client-dist
   jukebox-network-pg-data:
-  club-static:
-    name: club-static
   pgadmin-network-data:
 
 networks:
   cluster:
-    name: jukebox_cluster
-    driver: bridge
+    name: clubs_cluster
+    external: true

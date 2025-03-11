@@ -50,7 +50,7 @@ export class JukeboxLinkAssignment extends BaseEntity {
 
   @ManyToOne(() => SpotifyAccount, (link) => link.jukebox_assignments)
   @JoinColumn({ name: 'spotify_link_id' })
-  spotify_link: SpotifyAccount
+  spotify_link: SpotifyAccount // TODO: Rename to spotify_account
 
   @Column({ default: false })
   active: boolean

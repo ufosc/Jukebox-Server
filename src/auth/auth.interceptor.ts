@@ -2,6 +2,7 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
+  Logger,
   NestInterceptor,
   UnauthorizedException,
 } from '@nestjs/common'
@@ -31,7 +32,7 @@ export class AuthInterceptor implements NestInterceptor {
       request.user = await this.network.fetchUser()
       return next.handle()
     } catch (e) {
-      throw new UnauthorizedException()
+      throw new UnauthorizedException(e)
     }
   }
 }

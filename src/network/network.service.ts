@@ -49,7 +49,6 @@ export class NetworkService {
 
   async fetchUser(): Promise<IUser> {
     const res = await this.sendRequest(this.routes.getUser)
-    console.log('user res:', res)
 
     if (res.status > 299) {
       throw new Error('Error fetching data from network')

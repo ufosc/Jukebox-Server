@@ -1,13 +1,9 @@
 {
-  "name": "@ufosc/jukebox-server",
+  "name": "jukebox-server",
   "version": "0.0.1",
   "description": "",
   "author": "",
   "private": true,
-  "repository": "https://github.com/ufosc/Jukebox-Server",
-  "publishConfig": {
-    "@ufosc:registry": "https://npm.pkg.github.com"
-  },
   "license": "GPL-3.0-only",
   "scripts": {
     "build": "nest build",

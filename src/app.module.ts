@@ -12,6 +12,7 @@ import { TrackQueueModule } from './jukebox/track-queue/track-queue.module'
 import { NetworkModule } from './network/network.module'
 import { SpotifyModule } from './spotify/spotify.module'
 import { AxiosProvider } from './utils/providers/axios.provider'
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -31,5 +32,6 @@ import { AxiosProvider } from './utils/providers/axios.provider'
     // NetworkService,
     { provide: APP_INTERCEPTOR, useClass: AuthInterceptor },
   ],
+  controllers: [AppController],
 })
 export class AppModule {}

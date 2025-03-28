@@ -41,6 +41,20 @@ tasks:
     cmds:
       - docker buildx build --platform=linux/amd64,linux/arm64 -t ikehunter5/jukebox-server:latest -f ./Dockerfile . --push
 
+  seed:
+    desc: 'Add mock data to the database'
+    deps:
+      - build
+    cmds:
+      - docker-compose run --rm server sh -c "npm run seed"
+
+  seed:network:
+    desc: 'Add mock data to the network database'
+    deps:
+      - build:network
+    cmds:
+      - docker-compose -f docker-compose.network.yml run --rm server sh -c "npm run seed"
+
   #########################################
   # Jukebox-Types Package
   #########################################

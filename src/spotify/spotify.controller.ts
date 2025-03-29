@@ -37,7 +37,7 @@ export class SpotifyController {
     const profile = await this.spotifyService.getProfile(account)
 
     if (jukeboxId != null) {
-      this.jukeboxService.addLinkToJukebox(jukeboxId, account)
+      await this.jukeboxService.addLinkToJukebox(jukeboxId, account)
     }
 
     if (finalRedirect) {

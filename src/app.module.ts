@@ -19,10 +19,10 @@ import { AppController } from './app.controller';
     ConfigModule.forRoot({ isGlobal: true }),
     CacheModule.registerAsync(CacheOptions),
     DatabaseModule,
+    NetworkModule,
     SpotifyModule,
     TrackQueueModule,
     JukeboxModule,
-    NetworkModule,
   ],
   // controllers: [AppController],
   providers: [
@@ -30,7 +30,7 @@ import { AppController } from './app.controller';
     AppGateway,
     AxiosProvider,
     // NetworkService,
-    { provide: APP_INTERCEPTOR, useClass: AuthInterceptor },
+    // { provide: APP_INTERCEPTOR, useClass: AuthInterceptor },
   ],
   controllers: [AppController],
 })

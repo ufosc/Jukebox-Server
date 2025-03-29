@@ -12,10 +12,11 @@ services:
       - HOST=localhost
       - LOG_LEVEL=debug
       - KAFKA_BROKERS=kafka-jbx:9092
-      - BASE_URL=http://localhost:8080
+      - BASE_URL=http://localhost:8082
       - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID}
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET}
-      - CLUBS_URL=http://proxy:8080
+      - CLUBS_URL=http://clubs-network-proxy:8080
+      # - CLUBS_URL=http://127.0.0.1:8080
       - DB_HOST=jbx-network-db
       - DB_PORT=5432
       - DB_USER=devuser
@@ -27,7 +28,7 @@ services:
       - 8082:8082
     depends_on:
       - postgres
-      - pgadmin
+      # - pgadmin
       # - kafka
       - redis
     volumes:
@@ -47,28 +48,28 @@ services:
       - POSTGRES_PASSWORD=devpass
     networks:
       - cluster
-      
+
   redis:
     image: redis:alpine
     container_name: jbx-network-redis
     networks:
       - cluster
-      
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: jbx-netork-pgadmin
-    restart: always
-    ports:
-      - "8888:80"
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@example.com
-      - PGADMIN_DEFAULT_PASSWORD=changeme
-      - PGADMIN_CONFIG_DATABASE_URI="postgresql://devuser:devpass@jbx-network-db:5432/devdatabase"
-      
-    volumes:
-      - pgadmin-network-data:/var/lib/pgadmin
-    networks:
-      - cluster
+
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   container_name: jbx-netork-pgadmin
+  #   restart: always
+  #   ports:
+  #     - "8888:80"
+  #   environment:
+  #     - PGADMIN_DEFAULT_EMAIL=admin@example.com
+  #     - PGADMIN_DEFAULT_PASSWORD=changeme
+  #     - PGADMIN_CONFIG_DATABASE_URI="postgresql://devuser:devpass@jbx-network-db:5432/devdatabase"
+
+  #   volumes:
+  #     - pgadmin-network-data:/var/lib/pgadmin
+  #   networks:
+  #     - cluster
 
 volumes:
   jukebox-network-pg-data:

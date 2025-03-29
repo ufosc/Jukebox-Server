@@ -10,8 +10,10 @@ import {
   Patch,
   Post,
   Query,
+  UseInterceptors,
 } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
+import { AuthInterceptor } from 'src/auth/auth.interceptor'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { CurrentUser } from '../auth/current-user.decorator'
 import { SpotifyAuthService } from '../spotify/spotify-auth.service'
@@ -19,18 +21,19 @@ import { AddJukeboxLinkDto } from './dto/add-jukebox-link.dto'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
 import { CreateJukeboxInteractionDto, JukeboxInteractionDto } from './dto/jukebox-interaction.dto'
 import { JukeboxLinkDto } from './dto/jukebox-link.dto'
+import { JukeboxSearchDto } from './dto/jukebox-search.dto'
 import { JukeboxDto } from './dto/jukebox.dto'
+import { LikeDislikeTrackDto } from './dto/like-dislike-track.dto'
 import { PlayerStateDto } from './dto/player-state.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { JukeboxGateway } from './jukebox.gateway'
 import { JukeboxService } from './jukebox.service'
 import { AddTrackToQueueDto } from './track-queue/dtos/track-queue.dto'
 import { TrackQueueService } from './track-queue/track-queue.service'
-import { JukeboxSearchDto } from './dto/jukebox-search.dto'
-import { LikeDislikeTrackDto } from './dto/like-dislike-track.dto';
 
 @ApiTags('jukeboxes')
 @Controller('jukebox/')
+@UseInterceptors(AuthInterceptor)
 export class JukeboxController {
   constructor(
     private readonly jukeboxSvc: JukeboxService,
@@ -188,20 +191,19 @@ export class JukeboxController {
   }
 
   @Post('/:jukebox_id/tracks-queue/like-dislike')
-async likeDislikeTrackInQueue(
-  @Param('jukebox_id') jukeboxId: number,
-  @Body() body: LikeDislikeTrackDto
-) {
-  const updatedTrack = await this.jukeboxSvc.interactWithTrackInQueue(
-    jukeboxId,
-    body.queue_index,
-    body.action
-  );
+  async likeDislikeTrackInQueue(
+    @Param('jukebox_id') jukeboxId: number,
+    @Body() body: LikeDislikeTrackDto,
+  ) {
+    const updatedTrack = await this.jukeboxSvc.interactWithTrackInQueue(
+      jukeboxId,
+      body.queue_index,
+      body.action,
+    )
 
-  // Emit WebSocket event to update all clients
-  await this.jbxGateway.emitTrackQueueUpdate(jukeboxId);
+    // Emit WebSocket event to update all clients
+    await this.jbxGateway.emitTrackQueueUpdate(jukeboxId)
 
-  return updatedTrack;
-}
-
+    return updatedTrack
+  }
 }

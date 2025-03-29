@@ -56,8 +56,8 @@ export class SpotifyAuthService extends SpotifyBaseService {
     return tokens
   }
 
-  public getSpotifyRedirectUri(userId: number, finalRedirect?: string) {
-    const state = JSON.stringify({ userId, finalRedirect })
+  public getSpotifyRedirectUri(userId: number, finalRedirect?: string, jukeboxId?: number) {
+    const state = JSON.stringify({ userId, finalRedirect, jukeboxId })
     const url =
       'https://accounts.spotify.com/authorize?' +
       stringify({
@@ -76,9 +76,9 @@ export class SpotifyAuthService extends SpotifyBaseService {
     const sdk = this.getSdk(tokens)
     const profile = await sdk.currentUser.profile()
 
-    await this.updateOrCreateAccount(userId, profile.email, tokens)
+    return await this.updateOrCreateAccount(userId, profile.email, tokens)
 
-    return profile
+    // return profile
   }
 
   // TODO: Implement not found error, should be implemented in service or controller?
@@ -168,9 +168,9 @@ export class SpotifyAuthService extends SpotifyBaseService {
     const existing = await this.repo.findOneBy({ user_id: userId, spotify_email: spotifyEmail })
 
     if (!existing) {
-      await this.addAccount({ user_id: userId, spotify_email: spotifyEmail, tokens })
+      return await this.addAccount({ user_id: userId, spotify_email: spotifyEmail, tokens })
     } else {
-      await this.updateAccount(existing.id, {
+      return await this.updateAccount(existing.id, {
         access_token: tokens.access_token,
         expires_in: tokens.expires_in,
       })

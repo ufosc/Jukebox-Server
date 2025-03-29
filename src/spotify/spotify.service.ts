@@ -10,6 +10,11 @@ export class SpotifyService extends SpotifyBaseService {
     super()
   }
 
+  public async getProfile(spotifyAuth: SpotifyTokensDto) {
+    const sdk = this.getSdk(spotifyAuth)
+    return await sdk.currentUser.profile()
+  }
+
   public async getTrack(spotifyAuth: SpotifyTokensDto, trackId: string): Promise<ITrackDetails> {
     const sdk = this.getSdk(spotifyAuth)
     const track = await sdk.tracks.get(trackId)

@@ -10,7 +10,7 @@ const bootstrap = async () => {
     logger: ['debug', 'error', 'fatal', 'log', 'verbose', 'warn'],
   })
   app.useGlobalPipes(new ValidationPipe({ transform: true }))
-  app.setGlobalPrefix('api/v1')
+  app.setGlobalPrefix('api/v1', { exclude: [''] })
   app.useGlobalFilters(new HttpExceptionFilter())
 
   app.enableCors({ origin: ['http://localhost:3000'], credentials: true })

@@ -12,16 +12,17 @@ import { TrackQueueModule } from './jukebox/track-queue/track-queue.module'
 import { NetworkModule } from './network/network.module'
 import { SpotifyModule } from './spotify/spotify.module'
 import { AxiosProvider } from './utils/providers/axios.provider'
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     CacheModule.registerAsync(CacheOptions),
     DatabaseModule,
+    NetworkModule,
     SpotifyModule,
     TrackQueueModule,
     JukeboxModule,
-    NetworkModule,
   ],
   // controllers: [AppController],
   providers: [
@@ -29,7 +30,8 @@ import { AxiosProvider } from './utils/providers/axios.provider'
     AppGateway,
     AxiosProvider,
     // NetworkService,
-    { provide: APP_INTERCEPTOR, useClass: AuthInterceptor },
+    // { provide: APP_INTERCEPTOR, useClass: AuthInterceptor },
   ],
+  controllers: [AppController],
 })
 export class AppModule {}

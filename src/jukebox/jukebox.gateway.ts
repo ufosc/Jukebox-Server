@@ -1,4 +1,9 @@
-import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets'
+import {
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets'
 import { Server, Socket } from 'socket.io'
 import { AppGateway } from 'src/app.gateway'
 import { SpotifyService } from 'src/spotify/spotify.service'
@@ -12,7 +17,7 @@ import { TrackQueueService } from './track-queue/track-queue.service'
     origin: '*',
   },
 })
-export class JukeboxGateway {
+export class JukeboxGateway implements OnGatewayDisconnect {
   constructor(
     private queueSvc: TrackQueueService,
     private jukeboxSvc: JukeboxService,
@@ -21,6 +26,8 @@ export class JukeboxGateway {
   ) {}
 
   @WebSocketServer() server: Server
+
+  handleDisconnect(client: any) {}
 
   public async emitPlayerUpdate(jukebox_id: number) {
     const state = await this.jukeboxSvc.getPlayerState(jukebox_id)

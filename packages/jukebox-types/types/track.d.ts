@@ -115,7 +115,7 @@ declare interface IArtistInlineDetails extends IArtistInline {
  */
 declare interface IAlbumInlineDetails extends IAlbumInline {
   id: string
-  album_type: 'album'
+  album_type: 'album' | 'single'
   artists: IArtistInlineDetails[]
   available_markets: string[]
   external_urls?: { spotify: string }

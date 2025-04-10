@@ -8,7 +8,7 @@ class TrackImageDto implements ITrackImage {
 
 class AlbumInlineDto implements IAlbumInlineDetails {
   id: string
-  album_type: 'album'
+  album_type: 'album' | 'single'
   artists: IArtistInlineDetails[]
   available_markets: string[]
   external_urls?: { spotify: string }

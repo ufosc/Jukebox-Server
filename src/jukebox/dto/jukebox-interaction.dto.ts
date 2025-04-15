@@ -1,11 +1,26 @@
-export class CreateJukeboxInteractionDto implements IJukeboxInteractionCreate {
-  action: 'like' | 'dislike'
+import { ApiProperty } from '@nestjs/swagger'
 
-  location: 'player' | 'queue'
-  queue_index?: number
+export class CreateJukeboxInteractionDto implements IJukeboxInteractionCreate {
+  @ApiProperty({ enum: ['like', 'dislike'] })
+  action: 'like' | 'dislike'
+  queue_index: number
 }
 
-export class JukeboxInteractionDto extends CreateJukeboxInteractionDto implements IJukeboxInteraction {
+export class UserDto implements IUser {
+  email: string
+  first_name?: string | undefined
+  last_name?: string | undefined
+  username: string
+  image?: string | undefined
+  id: number
+  created_at: string
+  updated_at: string
+}
+
+export class JukeboxInteractionDto
+  extends CreateJukeboxInteractionDto
+  implements IJukeboxInteraction
+{
   jukebox_id: number
-  user: IUser
+  user: UserDto
 }

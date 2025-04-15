@@ -1,5 +1,5 @@
 import { Controller, Delete, Get, Param, Query, Res, UseInterceptors } from '@nestjs/common'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { Response } from 'express'
 import { AuthInterceptor } from 'src/auth/auth.interceptor'
 import { CurrentUser } from 'src/auth/current-user.decorator'
@@ -8,6 +8,7 @@ import { SpotifyAuthService } from './spotify-auth.service'
 import { SpotifyService } from './spotify.service'
 
 @ApiTags('spotify')
+@ApiBearerAuth()
 @Controller('spotify/')
 export class SpotifyController {
   constructor(

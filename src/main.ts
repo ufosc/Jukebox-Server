@@ -1,8 +1,8 @@
 import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
-import { SwaggerModule } from '@nestjs/swagger'
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppModule } from './app.module'
-import { generateSwaggerDocument, PORT } from './config'
+import { PORT } from './config'
 import { logger } from './middleware/logger.middleware'
 import { HttpExceptionFilter } from './utils'
 
@@ -16,9 +16,13 @@ const bootstrap = async () => {
   app.use(logger)
 
   app.enableCors({ origin: ['http://localhost:3000'], credentials: true })
-  const document = generateSwaggerDocument(app)
+  const config = new DocumentBuilder().addBearerAuth().build()
 
-  SwaggerModule.setup('/api/docs/', app, document, { yamlDocumentUrl: '/api/v1/schema/jukebox/' })
+  const documentFactory = () => SwaggerModule.createDocument(app, config)
+
+  SwaggerModule.setup('/api/docs/', app, documentFactory, {
+    yamlDocumentUrl: '/api/v1/schema/jukebox/',
+  })
 
   await app.listen(PORT)
 }

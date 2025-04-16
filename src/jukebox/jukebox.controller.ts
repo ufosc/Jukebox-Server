@@ -12,7 +12,7 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common'
-import { ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 import { AuthInterceptor } from 'src/auth/auth.interceptor'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { CurrentUser } from '../auth/current-user.decorator'
@@ -23,7 +23,6 @@ import { CreateJukeboxInteractionDto, JukeboxInteractionDto } from './dto/jukebo
 import { JukeboxLinkDto } from './dto/jukebox-link.dto'
 import { JukeboxSearchDto } from './dto/jukebox-search.dto'
 import { JukeboxDto } from './dto/jukebox.dto'
-import { LikeDislikeTrackDto } from './dto/like-dislike-track.dto'
 import { PlayerStateDto } from './dto/player-state.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { JukeboxGateway } from './jukebox.gateway'
@@ -32,6 +31,7 @@ import { AddTrackToQueueDto } from './track-queue/dtos/track-queue.dto'
 import { TrackQueueService } from './track-queue/track-queue.service'
 
 @ApiTags('jukeboxes')
+@ApiBearerAuth()
 @Controller('jukebox/')
 @UseInterceptors(AuthInterceptor)
 export class JukeboxController {
@@ -188,22 +188,5 @@ export class JukeboxController {
   ) {
     const account = await this.jukeboxSvc.getActiveSpotifyAccount(jukeboxId)
     return this.spotifySvc.searchTracks(account, body)
-  }
-
-  @Post('/:jukebox_id/tracks-queue/like-dislike')
-  async likeDislikeTrackInQueue(
-    @Param('jukebox_id') jukeboxId: number,
-    @Body() body: LikeDislikeTrackDto,
-  ) {
-    const updatedTrack = await this.jukeboxSvc.interactWithTrackInQueue(
-      jukeboxId,
-      body.queue_index,
-      body.action,
-    )
-
-    // Emit WebSocket event to update all clients
-    await this.jbxGateway.emitTrackQueueUpdate(jukeboxId)
-
-    return updatedTrack
   }
 }

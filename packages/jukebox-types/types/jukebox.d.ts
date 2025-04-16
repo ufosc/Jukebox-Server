@@ -140,8 +140,9 @@ declare interface IPlayerAuxUpdate extends IPlayerAuxState {
  */
 declare interface IJukeboxInteractionCreate {
   action: 'like' | 'dislike'
-  location: 'player' | 'queue'
-  queue_index?: number
+
+  /** Position in the queue, 0 for currently playing, 1 for top of queue. */
+  queue_index: number
 }
 
 /**

@@ -16,13 +16,12 @@ import { AddJukeboxLinkDto } from './dto/add-jukebox-link.dto'
 import { CreateJukeboxDto } from './dto/create-jukebox.dto'
 import { CreateJukeboxInteractionDto, JukeboxInteractionDto } from './dto/jukebox-interaction.dto'
 import { JukeboxLinkDto } from './dto/jukebox-link.dto'
+import { TrackInteraction } from './dto/like-dislike-track.dto'
 import { PlayerStateDto, PlayerStateUpdateDto } from './dto/player-state.dto'
 import { QueuedTrackDto } from './dto/track.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { Jukebox, JukeboxLinkAssignment } from './entities/jukebox.entity'
 import { TrackQueueService } from './track-queue/track-queue.service'
-import { TrackInteraction } from './dto/like-dislike-track.dto';
-
 
 @Injectable()
 export class JukeboxService {
@@ -193,7 +192,15 @@ export class JukeboxService {
     const key = this.getCacheKey(jukeboxId, 'player-state')
     const playerState = await this.cache.get<PlayerStateDto>(key)
 
-    return playerState ?? null
+    // return playerState ?? null
+    return (
+      playerState ?? {
+        is_playing: false,
+        jukebox_id: jukeboxId,
+        progress: 0,
+        current_track: undefined,
+      }
+    )
   }
 
   async convertToQueuedTrack(
@@ -249,7 +256,7 @@ export class JukeboxService {
         is_playing: false,
       }
     }
-    
+
     Object.assign(nextState, payload)
     await this.setPlayerState(jukeboxId, nextState)
 
@@ -265,7 +272,7 @@ export class JukeboxService {
     user: IUser,
     payload: CreateJukeboxInteractionDto,
   ): Promise<JukeboxInteractionDto> {
-    const { action, location, queue_index } = payload
+    const { action, queue_index } = payload
 
     /** Helper function to handle interaction */
     const interact = (track: QueuedTrackDto) => {
@@ -283,7 +290,7 @@ export class JukeboxService {
       return track
     }
 
-    if (location === 'player') {
+    if (queue_index === 0) {
       // Modify currently player track
       const state = await this.getPlayerState(jukeboxId)
       if (!state?.current_track) {
@@ -314,7 +321,6 @@ export class JukeboxService {
       jukebox_id: jukeboxId,
       user,
       action,
-      location,
       queue_index,
     }
   }
@@ -399,7 +405,7 @@ export class JukeboxService {
 
     const queuedTrack = await this.queueSvc.queueTrack(jukeboxId, track, meta.username)
     const queue = await this.queueSvc.getTrackQueue(jukeboxId)
-    console.log("queue:", queue)
+    console.log('queue:', queue)
 
     if (queue.length === 1) {
       await this.spotifySvc.queueTrack(account, track.uri)
@@ -411,27 +417,25 @@ export class JukeboxService {
   async interactWithTrackInQueue(
     jukeboxId: number,
     queueIndex: number,
-    action: TrackInteraction
+    action: TrackInteraction,
   ): Promise<IQueuedTrack> {
     // Get the track at the specified position
-    const track = await this.queueSvc.getTrackAtPos(jukeboxId, queueIndex);
-    
+    const track = await this.queueSvc.getTrackAtPos(jukeboxId, queueIndex)
+
     if (!track) {
-      throw new BadRequestException(`No track found at position ${queueIndex} in the queue.`);
+      throw new BadRequestException(`No track found at position ${queueIndex} in the queue.`)
     }
-  
+
     // Update likes or dislikes
     if (action === TrackInteraction.LIKE) {
-      track.interactions.likes += 1;
+      track.interactions.likes += 1
     } else if (action === TrackInteraction.DISLIKE) {
-      track.interactions.dislikes += 1;
+      track.interactions.dislikes += 1
     }
-  
-    // Save the updated track back to the queue
-    await this.queueSvc.setTrackAtPos(jukeboxId, track, queueIndex);
-    
-    return track;
-  }
-  
 
+    // Save the updated track back to the queue
+    await this.queueSvc.setTrackAtPos(jukeboxId, track, queueIndex)
+
+    return track
+  }
 }

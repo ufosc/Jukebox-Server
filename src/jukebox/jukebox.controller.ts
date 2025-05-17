@@ -55,12 +55,6 @@ export class JukeboxController {
     return jbxs.map((jbx) => jbx.serialize())
   }
 
-  @Get('jukeboxes/club/:id')
-  async getClubJbxList(@Param('id') id:number): Promise<JukeboxDto[]> {
-    const clubJbxs = await this.jukeboxSvc.findClubJbxs(id)
-    return clubJbxs.map((jbx) => jbx.serialize())
-  }
-
   @Get('jukeboxes/:id/')
   async findOne(@Param('id') id: number): Promise<JukeboxDto> {
     const jbx = await this.jukeboxSvc.findOne(id)

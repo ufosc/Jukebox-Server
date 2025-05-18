@@ -47,6 +47,13 @@ export class JukeboxService {
     })
   }
 
+  findClubJbxs(clubID: number) {
+    return this.repo.find({
+      relations: ['link_assignments', 'link_assignments.spotify_link'],
+      where: { club_id: clubID },
+    })
+  }
+
   async findOne(id: number) {
     const jukebox = await this.repo.findOne({
       where: { id },

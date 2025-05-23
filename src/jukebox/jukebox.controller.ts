@@ -7,6 +7,7 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -158,6 +159,21 @@ export class JukeboxController {
     await this.queueSvc.clearQueue(jukeboxId)
     await this.jbxGateway.emitTrackQueueUpdate(jukeboxId)
   }
+
+  /*
+
+  @Delete('/:jukebox_id/links/:id/')
+  async deleteJukeboxLink(@Param('jukebox_id') jukeboxId: number, @Param('id') linkId: number) {
+
+  */
+  
+  @Delete('/:jukebox_id/tracks-queue/:id/')
+  async clearTrack(@Param('jukebox_id') jukeboxId: number, @Param('id') queueSpot: string) {
+    const removedTracks = await this.queueSvc.clearSong(jukeboxId, queueSpot)
+    await this.jbxGateway.emitTrackQueueUpdate(jukeboxId)
+    return removedTracks
+  }
+  
 
   @Post('/:jukebox_id/connect/')
   async connectJukeboxPlayer(

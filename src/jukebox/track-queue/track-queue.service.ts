@@ -58,6 +58,14 @@ export class Queue<T = unknown> {
     this.items.splice(pos, 0, removedTrack)
   }
 
+  public getTrack(pos: number) {
+    if(pos >= this.items.length)
+    {
+      return -1
+    }
+    return this.items[pos]
+  }
+
   public update(pos: number, fields: Partial<T>) {
     if (this.items.length <= pos) return
     this.items[pos] = { ...this.items[pos], ...fields }
@@ -253,5 +261,31 @@ export class TrackQueueService {
     await this.commitQueue(jukeboxId, queue)
 
     return removed
+  }
+
+  public async swapSong(jukeboxId: number, targetPos:number, currentPos: number ):Promise<number>
+  {
+    console.log(`${currentPos} to ${targetPos}`)
+    const queue = await this.getCachedQueue(jukeboxId)
+
+    if (queue.size() < 0) {
+      return -1
+    }
+
+    if (targetPos < 0 || currentPos < 0 || targetPos === currentPos) {
+      return -1
+    }
+
+    const queuedTrack = queue.getTrack(currentPos)
+    
+    if(queuedTrack === -1)
+    {
+      return -1
+    }
+    queue.setPosition(queuedTrack.item, targetPos)
+
+    await this.commitQueue(jukeboxId, queue)
+    
+    return queue.size()
   }
 }

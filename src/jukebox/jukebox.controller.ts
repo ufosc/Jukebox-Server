@@ -28,7 +28,7 @@ import { PlayerStateDto } from './dto/player-state.dto'
 import { UpdateJukeboxDto } from './dto/update-jukebox.dto'
 import { JukeboxGateway } from './jukebox.gateway'
 import { JukeboxService } from './jukebox.service'
-import { AddTrackToQueueDto } from './track-queue/dtos/track-queue.dto'
+import { AddTrackToQueueDto, SwapTracksDto } from './track-queue/dtos/track-queue.dto'
 import { TrackQueueService } from './track-queue/track-queue.service'
 
 @ApiTags('jukeboxes')
@@ -150,6 +150,25 @@ export class JukeboxController {
     await this.jbxGateway.emitTrackQueueUpdate(jukeboxId)
 
     return queuedTrack
+  }
+
+  @Post('/:jukebox_id/tracks-queue/swap-tracks/')
+  async swapTrackQueue(
+    @Param('jukebox_id') jukeboxId: number,
+    @Body() tracks: SwapTracksDto,
+  ){
+    const success = await this.queueSvc.swapSong(jukeboxId, tracks.target_pos, tracks.current_pos)
+    if(success === -1)
+    {
+      throw new NotFoundException(
+        'Cannot swap tracks!'
+      )
+    }
+
+    await this.jbxGateway.emitTrackQueueUpdate(jukeboxId)
+
+    return success
+
   }
 
   @Delete('/:jukebox_id/tracks-queue/')

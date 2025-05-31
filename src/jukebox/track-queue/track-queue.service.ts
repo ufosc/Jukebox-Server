@@ -8,6 +8,7 @@ export class QueueItem<T = unknown> {
   constructor(public item: T) {}
 }
 
+
 export class Queue<T = unknown> {
   constructor(readonly items: QueueItem<T>[]) {}
 
@@ -34,6 +35,12 @@ export class Queue<T = unknown> {
     return this.items.map((item) => item.item)
   }
 
+  public remove(pos: number): QueueItem<T>[] | undefined {
+    if (this.items.length === 0 || pos < 0) return undefined
+    const target = this.items.splice(pos, 1)
+    return target.length > 0 ? target : undefined
+  }
+
   // Moves a track to a new position in the queue
   public setPosition(track: T, pos: number) {
     const currentIndex = this.items.findIndex((target) => target.item === track)
@@ -51,12 +58,36 @@ export class Queue<T = unknown> {
     this.items.splice(pos, 0, removedTrack)
   }
 
+  public getTrack(pos: number) {
+    if(pos >= this.items.length)
+    {
+      return -1
+    }
+    return this.items[pos]
+  }
+
   public update(pos: number, fields: Partial<T>) {
     if (this.items.length <= pos) return
     this.items[pos] = { ...this.items[pos], ...fields }
 
     return this.items[pos]
   }
+  
+  public size() {
+    return this.items.length
+  }
+
+  public findElement(elementType: keyof T, targetElement){
+    for (let i = 0; i < this.items.length; i++) {
+      const item = this.items[i]
+      if (item.item[elementType] === targetElement) {
+        return i
+      }
+    }
+
+    return -1
+  }
+
 }
 type TrackQueue = Queue<IQueuedTrack>
 type TrackQueueItem = QueueItem<IQueuedTrack>
@@ -212,4 +243,49 @@ export class TrackQueueService {
 
   //   return updatedState
   // }
+
+  public async clearSong(jukeboxId: number, queueId: string): Promise<QueueItem<IQueuedTrack>[] | undefined> {
+    const queue = await this.getCachedQueue(jukeboxId)
+
+    if (queue.size() < 0) {
+      return undefined
+    }
+
+    const queuePos: number = queue.findElement('queue_id', queueId)
+    if (queuePos === -1) {
+      return undefined
+    }
+
+    const removed: QueueItem<IQueuedTrack>[] | undefined = queue.remove(queuePos)
+
+    await this.commitQueue(jukeboxId, queue)
+
+    return removed
+  }
+
+  public async swapSong(jukeboxId: number, targetPos:number, currentPos: number ):Promise<number>
+  {
+    console.log(`${currentPos} to ${targetPos}`)
+    const queue = await this.getCachedQueue(jukeboxId)
+
+    if (queue.size() < 0) {
+      return -1
+    }
+
+    if (targetPos < 0 || currentPos < 0 || targetPos === currentPos) {
+      return -1
+    }
+
+    const queuedTrack = queue.getTrack(currentPos)
+    
+    if(queuedTrack === -1)
+    {
+      return -1
+    }
+    queue.setPosition(queuedTrack.item, targetPos)
+
+    await this.commitQueue(jukeboxId, queue)
+    
+    return queue.size()
+  }
 }

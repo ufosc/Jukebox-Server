@@ -13,3 +13,9 @@ export class AddTrackToQueueDto {
   @IsOptional()
   position?: number
 }
+
+export class SwapTracksDto {
+  @ApiProperty()
+  current_pos: number
+  target_pos: number
+}

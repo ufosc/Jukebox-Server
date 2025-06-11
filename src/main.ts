@@ -16,12 +16,17 @@ const bootstrap = async () => {
   app.use(logger)
 
   app.enableCors({ origin: ['http://localhost:3000'], credentials: true })
-  const config = new DocumentBuilder().addBearerAuth().build()
+  const config = new DocumentBuilder().addBearerAuth().setTitle('Jukebox API').build()
 
   const documentFactory = () => SwaggerModule.createDocument(app, config)
 
   SwaggerModule.setup('api/v1/docs', app, documentFactory, {
     yamlDocumentUrl: '/api/v1/schema/jukebox/',
+  })
+
+  // Redirect /api/docs to /api/v1/docs
+  app.getHttpAdapter().get('/api/docs/', (req, res) => {
+    res.redirect('/api/v1/docs/')
   })
 
   await app.listen(PORT)

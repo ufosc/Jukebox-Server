@@ -1,22 +1,17 @@
 import { Module } from '@nestjs/common'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { AppGateway } from 'src/app.gateway'
-import { NetworkModule } from 'src/network/network.module'
-import { SpotifyModule } from '../spotify/spotify.module'
-import { Jukebox, JukeboxLinkAssignment } from './entities/jukebox.entity'
+import { AccountLinkModule } from './account-link/account-link.module'
+import { JukeSessionModule } from './juke-session/juke-session.module'
+import { JukeSessionService } from './juke-session/juke-session.service'
 import { JukeboxController } from './jukebox.controller'
-import { JukeboxGateway } from './jukebox.gateway'
 import { JukeboxService } from './jukebox.service'
-import { TrackQueueService } from './track-queue/track-queue.service'
+import { PlayerController } from './player/player.controller'
+import { PlayerService } from './player/player.service'
+import { QueueController } from './queue/queue.controller'
+import { QueueService } from './queue/queue.service'
 
 @Module({
-  controllers: [JukeboxController],
-  providers: [JukeboxService, TrackQueueService, JukeboxGateway, AppGateway],
-  imports: [
-    TypeOrmModule.forFeature([Jukebox, JukeboxLinkAssignment]),
-    SpotifyModule,
-    NetworkModule,
-  ],
-  exports: [JukeboxService, TrackQueueService],
+  controllers: [JukeboxController, QueueController, PlayerController],
+  providers: [JukeboxService, QueueService, JukeSessionService, PlayerService],
+  imports: [AccountLinkModule, JukeSessionModule],
 })
 export class JukeboxModule {}

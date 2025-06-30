@@ -1,0 +1,25 @@
+import { EntityBase } from 'src/config/entities'
+import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
+import { Column, ManyToOne, OneToMany } from 'typeorm'
+import { JukeSessionMembership } from './membership.entity'
+
+export class JukeSession extends EntityBase {
+  @ManyToOne(() => Jukebox, (jukebox) => jukebox.juke_sessions)
+  jukebox: Jukebox
+
+  @Column()
+  join_code: string
+
+  @Column()
+  start_at: Date
+
+  @Column()
+  end_at: Date
+
+  @Column()
+  is_active: boolean
+
+  // Foreign Relationships
+  @OneToMany(() => JukeSessionMembership, (membership) => membership.juke_session)
+  memberships: JukeSessionMembership
+}

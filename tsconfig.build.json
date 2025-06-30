@@ -1,5 +1,13 @@
 {
   "extends": "./tsconfig.json",
   "moduleResolution": "bundler",
-  "exclude": ["node_modules", "test", "dist", "**/*spec.ts", "_deprecated", "_deprecated*"]
+  "exclude": [
+    "node_modules",
+    "test",
+    "dist",
+    "**/*spec.ts",
+    "_deprecated/**",
+    "_deprecated*",
+    "_deprecated/**/*"
+  ]
 }

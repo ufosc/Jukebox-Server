@@ -1,16 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { EntityBase } from './entities'
 
-export class BaseDto {
+export class EntityDtoBase<T = EntityBase> {
   @ApiProperty({ readOnly: true })
   id: number
 
   @ApiProperty({ readOnly: true })
-  created_at: string
+  created_at: Date
 
   @ApiProperty({ readOnly: true })
-  updated_at: string
+  updated_at: Date
 
-  static serialize(entity: { id: number; created_at: string; updated_at: string }) {
-    return { id: entity.id, created_at: entity.created_at, updated_at: entity.updated_at }
+  constructor(entity: T) {
+    Object.assign(this, entity)
   }
 }

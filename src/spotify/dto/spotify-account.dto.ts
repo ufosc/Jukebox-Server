@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 import { Expose } from 'class-transformer'
-import { BaseDto } from 'src/config/dtos'
+import { EntityDtoBase } from 'src/config/dtos'
 import { SpotifyTokensDto } from './spotify-tokens.dto'
 
 export class CreateSpotifyAccountDto {
@@ -14,13 +14,15 @@ export class UpdateSpotifyAccountDto {
   expires_in: number
 }
 
-export class SpotifyAccountDto extends BaseDto implements Partial<ISpotifyAccount> {
+export class SpotifyAccountDto extends EntityDtoBase {
   @Expose()
   id: number
 
   @Expose()
   @ApiProperty()
   access_token: string
+
+  refresh_token: string
 
   @Expose()
   @ApiProperty()

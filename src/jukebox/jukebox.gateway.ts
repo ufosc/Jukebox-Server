@@ -5,12 +5,8 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets'
 import { Server, Socket } from 'socket.io'
-import { AppGateway } from 'src/app.gateway'
-import { SpotifyService } from 'src/spotify/spotify.service'
-import { JukeboxInteractionDto } from './dto/jukebox-interaction.dto'
-import { PlayerAuxUpdateDto } from './dto/track-player-state.dto'
-import { JukeboxService } from './jukebox.service'
-import { TrackQueueService } from './track-queue/track-queue.service'
+import { PlayerAuxUpdateDto } from './player/dto'
+import { PlayerService } from './player/player.service'
 
 @WebSocketGateway({
   cors: {
@@ -18,30 +14,11 @@ import { TrackQueueService } from './track-queue/track-queue.service'
   },
 })
 export class JukeboxGateway implements OnGatewayDisconnect {
-  constructor(
-    private queueSvc: TrackQueueService,
-    private jukeboxSvc: JukeboxService,
-    private spotifySvc: SpotifyService,
-    private appGateway: AppGateway,
-  ) {}
+  constructor(private playerService: PlayerService) {}
 
   @WebSocketServer() server: Server
-
-  handleDisconnect(client: any) {}
-
-  public async emitPlayerUpdate(jukebox_id: number) {
-    const state = await this.jukeboxSvc.getPlayerState(jukebox_id)
-    this.server.emit('player-update', state)
-  }
-
-  public async emitPlayerInteraction(payload: JukeboxInteractionDto) {
-    this.server.emit('player-interaction', payload)
-  }
-
-  public async emitTrackQueueUpdate(jukebox_id: number) {
-    const nextTracks = await this.jukeboxSvc.getTrackQueue(jukebox_id, true)
-    this.server.emit('track-queue-update', nextTracks)
-  }
+  
+  handleDisconnect(client: Socket) {}
 
   /**
    * When the frontend instance that is playing a track through a spotify player
@@ -54,42 +31,22 @@ export class JukeboxGateway implements OnGatewayDisconnect {
    */
   @SubscribeMessage('player-aux-update')
   async handlePlayerAuxUpdate(client: Socket, payload: PlayerAuxUpdateDto) {
-    const {
-      current_track: player_track,
-      jukebox_id,
-      is_playing,
-      progress,
-      changed_tracks,
-    } = payload
-    const playerTrackIsNext = await this.jukeboxSvc.playerTrackIsNext(jukebox_id, player_track)
-    const playerState = await this.jukeboxSvc.getPlayerState(jukebox_id)
+    const { jukebox_id, action, progress } = payload
 
-    if (changed_tracks && !playerTrackIsNext) {
-      // Case: New track, not top of queue (someone set track from spotify directly)
-      console.debug('WS event: New track, not top of queue')
-      await this.jukeboxSvc.setCurrentTrack(jukebox_id, player_track)
-      await this.jukeboxSvc.updatePlayerState(jukebox_id, { is_playing, progress })
-      await this.emitPlayerUpdate(jukebox_id)
+    switch (action) {
+      case 'played':
+        this.playerService.setIsPlaying(jukebox_id, true)
+        break
+      case 'paused':
+        this.playerService.setIsPlaying(jukebox_id, false)
+        break
+      case 'changed_tracks':
+        this.playerService.handleChangedTracks(jukebox_id, payload.current_track)
+        break
+    }
 
-      // Send update to tracks, will use spotify's queue
-      await this.emitTrackQueueUpdate(jukebox_id)
-    } else if (changed_tracks && playerTrackIsNext) {
-      // Case: New track, is top of queue (a new song was queued up)
-      console.debug('WS event: New track, is top of queue')
-      await this.jukeboxSvc.shiftNextTrack(jukebox_id)
-      await this.emitPlayerUpdate(jukebox_id)
-      await this.emitTrackQueueUpdate(jukebox_id)
-    } else {
-      // Case: Same track, change in a player attribute like "is_playing" or "progress"
-      console.debug('WS event: Same track, other change')
-      if (playerState?.current_track?.track.id !== player_track.id) {
-        // Resync the player track if needed
-        console.debug('Same track is not current track')
-        await this.jukeboxSvc.setCurrentTrack(jukebox_id, player_track)
-      }
-
-      await this.jukeboxSvc.updatePlayerState(jukebox_id, { is_playing, progress })
-      await this.emitPlayerUpdate(jukebox_id)
+    if (progress != null) {
+      this.playerService.setCurrentProgress(jukebox_id, progress, payload.timestamp)
     }
   }
 }

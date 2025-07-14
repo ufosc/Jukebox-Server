@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common'
 import { UserDto } from 'src/shared'
 import { SpotifyService } from 'src/spotify/spotify.service'
-import { CurrentUser } from 'src/utils/decorators'
-import { AccountLinkService } from '../account-link/account-link.service'
+import { ActiveAccount, CurrentUser } from 'src/utils/decorators'
+import { AccountLinkDto } from '../account-link/dto'
 import { CreatePlayerInteractionDto, PlayerActionDto, SetPlayerDeviceDto } from './dto'
 import { PlayerService } from './player.service'
 
@@ -11,13 +11,15 @@ export class PlayerController {
   constructor(
     private playerService: PlayerService,
     private spotifyService: SpotifyService,
-    private accountLinkService: AccountLinkService,
   ) {}
 
   @Post()
-  async setPlayerDevice(@Param('jukebox_id') jukeboxId: string, @Body() body: SetPlayerDeviceDto) {
-    const account = await this.accountLinkService.getActiveAccount(+jukeboxId)
-    return this.spotifyService.setPlayerDevice(account.spotify_account, body.device_id)
+  async setPlayerDevice(
+    @Param('jukebox_id') jukeboxId: string,
+    @ActiveAccount() account: AccountLinkDto,
+    @Body() body: SetPlayerDeviceDto,
+  ) {
+    return await this.playerService.setPlayerDeviceId(+jukeboxId, account, body)
   }
 
   @Get()
@@ -35,7 +37,11 @@ export class PlayerController {
   }
 
   @Post() // play/pause/etc
-  executeAction(@Param('jukebox_id') jukeboxId: string, @Body() body: PlayerActionDto) {
-    return this.playerService.executeAction(+jukeboxId, body)
+  async executeAction(
+    @Param('jukebox_id') jukeboxId: string,
+    @ActiveAccount() account: AccountLinkDto,
+    @Body() body: PlayerActionDto,
+  ) {
+    return this.playerService.executeAction(+jukeboxId, account, body)
   }
 }

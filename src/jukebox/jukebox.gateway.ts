@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common'
 import {
   OnGatewayDisconnect,
   SubscribeMessage,
@@ -5,8 +6,10 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets'
 import { Server, Socket } from 'socket.io'
+import { TrackService } from 'src/track/track.service'
 import { PlayerAuxUpdateDto } from './player/dto'
 import { PlayerService } from './player/player.service'
+import { QueueService } from './queue/queue.service'
 
 @WebSocketGateway({
   cors: {
@@ -14,10 +17,14 @@ import { PlayerService } from './player/player.service'
   },
 })
 export class JukeboxGateway implements OnGatewayDisconnect {
-  constructor(private playerService: PlayerService) {}
+  constructor(
+    private playerService: PlayerService,
+    private queueService: QueueService,
+    private tracksService: TrackService,
+  ) {}
 
   @WebSocketServer() server: Server
-  
+
   handleDisconnect(client: Socket) {}
 
   /**
@@ -31,7 +38,7 @@ export class JukeboxGateway implements OnGatewayDisconnect {
    */
   @SubscribeMessage('player-aux-update')
   async handlePlayerAuxUpdate(client: Socket, payload: PlayerAuxUpdateDto) {
-    const { jukebox_id, action, progress } = payload
+    const { jukebox_id, action, progress, current_track } = payload
 
     switch (action) {
       case 'played':
@@ -41,7 +48,24 @@ export class JukeboxGateway implements OnGatewayDisconnect {
         this.playerService.setIsPlaying(jukebox_id, false)
         break
       case 'changed_tracks':
-        this.playerService.handleChangedTracks(jukebox_id, payload.current_track)
+        if (current_track && !current_track?.spotify_id) {
+          throw new BadRequestException('Track must have a spotify id')
+        }
+
+        // Check if next track was next in queue, if so pop it
+        const nextTrack = await this.queueService.getNextTrack(jukebox_id)
+
+        if (nextTrack.track.spotify_id === current_track?.spotify_id) {
+          // Changed track was next from queue
+          const track = await this.queueService.popNextTrack(jukebox_id)
+          await this.playerService.setCurrentQueuedTrack(jukebox_id, track)
+          await this.queueService.queueNextTrackToSpotify(jukebox_id) // TODO: make this api call
+        } else if (current_track) {
+          // Changed track was outside of queue
+          const track = await this.tracksService.getTrack(current_track.spotify_id!)
+          await this.playerService.setCurrentSpotifyTrack(jukebox_id, track)
+        }
+
         break
     }
 

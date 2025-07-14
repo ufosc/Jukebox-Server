@@ -7,7 +7,8 @@ export class TrackDto extends EntityDtoBase<Track> {
   album: string
   release_year: number
   artists: string[]
-  spotify_id?: string
+  spotify_id: string
+  spotify_uri: string
 }
 export class CreateTrackDto {
   name: string

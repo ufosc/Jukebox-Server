@@ -54,6 +54,13 @@ tasks:
       - build:network
     cmds:
       - docker-compose -f docker-compose.network.yml run --rm server sh -c "npm run seed"
+      
+  test:
+    desc: 'Run unit tests'
+    deps:
+      - build
+    cmds:
+      - npm run test
 
   #########################################
   # Jukebox-Types Package

@@ -14,4 +14,9 @@ export class PlayerStateDto {
   progress: number
   last_progress_update: Date
   is_playing: boolean
+  /**
+   * Spotify device id the player is playing on.
+   */
+  current_device_id?: string
+  juke_session_id?: number
 }

@@ -1,7 +1,8 @@
+import { EntityDtoBase } from 'src/config/dtos'
 import { JukeSessionMembershipInlineDto } from 'src/jukebox/juke-session/dto/membership.dto'
 import { TrackDto } from 'src/track/dto/track.dto'
 
-export class QueuedTrackDto {
+export class QueuedTrackDto extends EntityDtoBase {
   queued_by: JukeSessionMembershipInlineDto
   track: TrackDto
   likes: number

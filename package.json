@@ -103,7 +103,8 @@
     ],
     "modulePaths": [
       "."
-    ]
+    ],
+    "testPathIgnorePatterns": ["_deprecated"]
   },
   "workspaces": [
     "packages/jukebox-types"

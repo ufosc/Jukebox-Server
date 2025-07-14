@@ -4,25 +4,35 @@ import { JukeboxSearchDto } from 'src/jukebox/dto/jukebox-search.dto'
 import { SpotifyTokensDto } from './dto/spotify-tokens.dto'
 import { SpotifyBaseService } from './spotify-base.service'
 
+export interface ISpotifyService {
+  setPlayerDevice(spotifyAuth: SpotifyTokensDto, deviceId: string): Promise<void>
+  startPlayback(spotifyAuth: SpotifyTokensDto, deviceId: string): Promise<void>
+  pausePlayback(spotifyAuth: SpotifyTokensDto, deviceId: string): Promise<void>
+  skipNext(spotifyAuth: SpotifyTokensDto, deviceId: string): Promise<void>
+  skipPrevious(spotifyAuth: SpotifyTokensDto, deviceId: string): Promise<void>
+  loopPlayback(spotifyAuth: SpotifyTokensDto, deviceId: string): Promise<void>
+  playTrack(spotifyAuth: SpotifyTokensDto, deviceId: string, trackUri: string): Promise<void>
+}
+
 @Injectable()
-export class SpotifyService extends SpotifyBaseService {
+export class SpotifyService extends SpotifyBaseService implements ISpotifyService {
   constructor(protected axios: Axios) {
     super()
   }
 
-  public async getProfile(spotifyAuth: SpotifyTokensDto) {
+  async getProfile(spotifyAuth: SpotifyTokensDto) {
     const sdk = this.getSdk(spotifyAuth)
     return await sdk.currentUser.profile()
   }
 
-  public async getTrack(spotifyAuth: SpotifyTokensDto, trackId: string): Promise<ITrackDetails> {
+  async getTrack(spotifyAuth: SpotifyTokensDto, trackId: string): Promise<ITrackDetails> {
     const sdk = this.getSdk(spotifyAuth)
     const track = await sdk.tracks.get(trackId)
 
     return track as ITrackDetails
   }
 
-  public async queueTrack(spotifyAuth: SpotifyTokensDto, track_uri: string) {
+  async queueTrack(spotifyAuth: SpotifyTokensDto, track_uri: string) {
     // const sdk = this.getSdk(spotifyAuth)
     // await sdk.player.addItemToPlaybackQueue(track.uri)
     await this.axios
@@ -40,21 +50,51 @@ export class SpotifyService extends SpotifyBaseService {
       })
   }
 
-  public async setPlayerDevice(spotifyAuth: SpotifyTokensDto, deviceId: string) {
+  async setPlayerDevice(spotifyAuth: SpotifyTokensDto, deviceId: string) {
     const sdk = this.getSdk(spotifyAuth)
     await sdk.player.transferPlayback([deviceId])
   }
 
-  public async getQueue(spotifyAuth: SpotifyTokensDto) {
+  async getQueue(spotifyAuth: SpotifyTokensDto) {
     const sdk = this.getSdk(spotifyAuth)
     return sdk.player.getUsersQueue()
   }
 
-  public async searchTracks(spotifyAuth: SpotifyTokensDto, searchQuery: JukeboxSearchDto) {
+  async searchTracks(spotifyAuth: SpotifyTokensDto, searchQuery: JukeboxSearchDto) {
     const sdk = this.getSdk(spotifyAuth)
     return sdk.search(
       `${searchQuery.trackQuery} artist:${searchQuery.artistQuery} album:${searchQuery.albumQuery}`,
       ['track'],
     )
+  }
+
+  async startPlayback(spotifyAuth: SpotifyTokensDto, deviceId: string) {
+    const sdk = this.getSdk(spotifyAuth)
+    await sdk.player.startResumePlayback(deviceId)
+  }
+
+  async pausePlayback(spotifyAuth: SpotifyTokensDto, deviceId: string) {
+    const sdk = this.getSdk(spotifyAuth)
+    await sdk.player.pausePlayback(deviceId)
+  }
+
+  async skipNext(spotifyAuth: SpotifyTokensDto, deviceId: string) {
+    const sdk = this.getSdk(spotifyAuth)
+    await sdk.player.skipToNext(deviceId)
+  }
+
+  async skipPrevious(spotifyAuth: SpotifyTokensDto, deviceId: string) {
+    const sdk = this.getSdk(spotifyAuth)
+    await sdk.player.skipToPrevious(deviceId)
+  }
+
+  async loopPlayback(spotifyAuth: SpotifyTokensDto, deviceId: string) {
+    const sdk = this.getSdk(spotifyAuth)
+    await sdk.player.setRepeatMode('track', deviceId)
+  }
+
+  async playTrack(spotifyAuth: SpotifyTokensDto, deviceId: string, trackUri: string) {
+    const sdk = this.getSdk(spotifyAuth)
+    await sdk.player.startResumePlayback(deviceId, trackUri)
   }
 }

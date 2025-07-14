@@ -15,6 +15,9 @@ export class Track extends EntityBase {
   @Column()
   artists: string
 
-  @Column({ nullable: true })
-  spotify_id?: string
+  @Column()
+  spotify_id: string
+
+  @Column()
+  spotify_uri: string
 }

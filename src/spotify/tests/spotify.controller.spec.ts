@@ -1,9 +1,10 @@
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 import { getRepositoryToken } from '@nestjs/typeorm'
-import Axios from 'axios'
-import { JukeboxService } from 'src/_deprecated/jukebox/jukebox.service'
+import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
+import { JukeboxService } from 'src/jukebox/jukebox.service'
 import { NetworkModule } from 'src/network/network.module'
+import { AxiosProvider } from 'src/utils'
 import type { MockType } from 'src/utils/testing'
 import type { Repository } from 'typeorm'
 import { SpotifyAccount } from '../entities/spotify-account.entity'
@@ -22,15 +23,13 @@ describe('SpotifyController', () => {
       providers: [
         SpotifyAuthService,
         SpotifyService,
+        AccountLinkService,
+        AxiosProvider,
         {
           provide: JukeboxService,
           useValue: {
             addLinkToJukebox: async (jukeboxId: number, account: SpotifyAccount) => {},
           },
-        },
-        {
-          provide: Axios.Axios,
-          useValue: Axios.create(),
         },
         {
           provide: getRepositoryToken(SpotifyAccount),

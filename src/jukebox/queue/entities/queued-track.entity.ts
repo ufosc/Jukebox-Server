@@ -1,6 +1,9 @@
 import { EntityBase } from 'src/config/entities'
 import { JukeSessionMembership } from 'src/jukebox/juke-session/entities/membership.entity'
-import { PlayerInteraction } from 'src/jukebox/player/entity/player-interaction.entity'
+import {
+  InteractionType,
+  PlayerInteraction,
+} from 'src/jukebox/player/entity/player-interaction.entity'
 import { Track } from 'src/track/entities/track.entity'
 import { Column, ManyToOne, OneToMany } from 'typeorm'
 
@@ -25,4 +28,16 @@ export class QueuedTrack extends EntityBase {
 
   @Column({ default: true })
   is_editable: boolean
+
+  get likes() {
+    return this.interactions.filter(
+      (interaction) => interaction.interaction_type === InteractionType.LIKE,
+    ).length
+  }
+
+  get dislikes() {
+    return this.interactions.filter(
+      (interaction) => interaction.interaction_type === InteractionType.DISLIKE,
+    ).length
+  }
 }

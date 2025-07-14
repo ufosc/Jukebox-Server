@@ -11,8 +11,8 @@ export class QueueController {
   ) {}
 
   @Get()
-  getQueuedTracks(@Param('juke_session_id') jukeSessionId: string): QueueDto {
-    return this.queueService.getQueue(+jukeSessionId)
+  async getQueuedTracks(@Param('juke_session_id') jukeSessionId: string): Promise<QueueDto> {
+    return await this.queueService.getQueue(+jukeSessionId)
   }
 
   @Post()
@@ -25,12 +25,12 @@ export class QueueController {
   }
 
   @Put()
-  setQueueOrder(@Param('juke_session_id') jukeSessionId: string, @Body() body: SetQueueOrderDto) {
-    return this.queueService.setQueueOrder(+jukeSessionId, body.ordering)
+  async setQueueOrder(@Param('juke_session_id') jukeSessionId: string, @Body() body: SetQueueOrderDto): Promise<QueueDto> {
+    return await this.queueService.setQueueOrder(+jukeSessionId, body.ordering)
   }
 
   @Delete()
-  clearQueue(@Param('juke_session_id') jukeSessionId: string) {
+  async clearQueue(@Param('juke_session_id') jukeSessionId: string) {
     return this.queueService.clearQueue(+jukeSessionId)
   }
 }

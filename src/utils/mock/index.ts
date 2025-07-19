@@ -1,6 +1,4 @@
+export * from './mock-axios-provider'
 export * from './mock-cache-provider'
 export * from './mock-queued-tracks'
-export * from './mock-repo-provider'
 export * from './mock-user'
-export * from './services/mock-queue-service'
-export * from './services/mock-spotify-service'

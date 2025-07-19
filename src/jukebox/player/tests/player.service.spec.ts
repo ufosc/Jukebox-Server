@@ -1,33 +1,35 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { Test, TestingModule } from '@nestjs/testing'
+import { TypeOrmModule } from '@nestjs/typeorm'
 import { Cache } from 'cache-manager'
-import {
-  getMockRepo,
-  MockCacheProvider,
-  MockQueueServiceProvider,
-  MockSpotifyServiceProvider,
-} from 'src/utils'
+import { DatabaseModule } from 'src/config/database.module'
+import { QueuedTrack } from 'src/jukebox/queue/entities/queued-track.entity'
+import { QueueService } from 'src/jukebox/queue/queue.service'
+import { SpotifyService } from 'src/spotify/spotify.service'
+import { AxiosMockProvider, MockCacheProvider, mockUser } from 'src/utils/mock'
 import { MockQueuedTracks } from 'src/utils/mock/mock-queued-tracks'
 import { PlayerStateDto } from '../dto'
-import { PlayerInteraction } from '../entity/player-interaction.entity'
+import { InteractionType, PlayerInteraction } from '../entity/player-interaction.entity'
 import { PlayerService } from '../player.service'
 
 describe('PlayerService', () => {
   let service: PlayerService
   let cache: Cache
   let initialPlayerState: PlayerStateDto
+  let module: TestingModule
 
   const cacheKey = 'jukebox-1'
   const jukeboxId = 1
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule, TypeOrmModule.forFeature([PlayerInteraction, QueuedTrack])],
       providers: [
-        getMockRepo(PlayerInteraction),
-        PlayerService,
+        AxiosMockProvider,
         MockCacheProvider,
-        MockSpotifyServiceProvider,
-        MockQueueServiceProvider,
+        PlayerService,
+        SpotifyService,
+        QueueService,
       ],
     }).compile()
 
@@ -42,6 +44,10 @@ describe('PlayerService', () => {
       queued_track: MockQueuedTracks[0],
     }
     cache.set(cacheKey, initialPlayerState)
+  })
+
+  afterEach(async () => {
+    await module.close()
   })
 
   it('should be defined', () => {
@@ -75,7 +81,9 @@ describe('PlayerService', () => {
   })
 
   it('should add interaction', async () => {
-    expect(false).toBeTruthy()
+    const playerState = await service.addInteraction(jukeboxId, mockUser, InteractionType.LIKE)
+    expect(playerState.queued_track?.likes).toEqual(1)
+    expect(playerState.queued_track?.dislikes).toEqual(0)
   })
 
   it('should show track as playing', async () => {

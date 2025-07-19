@@ -60,7 +60,13 @@ tasks:
     deps:
       - build
     cmds:
-      - npm run test
+      - docker-compose run --rm server sh -c "npm run test"
+      
+  clean:
+    desc: 'Remove container and volumes'
+    cmds:
+      - docker-compose down --remove-orphans -v
+      
 
   #########################################
   # Jukebox-Types Package

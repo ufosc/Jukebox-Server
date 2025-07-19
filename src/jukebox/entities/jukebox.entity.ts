@@ -1,5 +1,5 @@
 import { EntityBase } from 'src/config/entities'
-import { Column, OneToMany } from 'typeorm'
+import { Column, Entity, OneToMany } from 'typeorm'
 import { AccountLink } from '../account-link/entities/account-link.entity'
 import { JukeSession } from '../juke-session/entities/juke-session.entity'
 
@@ -8,6 +8,7 @@ export enum TimeFormat {
   HOUR_24 = '24-hour',
 }
 
+@Entity('jukebox')
 export class Jukebox extends EntityBase {
   @Column()
   name: string

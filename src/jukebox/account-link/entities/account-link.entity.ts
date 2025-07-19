@@ -1,8 +1,9 @@
 import { EntityBase } from 'src/config/entities'
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
-import { Column, ManyToOne } from 'typeorm'
+import { Column, Entity, ManyToOne } from 'typeorm'
 import { Jukebox } from '../../entities/jukebox.entity'
 
+@Entity('account_link')
 export class AccountLink extends EntityBase {
   @ManyToOne(() => Jukebox, (jukebox) => jukebox.account_links)
   jukebox: Jukebox

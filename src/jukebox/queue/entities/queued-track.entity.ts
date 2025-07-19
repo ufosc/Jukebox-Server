@@ -5,8 +5,9 @@ import {
   PlayerInteraction,
 } from 'src/jukebox/player/entity/player-interaction.entity'
 import { Track } from 'src/track/entities/track.entity'
-import { Column, ManyToOne, OneToMany } from 'typeorm'
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm'
 
+@Entity('queued_track')
 export class QueuedTrack extends EntityBase {
   @ManyToOne(() => JukeSessionMembership, (membership) => membership.queued_tracks)
   queued_by: JukeSessionMembership

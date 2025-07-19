@@ -1,6 +1,6 @@
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
-import { AxiosProvider } from 'src/utils/providers/axios.provider'
+import { AxiosProvider } from 'src/utils/mock/mock-axios-provider'
 import { NetworkService } from './network.service'
 
 describe('NetworkService', () => {

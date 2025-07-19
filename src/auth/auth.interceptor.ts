@@ -9,7 +9,7 @@ import {
 import { Request } from 'express'
 import { Observable } from 'rxjs'
 import { NODE_ENV } from 'src/config'
-import { mockUser } from 'src/utils'
+import { mockUser } from 'src/utils/mock'
 import { NetworkService } from '../network/network.service'
 import { UserDto } from 'src/shared'
 

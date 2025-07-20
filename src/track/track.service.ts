@@ -1,11 +1,17 @@
 import { Injectable, NotImplementedException } from '@nestjs/common'
-import { TrackDto } from './dto/track.dto'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+import { CreateTrackDto, TrackDto } from './dto/track.dto'
+import { Track } from './entities/track.entity'
 
 @Injectable()
 export class TrackService {
-  // create(createTrackDto: CreateTrackDto) {
-  //   return 'This action adds a new track'
-  // }
+  constructor(@InjectRepository(Track) private trackRepo: Repository<Track>) {}
+
+  create(payload: CreateTrackDto) {
+    // TODO: URL encode artists to account for commas
+    return this.trackRepo.create(payload)
+  }
 
   // findAll() {
   //   return `This action returns all track`

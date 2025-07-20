@@ -1,14 +1,35 @@
-import { Injectable, NotImplementedException } from '@nestjs/common'
+import { Injectable, NotFoundException, NotImplementedException } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
 import { TrackDto } from 'src/track/dto/track.dto'
+import { Repository } from 'typeorm'
 import { QueueDto } from './dto/queue.dto'
-import { QueuedTrackDto } from './dto/queued-track.dto'
-
-export interface IQueueService {
-  getNextTrack(jukeboxId: number): Promise<QueuedTrackDto>
-}
+import { CreateQueuedTrackDto, QueuedTrackDto } from './dto/queued-track.dto'
+import { QueuedTrack } from './entities/queued-track.entity'
 
 @Injectable()
-export class QueueService implements IQueueService {
+export class QueueService {
+  constructor(@InjectRepository(QueuedTrack) private queuedTrackRepo: Repository<QueuedTrack>) {}
+
+  createQueuedTrack(payload: CreateQueuedTrackDto): QueuedTrack {
+    return this.queuedTrackRepo.create(payload)
+  }
+
+  /**
+   * Get a queued track by id, or throw 404 error.
+   */
+  async getQueuedTrackById(id: number): Promise<QueuedTrack> {
+    const query = await this.queuedTrackRepo.findOne({
+      where: { id },
+      relations: { interactions: true },
+    })
+
+    if (!query) {
+      throw new NotFoundException(`Cannot find queued track with id ${id}`)
+    }
+
+    return query
+  }
+
   /**
    * Add track to a juke session's queue.
    */

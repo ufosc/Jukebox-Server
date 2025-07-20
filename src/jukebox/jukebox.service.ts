@@ -1,10 +1,15 @@
 import { Injectable, NotImplementedException } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
 import { CreateJukeboxDto, JukeboxDto, UpdateJukeboxDto } from './dto/jukebox.dto'
+import { Jukebox } from './entities/jukebox.entity'
 
 @Injectable()
 export class JukeboxService {
-  async create(createJukeboxDto: CreateJukeboxDto): Promise<JukeboxDto> {
-    throw new NotImplementedException()
+  constructor(@InjectRepository(Jukebox) private jukeboxRepo: Repository<Jukebox>) {}
+
+  create(payload: CreateJukeboxDto): Jukebox {
+    return this.jukeboxRepo.create(payload)
   }
 
   findAll(): JukeboxDto[] {

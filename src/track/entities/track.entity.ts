@@ -12,8 +12,8 @@ export class Track extends EntityBase {
   @Column()
   release_year: number
 
-  @Column()
-  artists: string
+  @Column({ type: 'simple-array' })
+  artists: string[]
 
   @Column()
   spotify_id: string

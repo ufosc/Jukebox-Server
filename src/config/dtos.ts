@@ -11,7 +11,7 @@ export class EntityDtoBase<T = EntityBase> {
   @ApiProperty({ readOnly: true })
   updated_at: Date
 
-  constructor(entity: T) {
-    Object.assign(this, entity)
-  }
+  // constructor(entity: T) {
+  //   Object.assign(this, entity)
+  // }
 }

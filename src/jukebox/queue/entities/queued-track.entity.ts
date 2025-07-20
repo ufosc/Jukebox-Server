@@ -31,14 +31,18 @@ export class QueuedTrack extends EntityBase {
   is_editable: boolean
 
   get likes() {
-    return this.interactions.filter(
-      (interaction) => interaction.interaction_type === InteractionType.LIKE,
-    ).length
+    return (
+      this.interactions?.filter(
+        (interaction) => interaction.interaction_type === InteractionType.LIKE,
+      ).length || 0
+    )
   }
 
   get dislikes() {
-    return this.interactions.filter(
-      (interaction) => interaction.interaction_type === InteractionType.DISLIKE,
-    ).length
+    return (
+      this.interactions?.filter(
+        (interaction) => interaction.interaction_type === InteractionType.DISLIKE,
+      ).length || 0
+    )
   }
 }

@@ -1,18 +1,23 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { JukeboxService } from '../jukebox.service';
+import { Test, TestingModule } from '@nestjs/testing'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { DatabaseModule } from 'src/config/database.module'
+import { Jukebox } from '../entities/jukebox.entity'
+import { JukeboxService } from '../jukebox.service'
+import { Track } from 'src/track/entities/track.entity'
 
 describe('JukeboxService', () => {
-  let service: JukeboxService;
+  let service: JukeboxService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [DatabaseModule, TypeOrmModule.forFeature([Jukebox, Track])],
       providers: [JukeboxService],
-    }).compile();
+    }).compile()
 
-    service = module.get<JukeboxService>(JukeboxService);
-  });
+    service = module.get<JukeboxService>(JukeboxService)
+  })
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-});
+    expect(service).toBeDefined()
+  })
+})

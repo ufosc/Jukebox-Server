@@ -2,7 +2,6 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Cache } from 'cache-manager'
-import { plainToInstance } from 'class-transformer'
 import { UserDto } from 'src/shared'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { TrackDto } from 'src/track/dto/track.dto'
@@ -26,9 +25,19 @@ export class PlayerService {
     await this.cache.set(`jukebox-${jukeboxId}`, payload)
   }
 
-  private async updatePlayerState(jukeboxId: number, payload: Partial<PlayerStateDto>) {
+  private async updatePlayerState(
+    jukeboxId: number,
+    payload: Partial<PlayerStateDto> | ((state: PlayerStateDto) => PlayerStateDto),
+  ) {
     const currentState = await this.getPlayerState(jukeboxId)
-    const updatedState = { ...currentState, ...payload }
+    let updatedState: PlayerStateDto
+
+    if (typeof payload === 'function') {
+      updatedState = payload(currentState)
+    } else {
+      updatedState = { ...currentState, ...payload }
+    }
+
     await this.setPlayerState(jukeboxId, updatedState)
 
     return updatedState
@@ -49,6 +58,11 @@ export class PlayerService {
       }
       await this.setPlayerState(jukeboxId, cachedState)
     }
+
+    // if (cachedState.queued_track) {
+    //   const qt = await this.queueService.getQueuedTrackById(cachedState.queued_track.id)
+
+    // }
 
     return cachedState
   }
@@ -101,15 +115,25 @@ export class PlayerService {
         'Cannot interact with the player if a queued track is not playing.',
       )
 
-    const obj = this.repo.create({
+    this.repo.create({
       queued_track: { id: queued_track.id },
       user_id: user.id,
       interaction_type,
     })
-    await this.updatePlayerState(jukeboxId, {
-      queued_track: plainToInstance(QueuedTrackDto, obj.queued_track),
+
+    return await this.updatePlayerState(jukeboxId, (state) => {
+      if (interaction_type === InteractionType.LIKE) {
+        return {
+          ...state,
+          queued_track: { ...state.queued_track!, likes: state.queued_track!.likes + 1 },
+        }
+      } else {
+        return {
+          ...state,
+          queued_track: { ...state.queued_track!, dislikes: state.queued_track!.dislikes + 1 },
+        }
+      }
     })
-    return await this.getPlayerState(jukeboxId)
   }
 
   /**

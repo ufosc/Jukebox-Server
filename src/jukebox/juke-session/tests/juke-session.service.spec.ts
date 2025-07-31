@@ -20,4 +20,7 @@ describe('JukeSessionService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined()
   })
+  
+  it('should create juke session', () => {})
+  it('should create session membership', () => {})
 })

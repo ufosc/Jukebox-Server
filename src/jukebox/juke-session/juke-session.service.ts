@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotImplementedException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { plainToInstance } from 'class-transformer'
 import { Repository } from 'typeorm'
-import { CreateJukeSessionDto, UpdateJukeSessionDto } from './dto/juke-session.dto'
-import { CreateJukeSessionMembershipDto } from './dto/membership.dto'
+import { CreateJukeSessionDto, JukeSessionDto, UpdateJukeSessionDto } from './dto/juke-session.dto'
+import { CreateJukeSessionMembershipDto, JukeSessionMembershipDto } from './dto/membership.dto'
 import { JukeSession } from './entities/juke-session.entity'
 import { JukeSessionMembership } from './entities/membership.entity'
 
@@ -14,27 +15,72 @@ export class JukeSessionService {
     private membershipRepo: Repository<JukeSessionMembership>,
   ) {}
 
-  create(payload: CreateJukeSessionDto) {
-    return this.jukeSessionRepo.create(payload)
+  // ============================================
+  // MARK: CRUD Operations
+  // ============================================
+
+  async create(jukeboxId: number, payload: CreateJukeSessionDto): Promise<JukeSessionDto> {
+    const session = this.jukeSessionRepo.create({ jukebox: { id: jukeboxId } })
+    return plainToInstance(JukeSessionDto, session)
   }
 
-  createMembership(payload: CreateJukeSessionMembershipDto) {
-    return this.membershipRepo.create(payload)
+  async findAll(): Promise<JukeSessionDto[]> {
+    throw new NotImplementedException()
   }
 
-  findAll() {
-    return `This action returns all jukeSession`
+  async findOne(id: number): Promise<JukeSessionDto> {
+    throw new NotImplementedException()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} jukeSession`
+  async update(id: number, updateJukeSessionDto: UpdateJukeSessionDto): Promise<JukeSessionDto> {
+    throw new NotImplementedException()
   }
 
-  update(id: number, updateJukeSessionDto: UpdateJukeSessionDto) {
-    return `This action updates a #${id} jukeSession`
+  async remove(id: number): Promise<JukeSessionDto> {
+    throw new NotImplementedException()
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} jukeSession`
+  async createMembership(
+    jukeSessionId: number,
+    payload: CreateJukeSessionMembershipDto,
+  ): Promise<JukeSessionMembershipDto> {
+    const membership = this.membershipRepo.create({
+      juke_session: { id: jukeSessionId },
+      ...payload,
+    })
+    return plainToInstance(JukeSessionMembershipDto, membership)
+  }
+
+  async getMemberships(jukeSessionId: number): Promise<JukeSessionMembership[]> {
+    throw new NotImplementedException()
+  }
+
+  async getMembership(jukeSessionId: number, membershipId: number): Promise<JukeSessionMembership> {
+    throw new NotImplementedException()
+  }
+
+  async deleteMembership(
+    jukeSessionId: number,
+    membershipId: number,
+  ): Promise<JukeSessionMembership> {
+    throw new NotImplementedException()
+  }
+
+  // ============================================
+  // MARK: Business Logic
+  // ============================================
+
+  /**
+   * End Juke Session with ID
+   */
+  async endSession(id: number): Promise<JukeSession> {
+    throw new NotImplementedException()
+  }
+
+  /**
+   * Get Current Juke Session, or throw 404.
+   */
+  async getCurrentSession(): Promise<JukeSession> {
+    throw new NotImplementedException()
   }
 }

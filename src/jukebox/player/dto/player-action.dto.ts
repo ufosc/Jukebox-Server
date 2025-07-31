@@ -1,3 +1,16 @@
+import { Expose } from 'class-transformer'
+import { IsEnum } from 'class-validator'
+
+export enum ActionType {
+  PLAY = 'play',
+  PAUSE = 'pause',
+  NEXT = 'next',
+  PREVIOUS = 'previous',
+  LOOP = 'loop',
+}
+
 export class PlayerActionDto {
-  action_type: 'play' | 'pause' | 'next' | 'previous' | 'loop'
+  @Expose()
+  @IsEnum(ActionType)
+  action_type: ActionType
 }

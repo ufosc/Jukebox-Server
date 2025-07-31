@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, NotImplementedException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { plainToInstance } from 'class-transformer'
 import { TrackDto } from 'src/track/dto/track.dto'
 import { Repository } from 'typeorm'
 import { QueueDto } from './dto/queue.dto'
@@ -10,8 +11,9 @@ import { QueuedTrack } from './entities/queued-track.entity'
 export class QueueService {
   constructor(@InjectRepository(QueuedTrack) private queuedTrackRepo: Repository<QueuedTrack>) {}
 
-  createQueuedTrack(payload: CreateQueuedTrackDto): QueuedTrack {
-    return this.queuedTrackRepo.create(payload)
+  async createQueuedTrack(payload: CreateQueuedTrackDto): Promise<QueuedTrackDto> {
+    const track = await this.queuedTrackRepo.create(payload)
+    return plainToInstance(QueuedTrackDto, track)
   }
 
   /**

@@ -1,11 +1,25 @@
 import { PartialType } from '@nestjs/swagger'
+import { Expose } from 'class-transformer'
 import { EntityDtoBase } from 'src/config/dtos'
-import { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
 
 export class JukeSessionDto extends EntityDtoBase {
-  jukebox: JukeboxDto
+  @Expose()
+  jukebox_id: number
+  @Expose()
+  join_code: string
+  @Expose()
+  start_at: Date
+  @Expose()
+  end_at: Date
+  @Expose()
+  is_active: boolean
 }
 export class CreateJukeSessionDto {
-  jukebox: { id: number }
+  // @Expose()
+  // jukebox_id: number
+  @Expose()
+  start_at?: Date
+  @Expose()
+  end_at: Date
 }
 export class UpdateJukeSessionDto extends PartialType(CreateJukeSessionDto) {}

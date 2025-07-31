@@ -9,7 +9,7 @@ import { Repository } from 'typeorm'
 import { AccountLinkDto } from '../account-link/dto'
 import { QueuedTrackDto } from '../queue/dto'
 import { QueueService } from '../queue/queue.service'
-import { PlayerActionDto, PlayerStateDto, SetPlayerDeviceDto } from './dto'
+import { ActionType, PlayerActionDto, PlayerStateDto, SetPlayerDeviceDto } from './dto'
 import { InteractionType, PlayerInteraction } from './entity/player-interaction.entity'
 
 @Injectable()
@@ -186,15 +186,15 @@ export class PlayerService {
     const { spotify_account } = activeAccount
 
     switch (action_type) {
-      case 'play':
+      case ActionType.PLAY:
         await this.spotifyService.startPlayback(spotify_account, current_device_id)
         await this.setIsPlaying(+jukeboxId, true)
         break
-      case 'pause':
+      case ActionType.PAUSE:
         await this.spotifyService.pausePlayback(spotify_account, current_device_id)
         await this.setIsPlaying(+jukeboxId, false)
         break
-      case 'next':
+      case ActionType.NEXT:
         if (!juke_session_id) {
           await this.spotifyService.skipNext(spotify_account, current_device_id)
           break
@@ -215,12 +215,14 @@ export class PlayerService {
         // The player on the client side will record a track change, setting
         // the current track of the cached player via ws.
         break
-      case 'previous':
+      case ActionType.PREVIOUS:
         await this.spotifyService.skipPrevious(spotify_account, current_device_id)
         break
-      case 'loop':
+      case ActionType.LOOP:
         await this.spotifyService.loopPlayback(spotify_account, current_device_id)
         break
     }
+
+    return this.getPlayerState(jukeboxId)
   }
 }

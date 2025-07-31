@@ -8,7 +8,7 @@ import { Jukebox } from './entities/jukebox.entity'
 export class JukeboxService {
   constructor(@InjectRepository(Jukebox) private jukeboxRepo: Repository<Jukebox>) {}
 
-  create(payload: CreateJukeboxDto): Jukebox {
+  async create(payload: CreateJukeboxDto): Promise<Jukebox> {
     return this.jukeboxRepo.create(payload)
   }
 

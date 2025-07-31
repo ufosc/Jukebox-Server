@@ -23,8 +23,8 @@ export class JukeSessionMembershipDto extends EntityDtoBase<JukeSessionMembershi
 }
 
 export class CreateJukeSessionMembershipDto {
-  @Expose()
-  juke_session: { id: number }
+  // @Expose()
+  // juke_session: { id: number }
 
   @Expose()
   user_id: number

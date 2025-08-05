@@ -1,5 +1,6 @@
 import { Injectable, NotImplementedException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { plainToInstance } from 'class-transformer'
 import { Repository } from 'typeorm'
 import { CreateJukeboxDto, JukeboxDto, UpdateJukeboxDto } from './dto/jukebox.dto'
 import { Jukebox } from './entities/jukebox.entity'
@@ -8,8 +9,10 @@ import { Jukebox } from './entities/jukebox.entity'
 export class JukeboxService {
   constructor(@InjectRepository(Jukebox) private jukeboxRepo: Repository<Jukebox>) {}
 
-  async create(payload: CreateJukeboxDto): Promise<Jukebox> {
-    return this.jukeboxRepo.create(payload)
+  async create(payload: CreateJukeboxDto): Promise<JukeboxDto> {
+    const preJukebox = this.jukeboxRepo.create(payload)
+    const jukebox = this.jukeboxRepo.save(preJukebox)
+    return plainToInstance(JukeboxDto, jukebox)
   }
 
   findAll(): JukeboxDto[] {

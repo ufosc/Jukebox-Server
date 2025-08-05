@@ -21,19 +21,19 @@ export class JukeSessionController {
   @Get()
   @ApiOperation({ summary: 'Get All Juke Sessions' })
   findAll(@Param('jukebox_id') jukeboxId: string): Promise<JukeSessionDto[]> {
-    return this.jukeSessionService.findAll()
+    return this.jukeSessionService.findAll(+jukeboxId)
   }
 
   @Get('current')
   @ApiOperation({ summary: 'Get Current Juke Session' })
   getCurrentSession(@Param('jukebox_id') jukeboxId: string) {
-    return this.jukeSessionService.getCurrentSession()
+    return this.jukeSessionService.getCurrentSession(+jukeboxId)
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a Juke Session' })
   findOne(@Param('jukebox_id') jukeboxId: string, @Param('id') id: string) {
-    return this.jukeSessionService.findOne(+id)
+    return this.jukeSessionService.findOne(+jukeboxId, +id)
   }
 
   @Patch(':id')
@@ -43,19 +43,19 @@ export class JukeSessionController {
     @Param('id') id: string,
     @Body() body: UpdateJukeSessionDto,
   ) {
-    return this.jukeSessionService.update(+id, body)
+    return this.jukeSessionService.update(+jukeboxId, +id, body)
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a Juke Session' })
   remove(@Param('jukebox_id') jukeboxId: string, @Param('id') id: string) {
-    return this.jukeSessionService.remove(+id)
+    return this.jukeSessionService.remove(+jukeboxId, +id)
   }
 
   @Post(':id/end')
   @ApiOperation({ summary: 'End Juke Session' })
   endJukeSession(@Param('jukebox_id') jukeboxId: string, @Param('id') id: string) {
-    return this.jukeSessionService.endSession(+id)
+    return this.jukeSessionService.endSession(+jukeboxId, +id)
   }
 
   @Post(':juke_session_id/members')

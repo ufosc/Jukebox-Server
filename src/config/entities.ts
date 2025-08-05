@@ -9,9 +9,10 @@ import {
 /**
  * Base Entity Source:
  * https://github.com/typeorm/typeorm/blob/master/src/repository/BaseEntity.ts
- * 
+ *
  * TypeOrm Docs: https://typeorm.io/docs/entity/entities/
  */
+
 export abstract class EntityBase extends TypeormBase {
   @PrimaryGeneratedColumn()
   id: number

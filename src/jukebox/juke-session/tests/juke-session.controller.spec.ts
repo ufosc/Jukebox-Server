@@ -111,6 +111,7 @@ describe('JukeSessionController', () => {
 
   it('should get juke session', async () => {
     const session = await createTestJukeSession()
+    console.log('test jukebox id:', jukebox.id)
     const result = await controller.findOne(String(jukebox.id), String(session.id))
     expect(result.end_at).toEqual(session.end_at)
   })

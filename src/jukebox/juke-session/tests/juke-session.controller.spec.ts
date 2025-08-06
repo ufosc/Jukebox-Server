@@ -103,6 +103,7 @@ describe('JukeSessionController', () => {
     const result = await controller.create(String(jukebox.id), {
       end_at: getEndAtDate(),
     })
+
     expect(result).toBeDefined()
     expect(result.jukebox_id).toEqual(jukebox.id)
     expect(result.join_code).not.toBeNull()

@@ -1,11 +1,12 @@
-import { Injectable, NotFoundException, NotImplementedException } from '@nestjs/common'
+import { Injectable, InternalServerErrorException, NotFoundException, NotImplementedException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToInstance } from 'class-transformer'
-import { Repository } from 'typeorm'
+import { QueryFailedError, Repository } from 'typeorm'
 import { CreateJukeSessionDto, JukeSessionDto, UpdateJukeSessionDto } from './dto/juke-session.dto'
 import { CreateJukeSessionMembershipDto, JukeSessionMembershipDto } from './dto/membership.dto'
 import { JukeSession } from './entities/juke-session.entity'
 import { JukeSessionMembership } from './entities/membership.entity'
+import { generateJoinCode } from './utils/generate-join-code'
 
 @Injectable()
 export class JukeSessionService {
@@ -13,15 +14,42 @@ export class JukeSessionService {
     @InjectRepository(JukeSession) private jukeSessionRepo: Repository<JukeSession>,
     @InjectRepository(JukeSessionMembership)
     private membershipRepo: Repository<JukeSessionMembership>,
-  ) {}
+  ) { }
 
   // ============================================
   // MARK: CRUD Ops
   // ============================================
 
   async create(jukeboxId: number, payload: CreateJukeSessionDto): Promise<JukeSessionDto> {
-    const preSession = this.jukeSessionRepo.create({ jukebox: { id: jukeboxId } })
-    const session = this.jukeSessionRepo.save(preSession)
+    const preSession = this.jukeSessionRepo.create({
+      jukebox: { id: jukeboxId },
+      start_at: payload.start_at ?? new Date(),
+      end_at: payload.end_at,
+    })
+
+    // Generate Unique Join Code
+    let session: JukeSession
+    const MAX_RETRIES = 25;
+    let retries = 0;
+
+    while (true) {
+      try {
+        preSession.join_code = generateJoinCode()
+        session = await this.jukeSessionRepo.save(preSession)
+        break
+      } catch (err) {
+        // Checks Postgres Unique Constraint Error Code
+        if (err instanceof QueryFailedError && err.driverError?.code === '23505') {
+          ++retries
+          if (retries > MAX_RETRIES) {
+            throw new InternalServerErrorException('Failed to generate a unique join code');
+          }
+        } else {
+          throw err
+        }
+      }
+    }
+
     return plainToInstance(JukeSessionDto, session)
   }
 

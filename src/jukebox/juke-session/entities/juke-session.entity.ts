@@ -8,7 +8,7 @@ export class JukeSession extends EntityBase {
   @ManyToOne(() => Jukebox, (jukebox) => jukebox.juke_sessions)
   jukebox: Jukebox
 
-  @Column()
+  @Column({ unique: true })
   join_code: string
 
   @Column()
@@ -17,7 +17,7 @@ export class JukeSession extends EntityBase {
   @Column()
   end_at: Date
 
-  @Column()
+  @Column({ default: true })
   is_active: boolean
 
   // Foreign Relationships

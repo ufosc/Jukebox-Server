@@ -59,8 +59,6 @@ export class JukeSessionService {
   }
 
   async findOne(jukeboxId: number, id: number): Promise<JukeSessionDto> {
-    console.log('jukebox id:', jukeboxId)
-    console.log('session id:', id)
     const session = await this.jukeSessionRepo.findOne({
       where: { jukebox: { id: jukeboxId }, id },
     })
@@ -76,8 +74,8 @@ export class JukeSessionService {
     id: number,
     updateJukeSessionDto: UpdateJukeSessionDto,
   ): Promise<JukeSessionDto> {
-    await this.jukeSessionRepo.update({ jukebox: { id }, id }, updateJukeSessionDto)
-    return this.findOne(jukeboxId, id)
+    await this.jukeSessionRepo.update({ jukebox: { id: jukeboxId }, id }, updateJukeSessionDto)
+    return await this.findOne(jukeboxId, id)
   }
 
   async remove(jukeboxId: number, id: number): Promise<JukeSessionDto> {
@@ -91,10 +89,11 @@ export class JukeSessionService {
     jukeSessionId: number,
     payload: CreateJukeSessionMembershipDto,
   ): Promise<JukeSessionMembershipDto> {
-    const membership = this.membershipRepo.create({
+    const preMembership = this.membershipRepo.create({
       juke_session: { id: jukeSessionId },
       ...payload,
     })
+    const membership = await this.membershipRepo.save(preMembership)
     return plainToInstance(JukeSessionMembershipDto, membership)
   }
 
@@ -146,6 +145,13 @@ export class JukeSessionService {
    * Get Current Juke Session, or throw 404.
    */
   async getCurrentSession(jukeboxId: number): Promise<JukeSessionDto> {
-    throw new NotImplementedException()
+    const session = await this.jukeSessionRepo.findOne({
+      where: { jukebox: { id: jukeboxId }, is_active: true },
+    })
+    if (!session) {
+      throw new NotFoundException(`No Current Juke session Found for jukebox ${jukeboxId}`)
+    }
+
+    return plainToInstance(JukeSessionDto, session)
   }
 }

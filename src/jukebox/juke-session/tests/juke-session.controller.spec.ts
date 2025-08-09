@@ -112,7 +112,6 @@ describe('JukeSessionController', () => {
 
   it('should get juke session', async () => {
     const session = await createTestJukeSession()
-    console.log('test jukebox id:', jukebox.id)
     const result = await controller.findOne(String(jukebox.id), String(session.id))
     expect(result.end_at).toEqual(session.end_at)
   })
@@ -155,7 +154,7 @@ describe('JukeSessionController', () => {
   it('should delete a juke session', async () => {
     const session = await createTestJukeSession()
     await controller.remove(String(jukebox.id), String(session.id))
-    expect(() => controller.findOne(String(jukebox.id), String(session.id))).toThrow(
+    expect(async () => await controller.findOne(String(jukebox.id), String(session.id))).rejects.toThrow(
       NotFoundException,
     )
   })
@@ -213,6 +212,6 @@ describe('JukeSessionController', () => {
     expect(result.user_id).toEqual(1)
     expect(() =>
       controller.getJukeSessionMember(String(jukebox.id), String(session.id), String(member.id)),
-    ).toThrow(NotFoundException)
+    ).rejects.toThrow(NotFoundException)
   })
 })

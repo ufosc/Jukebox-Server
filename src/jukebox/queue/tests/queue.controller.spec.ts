@@ -23,4 +23,20 @@ describe('QueueController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined()
   })
+
+  it('should get track queue', async () => {
+    expect(false).toBeTruthy()
+  })
+
+  it('should add track to queue', async () => {
+    expect(false).toBeTruthy()
+  })
+
+  it('should change order of track in queue', async () => {
+    expect(false).toBeTruthy()
+  })
+
+  it('should clear tracks from queue', async () => {
+    expect(false).toBeTruthy()
+  })
 })

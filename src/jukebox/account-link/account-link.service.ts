@@ -3,24 +3,24 @@ import { AccountLinkDto, CreateAccountLinkDto, UpdateAccountLinkDto } from './dt
 
 @Injectable()
 export class AccountLinkService {
-  create(createAccountLinkDto: CreateAccountLinkDto) {
-    return 'This action adds a new accountLink'
+  async create(createAccountLinkDto: CreateAccountLinkDto): Promise<AccountLinkDto> {
+    throw new NotImplementedException()
   }
 
-  findAll() {
-    return `This action returns all accountLink`
+  async findAll(): Promise<AccountLinkDto[]> {
+    throw new NotImplementedException()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} accountLink`
+  async findOne(id: number): Promise<AccountLinkDto> {
+    throw new NotImplementedException()
   }
 
-  update(id: number, updateAccountLinkDto: UpdateAccountLinkDto) {
-    return `This action updates a #${id} accountLink`
+  async update(id: number, updateAccountLinkDto: UpdateAccountLinkDto): Promise<AccountLinkDto> {
+    throw new NotImplementedException()
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} accountLink`
+  async remove(id: number): Promise<AccountLinkDto> {
+    throw new NotImplementedException()
   }
 
   async getActiveAccount(jukeboxId: number): Promise<AccountLinkDto> {

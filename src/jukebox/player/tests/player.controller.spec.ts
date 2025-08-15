@@ -9,6 +9,7 @@ import { AxiosProvider, MockCacheProvider } from 'src/utils/mock'
 import { PlayerInteraction } from '../entity/player-interaction.entity'
 import { PlayerController } from '../player.controller'
 import { PlayerService } from '../player.service'
+import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
 
 describe('PlayerController', () => {
   let controller: PlayerController
@@ -16,7 +17,7 @@ describe('PlayerController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PlayerController],
-      imports: [DatabaseModule, TypeOrmModule.forFeature([PlayerInteraction, QueuedTrack])],
+      imports: [DatabaseModule, TypeOrmModule.forFeature([PlayerInteraction, QueuedTrack, AccountLink])],
       providers: [
         PlayerService,
         AccountLinkService,

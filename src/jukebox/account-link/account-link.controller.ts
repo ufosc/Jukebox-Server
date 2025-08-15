@@ -1,22 +1,24 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
 import { AccountLinkService } from './account-link.service'
 import { CreateAccountLinkDto, UpdateAccountLinkDto } from './dto/account-link.dto'
+import { ApiOperation } from '@nestjs/swagger'
 
 @Controller('jukebox/jukeboxes/:jukebox_id/account-link')
 export class AccountLinkController {
-  constructor(private readonly accountLinkService: AccountLinkService) {}
+  constructor(private readonly accountLinkService: AccountLinkService) { }
 
   @Post()
+  @ApiOperation({ summary: "Creates an Account Link or finds one if the account and jukebox id already exist on one" })
   create(
     @Param('jukebox_id') jukeboxId: string,
     @Body() createAccountLinkDto: CreateAccountLinkDto,
   ) {
-    return this.accountLinkService.create(createAccountLinkDto)
+    return this.accountLinkService.create(+jukeboxId, createAccountLinkDto)
   }
 
   @Get()
   findAll(@Param('jukebox_id') jukeboxId: string) {
-    return this.accountLinkService.findAll()
+    return this.accountLinkService.findAll(+jukeboxId)
   }
 
   @Get(':id')

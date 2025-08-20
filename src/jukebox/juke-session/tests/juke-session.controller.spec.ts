@@ -19,6 +19,9 @@ import { JukeSession } from '../entities/juke-session.entity'
 import { JukeSessionMembership } from '../entities/membership.entity'
 import { JukeSessionController } from '../juke-session.controller'
 import { JukeSessionService } from '../juke-session.service'
+import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
+import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
+import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 
 function getEndAtDate(hours = 2) {
   return new Date(new Date().getTime() + 1000 * 60 * 60 * hours)
@@ -60,6 +63,8 @@ describe('JukeSessionController', () => {
           PlayerInteraction,
           QueuedTrack,
           Track,
+          AccountLink,
+          SpotifyAccount
         ]),
       ],
       controllers: [JukeSessionController],
@@ -72,6 +77,8 @@ describe('JukeSessionController', () => {
         QueueService,
         JukeboxService,
         TrackService,
+        AccountLinkService,
+        SpotifyService
       ],
     }).compile()
 
@@ -86,7 +93,7 @@ describe('JukeSessionController', () => {
     // Initialize objects
     jukebox = await jukeboxService.create({ club_id: clubId, name: 'Test Jukebox' })
     jukebox2 = await jukeboxService.create({ club_id: clubId, name: 'Test Jukebox 2' })
-    track = trackService.create({
+    track = await trackService.createTestTrack({
       name: 'Test track',
       album: 'Example Album',
       artists: ['Acme Music'],

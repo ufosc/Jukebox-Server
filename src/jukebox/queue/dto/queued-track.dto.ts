@@ -1,20 +1,13 @@
 import { Expose } from 'class-transformer'
 import { EntityDtoBase } from 'src/config/dtos'
+import { JukeSessionDto } from 'src/jukebox/juke-session/dto/juke-session.dto'
 import { JukeSessionMembershipInlineDto } from 'src/jukebox/juke-session/dto/membership.dto'
 import { TrackDto } from 'src/track/dto/track.dto'
 
-export class CreateQueuedTrackDto {
-  @Expose()
-  queued_by: { id: number }
-
-  @Expose()
-  track: { id: number }
-
-  @Expose()
-  played_at?: Date
-}
-
 export class QueuedTrackDto extends EntityDtoBase {
+  @Expose()
+  juke_session: JukeSessionDto
+
   @Expose()
   queued_by: JukeSessionMembershipInlineDto
 
@@ -28,10 +21,13 @@ export class QueuedTrackDto extends EntityDtoBase {
   dislikes: number
 
   @Expose()
+  played: boolean
+
+  @Expose()
   played_at?: Date
 
   @Expose()
-  played_order?: number
+  order: number
 
   /**
    * Is not editable if queued up in Spotify,

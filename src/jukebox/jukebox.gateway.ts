@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common'
+import { BadRequestException, NotImplementedException } from '@nestjs/common'
 import {
   OnGatewayDisconnect,
   SubscribeMessage,
@@ -21,13 +21,15 @@ export class JukeboxGateway implements OnGatewayDisconnect {
     private playerService: PlayerService,
     private queueService: QueueService,
     private tracksService: TrackService,
-  ) {}
+  ) { }
 
   @WebSocketServer() server: Server
 
-  handleDisconnect(client: Socket) {}
+  handleDisconnect(client: Socket) { }
 
   /**
+   * THIS NEEDS TO BE UPDATED TO REFLECT CHANGES IN QUEUED TRACKS
+   *
    * When the frontend instance that is playing a track through a spotify player
    * sends an update to the server.
    *
@@ -59,10 +61,10 @@ export class JukeboxGateway implements OnGatewayDisconnect {
           // Changed track was next from queue
           const track = await this.queueService.popNextTrack(jukebox_id)
           await this.playerService.setCurrentQueuedTrack(jukebox_id, track)
-          await this.queueService.queueNextTrackToSpotify(jukebox_id) // TODO: make this api call
+          await this.queueService.queueNextTrackToSpotify(jukebox_id, jukebox_id) // TODO: make this api call
         } else if (current_track) {
           // Changed track was outside of queue
-          const track = await this.tracksService.getTrack(current_track.spotify_id!)
+          const track = await this.tracksService.getTrack(current_track.spotify_id!, jukebox_id)
           await this.playerService.setCurrentSpotifyTrack(jukebox_id, track)
         }
 

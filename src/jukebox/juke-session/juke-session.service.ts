@@ -58,12 +58,12 @@ export class JukeSessionService {
     return sessions.map((session) => plainToInstance(JukeSessionDto, session))
   }
 
-  async findOne(jukeboxId: number, id: number): Promise<JukeSessionDto> {
+  async findOne(id: number): Promise<JukeSessionDto> {
     const session = await this.jukeSessionRepo.findOne({
-      where: { jukebox: { id: jukeboxId }, id },
+      where: { id },
     })
     if (!session) {
-      throw new NotFoundException(`Juke session for jukebox ${jukeboxId} not found with id ${id}`)
+      throw new NotFoundException(`Juke session not found with id ${id}`)
     }
 
     return plainToInstance(JukeSessionDto, session)
@@ -75,11 +75,11 @@ export class JukeSessionService {
     updateJukeSessionDto: UpdateJukeSessionDto,
   ): Promise<JukeSessionDto> {
     await this.jukeSessionRepo.update({ jukebox: { id: jukeboxId }, id }, updateJukeSessionDto)
-    return await this.findOne(jukeboxId, id)
+    return await this.findOne(id)
   }
 
-  async remove(jukeboxId: number, id: number): Promise<JukeSessionDto> {
-    const session = await this.findOne(jukeboxId, id)
+  async remove(id: number): Promise<JukeSessionDto> {
+    const session = await this.findOne(id)
     await this.jukeSessionRepo.delete({ id })
 
     return session

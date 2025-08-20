@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common'
 import { TrackService } from 'src/track/track.service'
 import { QueueDto, QueuedTrackDto, QueueUpTrackDto, SetQueueOrderDto } from './dto'
 import { QueueService } from './queue.service'
@@ -8,20 +8,22 @@ export class QueueController {
   constructor(
     private queueService: QueueService,
     private trackService: TrackService,
-  ) {}
+  ) { }
 
   @Get()
   async getQueuedTracks(@Param('juke_session_id') jukeSessionId: string): Promise<QueueDto> {
     return await this.queueService.getQueue(+jukeSessionId)
   }
 
-  @Post()
-  async queueUpTrack(
+  @Post(':jukebox_id')
+  async queueTrack(
     @Param('juke_session_id') jukeSessionId: string,
+    @Param('jukebox_id') jukeboxId: string,
     @Body() body: QueueUpTrackDto,
   ): Promise<QueuedTrackDto> {
-    const track = await this.trackService.getTrack(body.spotify_track_id)
-    return this.queueService.queueTrack(+jukeSessionId, track)
+    const { spotify_track_id, queued_by } = body
+    const track = await this.trackService.getTrack(spotify_track_id, +jukeboxId)
+    return this.queueService.queueTrack(+jukeSessionId, { queued_by, track })
   }
 
   @Put()

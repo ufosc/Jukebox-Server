@@ -7,7 +7,7 @@ import { JukeSessionService } from './juke-session.service'
 
 @Controller(':jukebox_id/juke-session')
 export class JukeSessionController {
-  constructor(private readonly jukeSessionService: JukeSessionService) {}
+  constructor(private readonly jukeSessionService: JukeSessionService) { }
 
   @Post()
   @ApiOperation({ summary: 'Start Juke Session' })
@@ -33,7 +33,7 @@ export class JukeSessionController {
   @Get(':id')
   @ApiOperation({ summary: 'Get a Juke Session' })
   findOne(@Param('jukebox_id') jukeboxId: string, @Param('id') id: string) {
-    return this.jukeSessionService.findOne(+jukeboxId, +id)
+    return this.jukeSessionService.findOne(+id)
   }
 
   @Patch(':id')
@@ -49,7 +49,7 @@ export class JukeSessionController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a Juke Session' })
   remove(@Param('jukebox_id') jukeboxId: string, @Param('id') id: string) {
-    return this.jukeSessionService.remove(+jukeboxId, +id)
+    return this.jukeSessionService.remove(+id)
   }
 
   @Post(':id/end')

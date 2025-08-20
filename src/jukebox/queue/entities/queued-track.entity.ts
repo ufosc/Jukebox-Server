@@ -1,4 +1,5 @@
 import { EntityBase } from 'src/config/entities'
+import { JukeSession } from 'src/jukebox/juke-session/entities/juke-session.entity'
 import { JukeSessionMembership } from 'src/jukebox/juke-session/entities/membership.entity'
 import {
   InteractionType,
@@ -12,6 +13,9 @@ export class QueuedTrack extends EntityBase {
   @ManyToOne(() => JukeSessionMembership, (membership) => membership.queued_tracks)
   queued_by: JukeSessionMembership
 
+  @ManyToOne(() => JukeSession)
+  juke_session: JukeSession
+
   @ManyToOne(() => Track)
   track: Track
 
@@ -24,8 +28,8 @@ export class QueuedTrack extends EntityBase {
   @Column({ nullable: true })
   played_at?: Date
 
-  @Column({ nullable: true })
-  played_order?: number
+  @Column()
+  order: number
 
   @Column({ default: true })
   is_editable: boolean

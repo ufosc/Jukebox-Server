@@ -15,7 +15,6 @@ import { JukeboxService } from 'src/jukebox/jukebox.service'
 import { QueuedTrackDto } from 'src/jukebox/queue/dto'
 import { QueuedTrack } from 'src/jukebox/queue/entities/queued-track.entity'
 import { QueueService } from 'src/jukebox/queue/queue.service'
-import { createTestQueuedTrackFactory } from 'src/jukebox/queue/tests/utils'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { TrackDto } from 'src/track/dto/track.dto'
 import { Track } from 'src/track/entities/track.entity'
@@ -24,6 +23,9 @@ import { AxiosMockProvider, MockCacheProvider, mockUser } from 'src/utils/mock'
 import { PlayerStateDto } from '../dto'
 import { InteractionType, PlayerInteraction } from '../entity/player-interaction.entity'
 import { PlayerService } from '../player.service'
+import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
+import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
+import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
 
 describe('PlayerService', () => {
   let service: PlayerService
@@ -46,7 +48,11 @@ describe('PlayerService', () => {
   const userId = 2
   const clubId = 3
 
-  let createTestQueuedTrack: ReturnType<typeof createTestQueuedTrackFactory>
+  const createTestQueuedTrack = async () =>
+    await queueService.createQueuedTrack(jukeSession.id, {
+      queued_by: { id: jukeSessionMembership.id },
+      track,
+    })
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -59,6 +65,8 @@ describe('PlayerService', () => {
           JukeSession,
           JukeSessionMembership,
           Track,
+          AccountLink,
+          SpotifyAccount
         ]),
       ],
       providers: [
@@ -70,6 +78,8 @@ describe('PlayerService', () => {
         JukeboxService,
         JukeSessionService,
         TrackService,
+        AccountLinkService,
+        SpotifyService
       ],
     }).compile()
 
@@ -78,8 +88,6 @@ describe('PlayerService', () => {
     jukeboxService = module.get<JukeboxService>(JukeboxService)
     jukeSessionService = module.get<JukeSessionService>(JukeSessionService)
     trackService = module.get<TrackService>(TrackService)
-
-    createTestQueuedTrack = createTestQueuedTrackFactory(queueService, trackService)
 
     cache = module.get<Cache>(CACHE_MANAGER)
 
@@ -90,7 +98,7 @@ describe('PlayerService', () => {
     jukeSessionMembership = await jukeSessionService.createMembership(jukeSession.id, {
       user_id: userId,
     })
-    track = trackService.create({
+    track = await trackService.createTestTrack({
       name: 'Test track',
       album: 'Example Album',
       artists: ['Acme Music'],
@@ -98,10 +106,7 @@ describe('PlayerService', () => {
       spotify_id: 'abc123',
     })
 
-    queuedTrack = await queueService.createQueuedTrack({
-      queued_by: { id: jukeSessionMembership.id },
-      track,
-    })
+    queuedTrack = await createTestQueuedTrack()
 
     initialPlayerState = {
       jukebox_id: jukeboxId,
@@ -175,15 +180,15 @@ describe('PlayerService', () => {
   })
 
   it('should show next queued track as playing', async () => {
-    const newTrack = await createTestQueuedTrack(jukeSessionMembership)
+    const newTrack = await createTestQueuedTrack()
     const playerState = await service.setCurrentQueuedTrack(jukeboxId, newTrack)
-    expect(playerState.queued_track?.track.id).toEqual(newTrack.id)
+    expect(playerState.queued_track?.track.id).toEqual(newTrack.track.id)
   })
 
   it('should show spotify track as currently playing', async () => {
-    const newTrack = await createTestQueuedTrack(jukeSessionMembership)
+    const newTrack = await createTestQueuedTrack()
     const playerState = await service.setCurrentSpotifyTrack(jukeboxId, newTrack.track)
     expect(playerState.spotify_track).not.toBeNull()
-    expect(playerState.spotify_track?.id).toEqual(newTrack.id)
+    expect(playerState.spotify_track?.id).toEqual(newTrack.track.id)
   })
 })

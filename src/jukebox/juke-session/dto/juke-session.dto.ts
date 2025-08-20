@@ -22,8 +22,6 @@ export class JukeSessionDto extends EntityDtoBase {
 }
 
 export class CreateJukeSessionDto {
-  // @Expose()
-  // jukebox_id: number
   @Expose()
   start_at?: Date
 

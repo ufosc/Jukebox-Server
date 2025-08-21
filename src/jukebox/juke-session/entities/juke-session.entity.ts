@@ -1,6 +1,6 @@
 import { EntityBase } from 'src/config/entities'
 import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm'
+import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm'
 import { JukeSessionMembership } from './membership.entity'
 
 @Entity('juke_session')

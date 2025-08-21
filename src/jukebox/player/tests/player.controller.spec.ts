@@ -9,6 +9,10 @@ import { AxiosProvider, MockCacheProvider } from 'src/utils/mock'
 import { PlayerInteraction } from '../entity/player-interaction.entity'
 import { PlayerController } from '../player.controller'
 import { PlayerService } from '../player.service'
+import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
+import { JukeSession } from 'src/jukebox/juke-session/entities/juke-session.entity'
+import { JukeSessionService } from 'src/jukebox/juke-session/juke-session.service'
+import { JukeSessionMembership } from 'src/jukebox/juke-session/entities/membership.entity'
 
 describe('PlayerController', () => {
   let controller: PlayerController
@@ -16,12 +20,13 @@ describe('PlayerController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PlayerController],
-      imports: [DatabaseModule, TypeOrmModule.forFeature([PlayerInteraction, QueuedTrack])],
+      imports: [DatabaseModule, TypeOrmModule.forFeature([PlayerInteraction, QueuedTrack, AccountLink, JukeSession, JukeSessionMembership])],
       providers: [
         PlayerService,
         AccountLinkService,
         QueueService,
         SpotifyService,
+        JukeSessionService,
         AxiosProvider,
         MockCacheProvider,
       ],

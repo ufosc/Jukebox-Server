@@ -11,13 +11,14 @@ import { SpotifyAuthService } from '../spotify-auth.service'
 import { SpotifyController } from '../spotify.controller'
 import { SpotifyService } from '../spotify.service'
 import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
+import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
 
 describe('SpotifyController', () => {
   let controller: SpotifyController
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [NetworkModule, DatabaseModule, TypeOrmModule.forFeature([SpotifyAccount, Jukebox])],
+      imports: [NetworkModule, DatabaseModule, TypeOrmModule.forFeature([SpotifyAccount, Jukebox, AccountLink])],
       controllers: [SpotifyController],
       providers: [
         SpotifyAuthService,

@@ -18,7 +18,7 @@ export class SpotifyController {
     protected spotifyService: SpotifyService,
     protected jukeboxService: JukeboxService,
     protected accountLinkService: AccountLinkService,
-  ) {}
+  ) { }
 
   @Get('login/')
   @UseInterceptors(AuthInterceptor)
@@ -42,8 +42,7 @@ export class SpotifyController {
 
     if (jukeboxId != null) {
       // await this.jukeboxService.addLinkToJukebox(jukeboxId, account)
-      this.accountLinkService.create({
-        jukebox_id: jukeboxId,
+      this.accountLinkService.create(jukeboxId, {
         spotify_account: account,
         active: true,
       })

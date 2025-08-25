@@ -81,6 +81,11 @@ export class AccountLinkService {
       relations: { spotify_account: true },
       loadRelationIds: { relations: ['jukebox'] }
     })
+
+    if (!link) {
+      throw new NotFoundException("Could not find active account link for jukeboxId: " + jukeboxId)
+    }
+
     return plainToInstance(AccountLinkDto, link)
   }
 }

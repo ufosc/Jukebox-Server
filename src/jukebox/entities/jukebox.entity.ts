@@ -1,5 +1,5 @@
 import { EntityBase } from 'src/config/entities'
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { AccountLink } from '../account-link/entities/account-link.entity'
 import { JukeSession } from '../juke-session/entities/juke-session.entity'
 
@@ -14,6 +14,7 @@ export class Jukebox extends EntityBase {
   name: string
 
   @Column()
+  @Index()
   club_id: number
 
   @Column({ type: 'enum', enum: TimeFormat, default: TimeFormat.HOUR_12 })

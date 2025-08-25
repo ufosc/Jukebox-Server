@@ -22,6 +22,7 @@ import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 import { AxiosMockProvider, mockSpotifyAccount } from 'src/utils/mock'
 import { AccountLinkDto } from 'src/jukebox/account-link/dto'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
+import { NetworkService } from 'src/network/network.service'
 
 describe('QueueController', () => {
   let controller: QueueController
@@ -50,7 +51,7 @@ describe('QueueController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [DatabaseModule, TypeOrmModule.forFeature([QueuedTrack, Track, JukeSessionMembership, JukeSession, Jukebox, AccountLink, SpotifyAccount])],
       controllers: [QueueController],
-      providers: [AxiosMockProvider, QueueService, TrackService, JukeSessionService, JukeboxService, AccountLinkService, SpotifyService, SpotifyAuthService],
+      providers: [AxiosMockProvider, QueueService, TrackService, JukeSessionService, JukeboxService, NetworkService, AccountLinkService, SpotifyService, SpotifyAuthService],
     }).compile()
 
     controller = module.get<QueueController>(QueueController)

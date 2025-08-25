@@ -13,6 +13,7 @@ import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
 import { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
+import { NetworkService } from 'src/network/network.service'
 
 describe('AccountLinkController', () => {
   let controller: AccountLinkController
@@ -56,7 +57,8 @@ describe('AccountLinkController', () => {
         MockCacheProvider,
         AccountLinkService,
         SpotifyAuthService,
-        JukeboxService
+        JukeboxService,
+        NetworkService
       ],
     }).compile()
 
@@ -180,7 +182,6 @@ describe('AccountLinkController', () => {
       { ...testAccountLinkDto2, spotify_account: undefined, active: false }
     )
 
-    const result = await controller.getActiveAccount(jukeboxId4)
-    expect(result).toBeNull()
+    expect(async () => await controller.getActiveAccount(jukeboxId4)).rejects.toThrow(NotFoundException)
   })
 })

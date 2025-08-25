@@ -22,6 +22,7 @@ import { JukeSessionService } from '../juke-session.service'
 import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
 import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
+import { NetworkService } from 'src/network/network.service'
 
 function getEndAtDate(hours = 2) {
   return new Date(new Date().getTime() + 1000 * 60 * 60 * hours)
@@ -75,6 +76,7 @@ describe('JukeSessionController', () => {
         PlayerService,
         SpotifyService,
         QueueService,
+        NetworkService,
         JukeboxService,
         TrackService,
         AccountLinkService,

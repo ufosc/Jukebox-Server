@@ -22,6 +22,7 @@ import { mockCreateTrack } from 'src/utils/mock/mock-create-track'
 import { QueueController } from '../queue.controller'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import { AccountLinkDto } from 'src/jukebox/account-link/dto'
+import { NetworkService } from 'src/network/network.service'
 
 describe('QueueService', () => {
   let controller: QueueController
@@ -50,7 +51,7 @@ describe('QueueService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [DatabaseModule, TypeOrmModule.forFeature([QueuedTrack, Track, JukeSessionMembership, JukeSession, Jukebox, AccountLink, SpotifyAccount])],
       controllers: [QueueController],
-      providers: [AxiosMockProvider, QueueService, TrackService, JukeSessionService, JukeboxService, AccountLinkService, SpotifyService, SpotifyAuthService,
+      providers: [AxiosMockProvider, QueueService, TrackService, JukeSessionService, JukeboxService, AccountLinkService, SpotifyService, SpotifyAuthService, NetworkService,
         { provide: SpotifyService, useValue: { queueTrack: jest.fn().mockResolvedValue(true) } }
       ],
     }).compile()

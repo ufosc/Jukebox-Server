@@ -1,19 +1,23 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Headers, Param, Patch, Post, Query, Req, UseInterceptors } from '@nestjs/common'
 import { CreateJukeboxDto, UpdateJukeboxDto } from './dto/jukebox.dto'
 import { JukeboxService } from './jukebox.service'
+import { AuthInterceptor } from 'src/auth/auth.interceptor';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('jukebox/jukeboxes/')
 export class JukeboxController {
-  constructor(private readonly jukeboxService: JukeboxService) {}
+  constructor(private readonly jukeboxService: JukeboxService) { }
 
   @Post()
   create(@Body() createJukeboxDto: CreateJukeboxDto) {
     return this.jukeboxService.create(createJukeboxDto)
   }
 
+  @ApiBearerAuth()
+  @UseInterceptors(AuthInterceptor)
   @Get()
-  findAll() {
-    return this.jukeboxService.findAll()
+  findAll(@Query('clubId') clubId: string) {
+    return this.jukeboxService.findAll(+clubId);
   }
 
   @Get(':id')

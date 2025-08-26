@@ -12,6 +12,9 @@ export class JukeSessionDto extends EntityDtoBase {
   join_code: string
 
   @Expose()
+  next_order: number
+
+  @Expose()
   start_at: Date
 
   @Expose()

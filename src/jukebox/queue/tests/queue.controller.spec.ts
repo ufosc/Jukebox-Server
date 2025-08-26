@@ -133,6 +133,7 @@ describe('QueueController', () => {
     queueTrackParams[2].spotify_track_id = track2.spotify_id
     const queueTrack2 = await controller.queueTrack(...queueTrackParams)
     queue = await controller.getQueuedTracks(sessionId3)
+    q1 = await queueService.getQueuedTrackById(queueTrack1.id)
     let q2 = await queueService.getQueuedTrackById(queueTrack2.id)
     expect(queue.tracks.length).toEqual(2)
     expect(queue.tracks[0]).toEqual(q1)

@@ -57,9 +57,9 @@ export class QueueService {
    * Add track to a juke session's queue.
    */
   async queueTrack(jukeSessionId: number, createQueuedTrackDto: CreateQueuedTrackDto): Promise<QueuedTrackDto> {
-    await this.checkSession(jukeSessionId)
-    const queue = await this.queuedTrackRepo.find({ where: { juke_session: { id: jukeSessionId }, played: false } })
-    const preQueuedTrack = this.queuedTrackRepo.create({ ...createQueuedTrackDto, juke_session: { id: jukeSessionId }, order: queue.length + 1 })
+    const session = await this.checkSession(jukeSessionId)
+    const preQueuedTrack = this.queuedTrackRepo.create({ ...createQueuedTrackDto, juke_session: { id: jukeSessionId }, order: session.next_order })
+    await this.jukeSessionService.updateNextOrder(jukeSessionId, session.next_order + 1)
     const queuedTrack = await this.queuedTrackRepo.save(preQueuedTrack)
     return plainToInstance(QueuedTrackDto, await this.getQueuedTrackById(queuedTrack.id))
   }
@@ -100,7 +100,9 @@ export class QueueService {
       [ordering],
     );
 
-    return await this.getQueue(jukeSessionId)
+    const queue = await this.getQueue(jukeSessionId)
+    await this.jukeSessionService.updateNextOrder(jukeSessionId, queue.tracks.length + 1)
+    return queue
   }
 
   /**

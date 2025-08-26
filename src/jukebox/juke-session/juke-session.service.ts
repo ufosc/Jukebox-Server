@@ -78,6 +78,11 @@ export class JukeSessionService {
     return await this.findOne(id)
   }
 
+  async updateNextOrder(id: number, nextOrder: number): Promise<JukeSessionDto> {
+    await this.jukeSessionRepo.update({ id }, { next_order: nextOrder })
+    return await this.findOne(id)
+  }
+
   async remove(id: number): Promise<JukeSessionDto> {
     const session = await this.findOne(id)
     await this.jukeSessionRepo.delete({ id })

@@ -89,7 +89,7 @@ describe('QueueService', () => {
 
   it('should get, pop, remove a queued track and preserve order', async () => {
     await controller.queueTrack(...queueTrackParams)
-    const queuedTrackToRemain = await controller.queueTrack(...queueTrackParams)
+    let queuedTrackToRemain = await controller.queueTrack(...queueTrackParams)
     const queuedTrackToBeRemoved = await controller.queueTrack(...queueTrackParams)
 
     let queue = await controller.getQueuedTracks(sessionId1)
@@ -108,6 +108,7 @@ describe('QueueService', () => {
     queue = await controller.getQueuedTracks(sessionId1)
     expect(queueLengthBeforeRemove - 1).toEqual(queue.tracks.length)
 
+    queuedTrackToRemain = await service.getQueuedTrackById(queuedTrackToRemain.id)
     expect(queuedTrackToRemain).toEqual(queue.tracks[0])
   })
 

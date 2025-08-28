@@ -43,6 +43,12 @@ describe('JukeSessionController', () => {
   const userId = 2
   const clubId = 3
 
+  beforeAll(() => {
+    jest
+      .spyOn(JukeSessionService.prototype, 'generateQrCode')
+      .mockResolvedValue('');
+  })
+
   const createTestJukeSession = async (
     payload?: Partial<CreateJukeSessionDto & { jukebox_id: number }>,
   ) => {
@@ -80,7 +86,7 @@ describe('JukeSessionController', () => {
         JukeboxService,
         TrackService,
         AccountLinkService,
-        SpotifyService
+        SpotifyService,
       ],
     }).compile()
 
@@ -222,5 +228,18 @@ describe('JukeSessionController', () => {
     expect(() =>
       controller.getJukeSessionMember(String(jukebox.id), String(session.id), String(member.id)),
     ).rejects.toThrow(NotFoundException)
+  })
+
+  it('should add a member to a session by join code', async () => {
+    const session = await createTestJukeSession()
+    const testUserId = 3
+    const membership = await controller.addJukeSessionMemberByJoinCode(
+      jukebox.id.toString(),
+      session.id.toString(),
+      session.join_code,
+      { user_id: testUserId }
+    )
+
+    expect(membership.user_id).toEqual(testUserId)
   })
 })

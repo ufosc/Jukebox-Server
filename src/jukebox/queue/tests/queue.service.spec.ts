@@ -47,6 +47,12 @@ describe('QueueService', () => {
 
   let queueTrackParams: Parameters<typeof controller.queueTrack>
 
+  beforeAll(() => {
+    jest
+      .spyOn(JukeSessionService.prototype, 'generateQrCode')
+      .mockResolvedValue('');
+  })
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [DatabaseModule, TypeOrmModule.forFeature([QueuedTrack, Track, JukeSessionMembership, JukeSession, Jukebox, AccountLink, SpotifyAccount])],

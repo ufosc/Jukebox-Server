@@ -13,6 +13,7 @@ import { AccountLink } from 'src/jukebox/account-link/entities/account-link.enti
 import { JukeSession } from 'src/jukebox/juke-session/entities/juke-session.entity'
 import { JukeSessionService } from 'src/jukebox/juke-session/juke-session.service'
 import { JukeSessionMembership } from 'src/jukebox/juke-session/entities/membership.entity'
+import { NetworkService } from 'src/network/network.service'
 
 describe('PlayerController', () => {
   let controller: PlayerController
@@ -27,6 +28,7 @@ describe('PlayerController', () => {
         QueueService,
         SpotifyService,
         JukeSessionService,
+        NetworkService,
         AxiosProvider,
         MockCacheProvider,
       ],

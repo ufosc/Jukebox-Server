@@ -49,6 +49,12 @@ describe('PlayerService', () => {
   const userId = 2
   const clubId = 3
 
+  beforeAll(() => {
+    jest
+      .spyOn(JukeSessionService.prototype, 'generateQrCode')
+      .mockResolvedValue('');
+  })
+
   const createTestQueuedTrack = async () =>
     await queueService.createQueuedTrack(jukeSession.id, {
       queued_by: { id: jukeSessionMembership.id },

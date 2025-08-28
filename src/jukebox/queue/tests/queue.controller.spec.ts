@@ -46,6 +46,12 @@ describe('QueueController', () => {
   let sessionId3: string
 
   let queueTrackParams: Parameters<typeof controller.queueTrack>
+  
+  beforeAll(() => {
+    jest
+      .spyOn(JukeSessionService.prototype, 'generateQrCode')
+      .mockResolvedValue('');
+  })
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

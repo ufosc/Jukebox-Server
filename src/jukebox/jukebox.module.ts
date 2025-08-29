@@ -1,22 +1,30 @@
-import { Module } from '@nestjs/common'
+import { forwardRef, Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { AppGateway } from 'src/app.gateway'
-import { NetworkModule } from 'src/network/network.module'
-import { SpotifyModule } from '../spotify/spotify.module'
-import { Jukebox, JukeboxLinkAssignment } from './entities/jukebox.entity'
+import { SpotifyModule } from 'src/spotify/spotify.module'
+import { TrackService } from 'src/track/track.service'
+import { AccountLinkModule } from './account-link/account-link.module'
+import { JukeSessionModule } from './juke-session/juke-session.module'
 import { JukeboxController } from './jukebox.controller'
-import { JukeboxGateway } from './jukebox.gateway'
 import { JukeboxService } from './jukebox.service'
-import { TrackQueueService } from './track-queue/track-queue.service'
+import { PlayerInteraction } from './player/entity/player-interaction.entity'
+import { PlayerController } from './player/player.controller'
+import { PlayerService } from './player/player.service'
+import { QueuedTrack } from './queue/entities/queued-track.entity'
+import { QueueController } from './queue/queue.controller'
+import { QueueService } from './queue/queue.service'
+import { Jukebox } from './entities/jukebox.entity'
+import { TrackModule } from 'src/track/track.module'
 
 @Module({
-  controllers: [JukeboxController],
-  providers: [JukeboxService, TrackQueueService, JukeboxGateway, AppGateway],
   imports: [
-    TypeOrmModule.forFeature([Jukebox, JukeboxLinkAssignment]),
-    SpotifyModule,
-    NetworkModule,
+    AccountLinkModule,
+    JukeSessionModule,
+    TrackModule,
+    forwardRef(() => SpotifyModule),
+    TypeOrmModule.forFeature([Jukebox, PlayerInteraction, QueuedTrack]),
   ],
-  exports: [JukeboxService, TrackQueueService],
+  controllers: [JukeboxController, QueueController, PlayerController],
+  providers: [JukeboxService, QueueService, PlayerService],
+  exports: [JukeboxService, QueueService, PlayerService, JukeSessionModule],
 })
 export class JukeboxModule {}

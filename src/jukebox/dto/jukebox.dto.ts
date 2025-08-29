@@ -1,22 +1,15 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { Expose } from 'class-transformer'
-import { BaseDto } from 'src/config/dtos'
-import { JukeboxLinkDto } from './jukebox-link.dto'
+import { PartialType } from '@nestjs/swagger'
+import { EntityDtoBase } from 'src/config/dtos'
+import { Jukebox } from '../entities/jukebox.entity'
 
-export class JukeboxDto extends BaseDto implements IJukebox {
-  @Expose()
-  @ApiProperty()
-  id: number
-
-  @Expose()
-  @ApiProperty()
+export class JukeboxDto extends EntityDtoBase<Jukebox> {
   name: string
-
-  @Expose()
-  @ApiProperty()
   club_id: number
-
-  @Expose()
-  @ApiProperty()
-  links: JukeboxLinkDto[]
 }
+
+export class CreateJukeboxDto {
+  name: string
+  club_id: number
+}
+
+export class UpdateJukeboxDto extends PartialType(CreateJukeboxDto) {}

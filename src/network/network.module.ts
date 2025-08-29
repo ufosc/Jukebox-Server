@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common'
-import { AxiosProvider } from 'src/utils/providers/axios.provider'
+import { AxiosProvider } from 'src/utils/mock/mock-axios-provider'
 import { NetworkService } from './network.service'
 
 @Module({

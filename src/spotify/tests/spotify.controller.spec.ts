@@ -1,41 +1,31 @@
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
-import { getRepositoryToken } from '@nestjs/typeorm'
-import Axios from 'axios'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { DatabaseModule } from 'src/config/database.module'
+import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
 import { JukeboxService } from 'src/jukebox/jukebox.service'
 import { NetworkModule } from 'src/network/network.module'
-import type { MockType } from 'src/utils/testing'
-import type { Repository } from 'typeorm'
+import { AxiosMockProvider } from 'src/utils/mock'
 import { SpotifyAccount } from '../entities/spotify-account.entity'
 import { SpotifyAuthService } from '../spotify-auth.service'
 import { SpotifyController } from '../spotify.controller'
 import { SpotifyService } from '../spotify.service'
+import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
+import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
 
 describe('SpotifyController', () => {
   let controller: SpotifyController
 
   beforeEach(async () => {
-    const mockSpotifyLinkRepo: () => MockType<Repository<SpotifyAccount>> = jest.fn(() => ({}))
     const module: TestingModule = await Test.createTestingModule({
-      imports: [NetworkModule],
+      imports: [NetworkModule, DatabaseModule, TypeOrmModule.forFeature([SpotifyAccount, Jukebox, AccountLink])],
       controllers: [SpotifyController],
       providers: [
         SpotifyAuthService,
         SpotifyService,
-        {
-          provide: JukeboxService,
-          useValue: {
-            addLinkToJukebox: async (jukeboxId: number, account: SpotifyAccount) => {},
-          },
-        },
-        {
-          provide: Axios.Axios,
-          useValue: Axios.create(),
-        },
-        {
-          provide: getRepositoryToken(SpotifyAccount),
-          useFactory: mockSpotifyLinkRepo,
-        },
+        AccountLinkService,
+        AxiosMockProvider,
+        JukeboxService,
       ],
     }).compile()
 

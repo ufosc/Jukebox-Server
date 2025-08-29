@@ -137,7 +137,15 @@ export class SpotifyAuthService extends SpotifyBaseService {
     return spotifyAccount
   }
 
-  private async addAccount(createSpotifyLinkDto: CreateSpotifyAccountDto) {
+  /**
+   * This function was made public for testing purposes and should not be used on its own
+   * outside of the normal auth flow in production.
+   *
+   * handleAuthCode should be used
+   * @param createSpotifyLinkDto
+   * @returns
+   */
+  public async addAccount(createSpotifyLinkDto: CreateSpotifyAccountDto) {
     const { user_id: userId, spotify_email: spotifyEmail, tokens } = createSpotifyLinkDto
     const account = this.repo.create({ user_id: userId, spotify_email: spotifyEmail, ...tokens })
 

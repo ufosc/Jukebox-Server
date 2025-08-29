@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { Axios, AxiosRequestConfig } from 'axios'
 import { CLUBS_URL, NODE_ENV } from 'src/config'
+import { UserDto } from 'src/shared'
 import { sleep } from 'src/utils'
 
 @Injectable()
@@ -47,7 +48,7 @@ export class NetworkService {
     this.token = token
   }
 
-  async fetchUser(): Promise<IUser> {
+  async fetchUser(): Promise<UserDto> {
     const res = await this.sendRequest(this.routes.getUser)
 
     if (res.status > 299) {
@@ -58,10 +59,6 @@ export class NetworkService {
       id: +res.data.id,
       email: res.data.email ?? '',
       username: res.data.username,
-      first_name: res.data.first_name,
-      last_name: res.data.last_name,
-      created_at: res.data.created_at,
-      updated_at: res.data.updated_at,
     }
   }
 }

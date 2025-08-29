@@ -1,16 +1,19 @@
 import {
-  BaseEntity as TypeormBase,
   CreateDateColumn,
   DeleteDateColumn,
   PrimaryGeneratedColumn,
+  BaseEntity as TypeormBase,
   UpdateDateColumn,
 } from 'typeorm'
 
 /**
  * Base Entity Source:
  * https://github.com/typeorm/typeorm/blob/master/src/repository/BaseEntity.ts
+ *
+ * TypeOrm Docs: https://typeorm.io/docs/entity/entities/
  */
-export class BaseEntity extends TypeormBase {
+
+export abstract class EntityBase extends TypeormBase {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -22,7 +25,7 @@ export class BaseEntity extends TypeormBase {
 
   @DeleteDateColumn({ nullable: true })
   deleted_on: Date
-  
+
   serialize() {
     return {
       id: this.id,

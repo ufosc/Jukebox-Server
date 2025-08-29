@@ -1,10 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { getRepositoryToken } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
-import { SpotifyAuthService } from '../spotify-auth.service'
-import { SpotifyAccount } from '../entities/spotify-account.entity'
-import { Axios } from 'axios'
 import { BadRequestException } from '@nestjs/common'
+import { Test, TestingModule } from '@nestjs/testing'
+import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm'
+import { Axios } from 'axios'
+import { DatabaseModule } from 'src/config/database.module'
+import { Repository } from 'typeorm'
+import { SpotifyAccount } from '../entities/spotify-account.entity'
+import { SpotifyAuthService } from '../spotify-auth.service'
 
 jest.mock('axios')
 
@@ -19,9 +20,11 @@ describe('SpotifyAuthService', () => {
     } as any
 
     const module: TestingModule = await Test.createTestingModule({
+      imports: [DatabaseModule, TypeOrmModule.forFeature([SpotifyAccount])],
       providers: [
         SpotifyAuthService,
-        { provide: getRepositoryToken(SpotifyAccount), useClass: Repository },
+
+        // { provide: getRepositoryToken(SpotifyAccount), useClass: Repository },
         { provide: Axios, useValue: axios },
       ],
     }).compile()
@@ -49,7 +52,7 @@ describe('SpotifyAuthService', () => {
     )
   })
 
-  it('should return a user\'s Spotify accounts', async () => {
+  it("should return a user's Spotify accounts", async () => {
     const mockAccounts = [{ user_id: 123, spotify_email: 'test@example.com' }]
     jest.spyOn(repo, 'findBy').mockResolvedValue(mockAccounts as any)
 

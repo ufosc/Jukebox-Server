@@ -20,12 +20,10 @@ export class SeedModule {}
 async function bootstrap() {
   NestFactory.createApplicationContext(SeedModule).then((appContext) => {
     const jukeboxService = appContext.get(JukeboxService)
-    jukeboxService.create({ club_id: 1, name: 'Test Jukebox' }).then(() => {
-      console.log('finished!')
-      appContext.close()
+    jukeboxService.create({ club_id: 1, name: 'Test Jukebox' })
+    appContext.close()
 
-      process.exit(0)
-    })
+    process.exit(0)
   })
 }
 bootstrap()

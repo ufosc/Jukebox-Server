@@ -55,6 +55,25 @@ tasks:
     cmds:
       - docker-compose -f docker-compose.network.yml run --rm server sh -c "npm run seed"
 
+  test:
+    desc: 'Run unit tests'
+    deps:
+      - build
+    cmds:
+      - docker-compose run --rm server sh -c "npm run test -- {{.CLI_ARGS}}"
+
+  test:cov:
+    desc: 'Run unit tests and compile coverate report'
+    deps:
+      - build
+    cmds:
+      - docker-compose run --rm server sh -c "npm run test:cov"
+
+  clean:
+    desc: 'Remove container and volumes'
+    cmds:
+      - docker-compose down --remove-orphans -v
+
   #########################################
   # Jukebox-Types Package
   #########################################

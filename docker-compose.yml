@@ -31,11 +31,14 @@ services:
 
   postgres:
     image: postgres:13-alpine
+    # image: postgres:13
     container_name: jbx-dev-db
     volumes:
       - jukebox-pg-data:/var/lib/postgresql/data
+      # - ./scripts/create-multiple-postgres-databases:/docker-entrypoint-initdb.d
     environment:
       - POSTGRES_DB=devdatabase
+      # - POSTGRES_MULTIPLE_DATABASES=devdatabase,test
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=devpass
       

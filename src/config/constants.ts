@@ -7,8 +7,11 @@ export const HOST: string = process.env.HOST || 'localhost'
 export const PORT = process.env.PORT || 3000
 export const BASE_URL = process.env.BASE_URL || `http://${HOST}:${PORT}`
 
-export const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID || 'changeme'
-export const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET || 'changeme'
+export const SPOTIFY_CLIENT_ID =
+  NODE_ENV === 'test' ? 'changeme' : process.env.SPOTIFY_CLIENT_ID || 'changeme'
+export const SPOTIFY_CLIENT_SECRET =
+  NODE_ENV === 'test' ? 'changeme' : process.env.SPOTIFY_CLIENT_SECRET || 'changeme'
+
 export const SPOTIFY_REDIRECT_PATH = '/api/v1/spotify/login/success/'
 export const SPOTIFY_REDIRECT_URI = BASE_URL + SPOTIFY_REDIRECT_PATH
 export const SPOTIFY_SCOPES = [

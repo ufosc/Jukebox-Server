@@ -22,6 +22,7 @@ import { mockCreateTrack } from 'src/utils/mock/mock-create-track'
 import { QueueController } from '../queue.controller'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import { AccountLinkDto } from 'src/jukebox/account-link/dto'
+import { NetworkService } from 'src/network/network.service'
 
 describe('QueueService', () => {
   let controller: QueueController
@@ -46,11 +47,17 @@ describe('QueueService', () => {
 
   let queueTrackParams: Parameters<typeof controller.queueTrack>
 
+  beforeAll(() => {
+    jest
+      .spyOn(JukeSessionService.prototype, 'generateQrCode')
+      .mockResolvedValue('');
+  })
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [DatabaseModule, TypeOrmModule.forFeature([QueuedTrack, Track, JukeSessionMembership, JukeSession, Jukebox, AccountLink, SpotifyAccount])],
       controllers: [QueueController],
-      providers: [AxiosMockProvider, QueueService, TrackService, JukeSessionService, JukeboxService, AccountLinkService, SpotifyService, SpotifyAuthService,
+      providers: [AxiosMockProvider, QueueService, TrackService, JukeSessionService, JukeboxService, AccountLinkService, SpotifyService, SpotifyAuthService, NetworkService,
         { provide: SpotifyService, useValue: { queueTrack: jest.fn().mockResolvedValue(true) } }
       ],
     }).compile()
@@ -88,7 +95,7 @@ describe('QueueService', () => {
 
   it('should get, pop, remove a queued track and preserve order', async () => {
     await controller.queueTrack(...queueTrackParams)
-    const queuedTrackToRemain = await controller.queueTrack(...queueTrackParams)
+    let queuedTrackToRemain = await controller.queueTrack(...queueTrackParams)
     const queuedTrackToBeRemoved = await controller.queueTrack(...queueTrackParams)
 
     let queue = await controller.getQueuedTracks(sessionId1)
@@ -107,6 +114,7 @@ describe('QueueService', () => {
     queue = await controller.getQueuedTracks(sessionId1)
     expect(queueLengthBeforeRemove - 1).toEqual(queue.tracks.length)
 
+    queuedTrackToRemain = await service.getQueuedTrackById(queuedTrackToRemain.id)
     expect(queuedTrackToRemain).toEqual(queue.tracks[0])
   })
 

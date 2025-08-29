@@ -26,6 +26,7 @@ import { PlayerService } from '../player.service'
 import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
+import { NetworkService } from 'src/network/network.service'
 
 describe('PlayerService', () => {
   let service: PlayerService
@@ -47,6 +48,12 @@ describe('PlayerService', () => {
   const jukeboxId = 1
   const userId = 2
   const clubId = 3
+
+  beforeAll(() => {
+    jest
+      .spyOn(JukeSessionService.prototype, 'generateQrCode')
+      .mockResolvedValue('');
+  })
 
   const createTestQueuedTrack = async () =>
     await queueService.createQueuedTrack(jukeSession.id, {
@@ -76,6 +83,7 @@ describe('PlayerService', () => {
         SpotifyService,
         QueueService,
         JukeboxService,
+        NetworkService,
         JukeSessionService,
         TrackService,
         AccountLinkService,

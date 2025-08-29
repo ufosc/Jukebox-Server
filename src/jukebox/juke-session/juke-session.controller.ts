@@ -1,15 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
-import { ApiOperation } from '@nestjs/swagger'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common'
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger'
 import { Serialize } from 'src/utils'
 import { CreateJukeSessionDto, JukeSessionDto, UpdateJukeSessionDto } from './dto/juke-session.dto'
 import { CreateJukeSessionMembershipDto, JukeSessionMembershipDto } from './dto/membership.dto'
 import { JukeSessionService } from './juke-session.service'
+import { AuthInterceptor } from 'src/auth/auth.interceptor'
 
 @Controller(':jukebox_id/juke-session')
 export class JukeSessionController {
   constructor(private readonly jukeSessionService: JukeSessionService) { }
 
   @Post()
+  @ApiBearerAuth()
+  @UseInterceptors(AuthInterceptor)
   @ApiOperation({ summary: 'Start Juke Session' })
   create(
     @Param('jukebox_id') jukeboxId: string,
@@ -67,6 +70,18 @@ export class JukeSessionController {
     @Body() body: CreateJukeSessionMembershipDto,
   ) {
     return this.jukeSessionService.createMembership(+id, body)
+  }
+
+  @Post(':juke_session_id/members/')
+  @Serialize(JukeSessionMembershipDto)
+  @ApiOperation({ summary: 'Add Juke Session Member With Join Code' })
+  addJukeSessionMemberByJoinCode(
+    @Param('jukebox_id') jukeboxId: string,
+    @Param('juke_session_id') id: string,
+    @Query('joinCode') joinCode: string,
+    @Body() body: CreateJukeSessionMembershipDto,
+  ) {
+    return this.jukeSessionService.addJukeSessionMemberByJoinCode(+id, joinCode, body)
   }
 
   @Get(':juke_session_id/members')

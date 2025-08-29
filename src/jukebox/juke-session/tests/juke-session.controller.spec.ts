@@ -22,6 +22,7 @@ import { JukeSessionService } from '../juke-session.service'
 import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
 import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
+import { NetworkService } from 'src/network/network.service'
 
 function getEndAtDate(hours = 2) {
   return new Date(new Date().getTime() + 1000 * 60 * 60 * hours)
@@ -41,6 +42,12 @@ describe('JukeSessionController', () => {
 
   const userId = 2
   const clubId = 3
+
+  beforeAll(() => {
+    jest
+      .spyOn(JukeSessionService.prototype, 'generateQrCode')
+      .mockResolvedValue('');
+  })
 
   const createTestJukeSession = async (
     payload?: Partial<CreateJukeSessionDto & { jukebox_id: number }>,
@@ -75,10 +82,11 @@ describe('JukeSessionController', () => {
         PlayerService,
         SpotifyService,
         QueueService,
+        NetworkService,
         JukeboxService,
         TrackService,
         AccountLinkService,
-        SpotifyService
+        SpotifyService,
       ],
     }).compile()
 
@@ -220,5 +228,18 @@ describe('JukeSessionController', () => {
     expect(() =>
       controller.getJukeSessionMember(String(jukebox.id), String(session.id), String(member.id)),
     ).rejects.toThrow(NotFoundException)
+  })
+
+  it('should add a member to a session by join code', async () => {
+    const session = await createTestJukeSession()
+    const testUserId = 3
+    const membership = await controller.addJukeSessionMemberByJoinCode(
+      jukebox.id.toString(),
+      session.id.toString(),
+      session.join_code,
+      { user_id: testUserId }
+    )
+
+    expect(membership.user_id).toEqual(testUserId)
   })
 })

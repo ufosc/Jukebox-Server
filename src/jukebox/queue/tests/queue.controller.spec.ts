@@ -22,6 +22,7 @@ import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 import { AxiosMockProvider, mockSpotifyAccount } from 'src/utils/mock'
 import { AccountLinkDto } from 'src/jukebox/account-link/dto'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
+import { NetworkService } from 'src/network/network.service'
 
 describe('QueueController', () => {
   let controller: QueueController
@@ -45,12 +46,18 @@ describe('QueueController', () => {
   let sessionId3: string
 
   let queueTrackParams: Parameters<typeof controller.queueTrack>
+  
+  beforeAll(() => {
+    jest
+      .spyOn(JukeSessionService.prototype, 'generateQrCode')
+      .mockResolvedValue('');
+  })
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [DatabaseModule, TypeOrmModule.forFeature([QueuedTrack, Track, JukeSessionMembership, JukeSession, Jukebox, AccountLink, SpotifyAccount])],
       controllers: [QueueController],
-      providers: [AxiosMockProvider, QueueService, TrackService, JukeSessionService, JukeboxService, AccountLinkService, SpotifyService, SpotifyAuthService],
+      providers: [AxiosMockProvider, QueueService, TrackService, JukeSessionService, JukeboxService, NetworkService, AccountLinkService, SpotifyService, SpotifyAuthService],
     }).compile()
 
     controller = module.get<QueueController>(QueueController)
@@ -132,6 +139,7 @@ describe('QueueController', () => {
     queueTrackParams[2].spotify_track_id = track2.spotify_id
     const queueTrack2 = await controller.queueTrack(...queueTrackParams)
     queue = await controller.getQueuedTracks(sessionId3)
+    q1 = await queueService.getQueuedTrackById(queueTrack1.id)
     let q2 = await queueService.getQueuedTrackById(queueTrack2.id)
     expect(queue.tracks.length).toEqual(2)
     expect(queue.tracks[0]).toEqual(q1)

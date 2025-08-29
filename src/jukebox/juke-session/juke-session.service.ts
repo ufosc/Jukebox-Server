@@ -7,13 +7,15 @@ import { CreateJukeSessionMembershipDto, JukeSessionMembershipDto } from './dto/
 import { JukeSession } from './entities/juke-session.entity'
 import { JukeSessionMembership } from './entities/membership.entity'
 import { generateJoinCode } from './utils/generate-join-code'
+import { NetworkService } from 'src/network/network.service'
+import { BASE_URL, CLUBS_URL } from 'src/config'
 
 @Injectable()
 export class JukeSessionService {
   constructor(
     @InjectRepository(JukeSession) private jukeSessionRepo: Repository<JukeSession>,
-    @InjectRepository(JukeSessionMembership)
-    private membershipRepo: Repository<JukeSessionMembership>,
+    @InjectRepository(JukeSessionMembership) private membershipRepo: Repository<JukeSessionMembership>,
+    private networkService: NetworkService
   ) { }
 
   // ============================================
@@ -50,7 +52,54 @@ export class JukeSessionService {
       }
     }
 
-    return plainToInstance(JukeSessionDto, session)
+    // For retrieving jukebox club_id on session relation
+    const createdSession = await this.jukeSessionRepo.findOne({
+      where: { id: session.id },
+      relations: {
+        jukebox: true,
+      }
+    })
+
+    if (!createdSession) {
+      throw new InternalServerErrorException("Could not get jukebox for QR code creation")
+    }
+
+    await this.jukeSessionRepo.update(
+      { id: session.id },
+      { qr_code: await this.generateQrCode(createdSession.id, jukeboxId, createdSession.join_code, createdSession.jukebox.club_id) }
+    )
+
+    return await this.findOne(session.id)
+  }
+
+  async generateQrCode(id: number, jukeboxId: number, joinCode: string, clubId: number): Promise<string> {
+    const link = await this.networkService.sendRequest(
+      `${CLUBS_URL}/api/v1/analytics/links/`,
+      "POST",
+      {
+        target_url: `${BASE_URL}/api/v1/${jukeboxId}/juke-session/${id}/members/?joinCode=${joinCode}`,
+        display_name: `Session ${id}`,
+        club_id: clubId
+      }
+    )
+
+    if (link.status !== 201) {
+      throw new InternalServerErrorException("Could not create QR code: " + link.description + ", " + link.data)
+    }
+
+    const qrCode = await this.networkService.sendRequest(
+      `${CLUBS_URL}/api/v1/analytics/qrcode/`,
+      "POST",
+      {
+        link_id: link.data.id
+      }
+    )
+
+    if (qrCode.status !== 201) {
+      throw new InternalServerErrorException("Could not create QR code with link: " + qrCode.description + ", " + qrCode.data)
+    }
+
+    return qrCode.data.image
   }
 
   async findAll(jukeboxId: number): Promise<JukeSessionDto[]> {
@@ -61,6 +110,9 @@ export class JukeSessionService {
   async findOne(id: number): Promise<JukeSessionDto> {
     const session = await this.jukeSessionRepo.findOne({
       where: { id },
+      relations: {
+        jukebox: true,
+      }
     })
     if (!session) {
       throw new NotFoundException(`Juke session not found with id ${id}`)
@@ -75,6 +127,11 @@ export class JukeSessionService {
     updateJukeSessionDto: UpdateJukeSessionDto,
   ): Promise<JukeSessionDto> {
     await this.jukeSessionRepo.update({ jukebox: { id: jukeboxId }, id }, updateJukeSessionDto)
+    return await this.findOne(id)
+  }
+
+  async updateNextOrder(id: number, nextOrder: number): Promise<JukeSessionDto> {
+    await this.jukeSessionRepo.update({ id }, { next_order: nextOrder })
     return await this.findOne(id)
   }
 
@@ -128,6 +185,25 @@ export class JukeSessionService {
     await this.membershipRepo.delete({ id: membershipId })
 
     return membership
+  }
+
+  async addJukeSessionMemberByJoinCode(
+    jukeSessionId: number,
+    joinCode: string,
+    payload: CreateJukeSessionMembershipDto
+  ): Promise<JukeSessionMembershipDto> {
+    const session = await this.jukeSessionRepo.findOne({ where: { join_code: joinCode } })
+
+    if (!session) {
+      throw new NotFoundException("Could Not Find Juke Session for Join Code: " + joinCode)
+    }
+
+    const preMembership = this.membershipRepo.create({
+      juke_session: { id: session.id },
+      ...payload,
+    })
+    const membership = await this.membershipRepo.save(preMembership)
+    return plainToInstance(JukeSessionMembershipDto, membership)
   }
 
   // ============================================

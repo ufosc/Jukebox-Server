@@ -12,6 +12,7 @@ import { JukeboxService } from 'src/jukebox/jukebox.service'
 import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
+import { NetworkService } from 'src/network/network.service'
 
 describe('TrackController', () => {
   let controller: TrackController
@@ -20,7 +21,7 @@ describe('TrackController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [DatabaseModule, TypeOrmModule.forFeature([Track, Jukebox, AccountLink, SpotifyAccount])],
       controllers: [TrackController],
-      providers: [AxiosMockProvider, TrackService, JukeboxService, AccountLinkService, SpotifyService, SpotifyAuthService,],
+      providers: [AxiosMockProvider, TrackService, JukeboxService, NetworkService, AccountLinkService, SpotifyService, SpotifyAuthService,],
     }).compile()
 
     controller = module.get<TrackController>(TrackController)

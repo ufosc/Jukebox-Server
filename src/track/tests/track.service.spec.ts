@@ -15,6 +15,7 @@ import { AxiosMockProvider, mockSpotifyAccount } from 'src/utils/mock'
 import { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
 import { mockTrackDetails } from 'src/utils/mock/mock-itrack-details'
 import { AccountLinkDto } from 'src/jukebox/account-link/dto'
+import { NetworkService } from 'src/network/network.service'
 
 describe('TrackService', () => {
   let service: TrackService
@@ -29,7 +30,7 @@ describe('TrackService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [DatabaseModule, TypeOrmModule.forFeature([Track, Jukebox, AccountLink, SpotifyAccount])],
-      providers: [AxiosMockProvider, TrackService, JukeboxService, AccountLinkService, SpotifyService, SpotifyAuthService,
+      providers: [AxiosMockProvider, TrackService, JukeboxService, NetworkService, AccountLinkService, SpotifyService, SpotifyAuthService,
         { provide: SpotifyService, useValue: { getTrack: jest.fn().mockResolvedValue(mockTrackDetails) } }
       ],
     }).compile()

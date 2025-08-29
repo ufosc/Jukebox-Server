@@ -9,11 +9,12 @@ import { SpotifyAccount } from './entities/spotify-account.entity'
 import { SpotifyAuthService } from './spotify-auth.service'
 import { SpotifyController } from './spotify.controller'
 import { SpotifyService } from './spotify.service'
+import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
 
 @Module({
   imports: [
     NetworkModule,
-    TypeOrmModule.forFeature([SpotifyAccount]),
+    TypeOrmModule.forFeature([SpotifyAccount, AccountLink]),
     forwardRef(() => JukeboxModule), // Prevent circular dependency
   ],
   controllers: [SpotifyController],
@@ -26,4 +27,4 @@ import { SpotifyService } from './spotify.service'
   ],
   exports: [SpotifyAuthService, SpotifyService],
 })
-export class SpotifyModule {}
+export class SpotifyModule { }

@@ -14,6 +14,8 @@ import { QueueController } from './queue/queue.controller'
 import { QueueService } from './queue/queue.service'
 import { Jukebox } from './entities/jukebox.entity'
 import { TrackModule } from 'src/track/track.module'
+import { NetworkService } from 'src/network/network.service'
+import { AxiosProvider } from 'src/utils/mock'
 
 @Module({
   imports: [
@@ -24,7 +26,7 @@ import { TrackModule } from 'src/track/track.module'
     TypeOrmModule.forFeature([Jukebox, PlayerInteraction, QueuedTrack]),
   ],
   controllers: [JukeboxController, QueueController, PlayerController],
-  providers: [JukeboxService, QueueService, PlayerService],
+  providers: [AxiosProvider, JukeboxService, QueueService, PlayerService, NetworkService],
   exports: [JukeboxService, QueueService, PlayerService, JukeSessionModule],
 })
-export class JukeboxModule {}
+export class JukeboxModule { }

@@ -6,6 +6,7 @@ import { Track } from './entities/track.entity'
 import { plainToInstance } from 'class-transformer'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
+import { JukeboxSearchDto } from 'src/jukebox/dto/jukebox-search.dto'
 
 @Injectable()
 export class TrackService {
@@ -79,6 +80,11 @@ export class TrackService {
     }
 
     return plainToInstance(TrackDto, result ?? track)
+  }
+
+  async searchTracks(jukeboxId: number, payload: JukeboxSearchDto) {
+    const link = await this.accountLinkService.getActiveAccount(jukeboxId)
+    return await this.spotifyService.searchTracks(link.spotify_account, payload)
   }
 
   /**

@@ -48,6 +48,10 @@ export class NetworkService {
     this.token = token
   }
 
+  isToken(): boolean {
+    return !!this.isToken
+  }
+
   async fetchUser(): Promise<UserDto> {
     const res = await this.sendRequest(this.routes.getUser)
 

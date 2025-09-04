@@ -4,6 +4,6 @@ import { NetworkService } from './network.service'
 
 @Module({
   providers: [NetworkService, AxiosProvider],
-  exports: [NetworkService],
+  exports: [NetworkService, AxiosProvider],
 })
 export class NetworkModule {}

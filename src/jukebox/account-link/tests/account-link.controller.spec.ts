@@ -136,7 +136,7 @@ describe('AccountLinkController', () => {
     expect(link.spotify_account).toEqual(testAccountLinkDto.spotify_account)
 
     await controller.remove(link.id)
-    expect(async () => await controller.findOne(link.id)).rejects.toThrow(NotFoundException)
+    await expect(controller.findOne(link.id)).rejects.toThrow(NotFoundException)
   })
 
   it('should get active spotify account for a jukebox', async () => {
@@ -176,8 +176,6 @@ describe('AccountLinkController', () => {
       active: false,
     })
 
-    expect(async () => await controller.getActiveAccount(jukeboxId4)).rejects.toThrow(
-      NotFoundException,
-    )
+    await expect(controller.getActiveAccount(jukeboxId4)).rejects.toThrow(NotFoundException)
   })
 })

@@ -1,0 +1,70 @@
+name: Code Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - "feature/**"
+      - "main"
+      - "production"
+
+jobs:
+  eslint-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Packages
+        run: npm ci
+      - name: Run Eslint
+        run: npm run lint
+
+  format-check:
+    runs-on: ubuntu-latest
+    needs: eslint-check
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Packages
+        run: npm ci
+      - name: Run Prettier
+        run: npm run format
+
+  jest-testing:
+    runs-on: ubuntu-latest
+    needs: eslint-check
+    if: ${{!contains(github.event.head_commit.message, "[skip ci]")}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Docker Compose
+        run: |
+          sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+      - name: Build images
+        run: docker-compose build
+      - name: Run Test
+        run: docker-compose run --rm server sh -c "npm run test"
+
+  auto_format:
+    permissions:
+      contents: write
+    needs: [format-check, jest-testing]
+    if: ${{needs.format-check.result == 'failure'}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Packages
+        run: npm ci
+      - name: Format Code
+        run: npm run format:fix
+      - name: Add Code
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+      - name: Auto Commit
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: auto format [skip ci]"

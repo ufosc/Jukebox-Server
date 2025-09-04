@@ -15,3 +15,4 @@
 !nest-cli.json
 !api/
 !proxy/
+!test/

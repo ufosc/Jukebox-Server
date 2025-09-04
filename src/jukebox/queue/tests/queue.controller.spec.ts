@@ -24,6 +24,7 @@ import { AxiosMockProvider, mockSpotifyAccount } from 'src/utils/mock'
 import type { AccountLinkDto } from 'src/jukebox/account-link/dto'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import { NetworkService } from 'src/network/network.service'
+import { mockTrackDetails } from 'src/utils/mock/mock-itrack-details'
 
 describe('QueueController', () => {
   let controller: QueueController
@@ -33,7 +34,6 @@ describe('QueueController', () => {
   let jukeSession2: JukeSessionDto
   let jukeSession3: JukeSessionDto
   let jukeSessionMembership: JukeSessionMembershipDto
-  let accountLink: AccountLinkDto
 
   let trackService: TrackService
   let jukeSessionService: JukeSessionService
@@ -50,6 +50,7 @@ describe('QueueController', () => {
 
   beforeAll(() => {
     jest.spyOn(JukeSessionService.prototype, 'generateQrCode').mockResolvedValue('')
+    jest.spyOn(SpotifyService.prototype, 'getTrack').mockResolvedValue(mockTrackDetails)
   })
 
   beforeEach(async () => {
@@ -100,9 +101,6 @@ describe('QueueController', () => {
     })
     jukeSessionMembership = await jukeSessionService.createMembership(jukeSession1.id, {
       user_id: 1,
-    })
-    accountLink = await accountLinkService.create(jukebox.id, {
-      spotify_account: await spotifyAuthService.addAccount(mockSpotifyAccount),
     })
 
     sessionId1 = jukeSession1.id

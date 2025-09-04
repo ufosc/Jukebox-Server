@@ -24,6 +24,7 @@ import { QueueController } from '../queue.controller'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import type { AccountLinkDto } from 'src/jukebox/account-link/dto'
 import { NetworkService } from 'src/network/network.service'
+import { mockTrackDetails } from 'src/utils/mock/mock-itrack-details'
 
 describe('QueueService', () => {
   let controller: QueueController
@@ -50,6 +51,7 @@ describe('QueueService', () => {
 
   beforeAll(() => {
     jest.spyOn(JukeSessionService.prototype, 'generateQrCode').mockResolvedValue('')
+    jest.spyOn(SpotifyService.prototype, 'getTrack').mockResolvedValue(mockTrackDetails)
   })
 
   beforeEach(async () => {

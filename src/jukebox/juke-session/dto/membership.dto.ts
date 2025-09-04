@@ -2,6 +2,7 @@ import { Expose } from 'class-transformer'
 import { EntityDtoBase } from 'src/config/dtos'
 import { JukeSessionMembership } from '../entities/membership.entity'
 import { JukeSessionDto } from './juke-session.dto'
+import { IsNotEmpty, IsNumber } from 'class-validator'
 
 export class JukeSessionMembershipInlineDto {
   @Expose()
@@ -23,9 +24,7 @@ export class JukeSessionMembershipDto extends EntityDtoBase<JukeSessionMembershi
 }
 
 export class CreateJukeSessionMembershipDto {
-  // @Expose()
-  // juke_session: { id: number }
-
-  @Expose()
+  @IsNotEmpty()
+  @IsNumber()
   user_id: number
 }

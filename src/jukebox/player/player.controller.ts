@@ -11,6 +11,7 @@ import {
   SetPlayerDeviceDto,
 } from './dto'
 import { PlayerService } from './player.service'
+import { NumberPipe } from 'src/pipes/int-pipe.pipe'
 
 @Controller('jukebox/jukeboxes/:jukebox_id/player/')
 export class PlayerController {
@@ -19,40 +20,40 @@ export class PlayerController {
   @Get()
   @Serialize(PlayerStateDto)
   @ApiOperation({ summary: 'Get Player State' })
-  getPlayerState(@Param('jukebox_id') jukeboxId: string) {
-    return this.playerService.getPlayerState(+jukeboxId)
+  getPlayerState(@Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number) {
+    return this.playerService.getPlayerState(jukeboxId)
   }
 
   @Post('device')
   @Serialize(PlayerStateDto)
   @ApiOperation({ summary: 'Set Player Device' })
   setPlayerDevice(
-    @Param('jukebox_id') jukeboxId: string,
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @ActiveAccount() account: AccountLinkDto,
     @Body() body: SetPlayerDeviceDto,
   ) {
-    return this.playerService.setPlayerDeviceId(+jukeboxId, account, body)
+    return this.playerService.setPlayerDeviceId(jukeboxId, account, body)
   }
 
   @Post('interaction') // like/dislike
   @Serialize(PlayerStateDto)
   @ApiOperation({ summary: 'Add Player Interaction' })
   addInteraction(
-    @Param('jukebox_id') jukeboxId: string,
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @CurrentUser() user: UserDto,
     @Body() body: CreatePlayerInteractionDto,
   ) {
-    return this.playerService.addInteraction(+jukeboxId, user, body.interaction_type)
+    return this.playerService.addInteraction(jukeboxId, user, body.interaction_type)
   }
 
   @Post('action') // play/pause/etc
   @Serialize(PlayerStateDto)
   @ApiOperation({ summary: 'Execute Player Action' })
   async executeAction(
-    @Param('jukebox_id') jukeboxId: string,
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @ActiveAccount() account: AccountLinkDto,
     @Body() body: PlayerActionDto,
   ) {
-    return this.playerService.executeAction(+jukeboxId, account, body)
+    return this.playerService.executeAction(jukeboxId, account, body)
   }
 }

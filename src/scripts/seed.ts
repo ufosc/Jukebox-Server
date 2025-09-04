@@ -17,7 +17,7 @@ import { JukeboxService } from 'src/jukebox/jukebox.service'
 })
 export class SeedModule {}
 
-async function bootstrap() {
+const bootstrap = async () => {
   NestFactory.createApplicationContext(SeedModule).then((appContext) => {
     const jukeboxService = appContext.get(JukeboxService)
     jukeboxService.create({ club_id: 1, name: 'Test Jukebox' })

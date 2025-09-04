@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString } from 'class-validator'
 
-export class SetPlayerDeviceDto {
+export class JoinCodeQuery {
   @IsNotEmpty()
   @IsString()
-  device_id: string
+  joinCode: string
 }

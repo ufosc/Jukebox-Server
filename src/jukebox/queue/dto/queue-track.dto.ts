@@ -1,12 +1,28 @@
-export class CreateQueuedTrackDto {
-  queued_by: { id: number }
+import { Type } from 'class-transformer'
+import { IsNotEmpty, IsNumber, IsString, ValidateNested } from 'class-validator'
 
-  track: { id: number }
+export class IdDto {
+  @IsNotEmpty()
+  @IsNumber()
+  id: number
+}
+
+export class CreateQueuedTrackDto {
+  @ValidateNested()
+  @Type(() => IdDto)
+  queued_by: IdDto
+
+  @ValidateNested()
+  @Type(() => IdDto)
+  track: IdDto
 }
 
 export class QueueUpTrackDto {
-  queued_by: { id: number }
+  @ValidateNested()
+  @Type(() => IdDto)
+  queued_by: IdDto
 
+  @IsNotEmpty()
+  @IsString()
   spotify_track_id: string
 }
-

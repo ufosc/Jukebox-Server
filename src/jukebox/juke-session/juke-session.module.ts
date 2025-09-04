@@ -11,6 +11,6 @@ import { AxiosProvider } from 'src/utils/mock'
   imports: [TypeOrmModule.forFeature([JukeSession, JukeSessionMembership])],
   controllers: [JukeSessionController],
   providers: [JukeSessionService, NetworkService, AxiosProvider],
-  exports: [JukeSessionService]
+  exports: [JukeSessionService],
 })
-export class JukeSessionModule { }
+export class JukeSessionModule {}

@@ -29,4 +29,4 @@ import { AxiosProvider } from 'src/utils/mock'
   providers: [AxiosProvider, JukeboxService, QueueService, PlayerService, NetworkService],
   exports: [JukeboxService, QueueService, PlayerService, JukeSessionModule],
 })
-export class JukeboxModule { }
+export class JukeboxModule {}

@@ -21,11 +21,11 @@ export class JukeboxGateway implements OnGatewayDisconnect {
     private playerService: PlayerService,
     private queueService: QueueService,
     private tracksService: TrackService,
-  ) { }
+  ) {}
 
   @WebSocketServer() server: Server
 
-  handleDisconnect(client: Socket) { }
+  handleDisconnect(client: Socket) {}
 
   /**
    * THIS NEEDS TO BE UPDATED TO REFLECT CHANGES IN QUEUED TRACKS

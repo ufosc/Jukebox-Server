@@ -27,4 +27,4 @@ import { AccountLink } from 'src/jukebox/account-link/entities/account-link.enti
   ],
   exports: [SpotifyAuthService, SpotifyService],
 })
-export class SpotifyModule { }
+export class SpotifyModule {}

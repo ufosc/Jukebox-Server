@@ -91,7 +91,7 @@ export class PlayerService {
     progress: number,
     timestamp?: Date,
   ): Promise<PlayerStateDto> {
-    let cachedState = await this.getPlayerState(jukeboxId)
+    const cachedState = await this.getPlayerState(jukeboxId)
     cachedState.progress = progress
     cachedState.last_progress_update = timestamp || new Date()
 

@@ -6,26 +6,29 @@ import { Track } from './entities/track.entity'
 import { plainToInstance } from 'class-transformer'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
+import { JukeboxSearchDto } from 'src/jukebox/dto/jukebox-search.dto'
 
 @Injectable()
 export class TrackService {
   constructor(
     @InjectRepository(Track) private trackRepo: Repository<Track>,
     private spotifyService: SpotifyService,
-    private accountLinkService: AccountLinkService
-  ) { }
+    private accountLinkService: AccountLinkService,
+  ) {}
 
   async create(payload: CreateTrackDto, jukeboxId?: number): Promise<TrackDto> {
     // TODO: URL encode artists to account for commas
     let uri: string | undefined
     if (!payload.spotify_uri) {
-
       if (!jukeboxId) {
         throw new Error('Could not create a track because spotify details could not be found')
       }
 
       const accountLink = await this.accountLinkService.getActiveAccount(jukeboxId)
-      const trackDetails = await this.spotifyService.getTrack(accountLink.spotify_account, payload.spotify_id)
+      const trackDetails = await this.spotifyService.getTrack(
+        accountLink.spotify_account,
+        payload.spotify_id,
+      )
       uri = trackDetails.uri
     }
 
@@ -60,13 +63,17 @@ export class TrackService {
 
     let track: TrackDto | undefined
     if (!result) {
-
       if (!jukeboxId) {
-        throw new Error('Could not create a track because local track does not yet exist and spotify details could not be found')
+        throw new Error(
+          'Could not create a track because local track does not yet exist and spotify details could not be found',
+        )
       }
 
       const accountLink = await this.accountLinkService.getActiveAccount(+jukeboxId)
-      const trackDetails = await this.spotifyService.getTrack(accountLink.spotify_account, spotifyId)
+      const trackDetails = await this.spotifyService.getTrack(
+        accountLink.spotify_account,
+        spotifyId,
+      )
       const releaseYear = new Date(trackDetails.album.release_date).getFullYear()
       track = await this.create({
         release_year: releaseYear,
@@ -74,11 +81,16 @@ export class TrackService {
         name: trackDetails.name,
         album: trackDetails.album.name,
         artists: trackDetails.artists.map((artist) => artist.name),
-        spotify_uri: trackDetails.uri
+        spotify_uri: trackDetails.uri,
       })
     }
 
     return plainToInstance(TrackDto, result ?? track)
+  }
+
+  async searchTracks(jukeboxId: number, payload: JukeboxSearchDto) {
+    const link = await this.accountLinkService.getActiveAccount(jukeboxId)
+    return await this.spotifyService.searchTracks(link.spotify_account, payload)
   }
 
   /**
@@ -89,7 +101,7 @@ export class TrackService {
    * @returns
    */
   async createTestTrack(payload: CreateTrackDto): Promise<TrackDto> {
-    const preTrack = this.trackRepo.create({ ...payload, spotify_uri: "" })
+    const preTrack = this.trackRepo.create({ ...payload, spotify_uri: '' })
     const track = await this.trackRepo.save(preTrack)
     return plainToInstance(TrackDto, track)
   }

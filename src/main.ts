@@ -1,34 +1,34 @@
-import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { AppModule } from './app.module'
 import { PORT } from './config'
 import { logger } from './middleware/logger.middleware'
 import { HttpExceptionFilter } from './utils'
+import { globalResponses } from './utils/helpers/global-responses'
+import { validationPipe } from './pipes/validation-pipe.pipe'
 
 const bootstrap = async () => {
   const app = await NestFactory.create(AppModule, {
     logger: ['debug', 'error', 'fatal', 'log', 'verbose', 'warn'],
   })
-  app.useGlobalPipes(new ValidationPipe({ transform: true }))
+  app.useGlobalPipes(validationPipe)
   app.setGlobalPrefix('api/v1', { exclude: [''] })
   app.useGlobalFilters(new HttpExceptionFilter())
   app.use(logger)
 
   app.enableCors({ origin: ['http://localhost:3000'], credentials: true })
   const config = new DocumentBuilder()
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'Token',
-        description: 'Input your token',
-        name: 'Authorization',
-        in: 'header',
-      }
-    )
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'Token',
+      description: 'Input your token',
+      name: 'Authorization',
+      in: 'header',
+    })
     .addSecurityRequirements('TokenAuth')
     .setTitle('Jukebox API')
+    .addGlobalResponse(...globalResponses)
     .build()
 
   const documentFactory = () => SwaggerModule.createDocument(app, config)

@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing'
+import type { TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { DatabaseModule } from 'src/config/database.module'
 import { Track } from '../entities/track.entity'
@@ -19,9 +20,20 @@ describe('TrackController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [DatabaseModule, TypeOrmModule.forFeature([Track, Jukebox, AccountLink, SpotifyAccount])],
+      imports: [
+        DatabaseModule,
+        TypeOrmModule.forFeature([Track, Jukebox, AccountLink, SpotifyAccount]),
+      ],
       controllers: [TrackController],
-      providers: [AxiosMockProvider, TrackService, JukeboxService, NetworkService, AccountLinkService, SpotifyService, SpotifyAuthService,],
+      providers: [
+        AxiosMockProvider,
+        TrackService,
+        JukeboxService,
+        NetworkService,
+        AccountLinkService,
+        SpotifyService,
+        SpotifyAuthService,
+      ],
     }).compile()
 
     controller = module.get<TrackController>(TrackController)

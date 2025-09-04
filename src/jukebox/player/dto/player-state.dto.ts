@@ -6,15 +6,9 @@ export class PlayerStateDto {
   @Expose()
   jukebox_id: number
 
-  /**
-   * Set if the current track came from the queue.
-   */
   @Expose()
   queued_track?: QueuedTrackDto
 
-  /**
-   * Set if the current track came from Spotify.
-   */
   @Expose()
   spotify_track?: TrackDto
 
@@ -27,9 +21,6 @@ export class PlayerStateDto {
   @Expose()
   is_playing: boolean
 
-  /**
-   * Spotify device id the player is playing on.
-   */
   @Expose()
   current_device_id?: string
 

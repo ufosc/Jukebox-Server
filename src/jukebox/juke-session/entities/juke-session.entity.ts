@@ -12,7 +12,7 @@ export class JukeSession extends EntityBase {
   @Column({ unique: true })
   join_code: string
 
-  @Column({ default: "" })
+  @Column({ default: '' })
   qr_code: string
 
   @Column({ default: 1 })

@@ -1,0 +1,25 @@
+name: Code Formatting
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  auto_format:
+    runs-on: ubuntu-latest
+    env:
+      BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Packages
+        run: npm ci
+      - name: Format Code
+        run: npm run format:fix
+      - name: Add Code
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "style: auto format"
+          git push origin $GITHUB_HEAD_REF

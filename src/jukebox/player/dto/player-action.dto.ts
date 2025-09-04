@@ -1,4 +1,3 @@
-import { Expose } from 'class-transformer'
 import { IsEnum } from 'class-validator'
 
 export enum ActionType {
@@ -10,7 +9,6 @@ export enum ActionType {
 }
 
 export class PlayerActionDto {
-  @Expose()
   @IsEnum(ActionType)
   action_type: ActionType
 }

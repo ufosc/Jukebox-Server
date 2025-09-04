@@ -1,5 +1,6 @@
 import { PartialType } from '@nestjs/swagger'
 import { Expose, Transform } from 'class-transformer'
+import { IsDate, IsNotEmpty, IsOptional } from 'class-validator'
 import { EntityDtoBase } from 'src/config/dtos'
 
 export class JukeSessionDto extends EntityDtoBase {
@@ -28,10 +29,12 @@ export class JukeSessionDto extends EntityDtoBase {
 }
 
 export class CreateJukeSessionDto {
-  @Expose()
+  @IsOptional()
+  @IsDate()
   start_at?: Date
 
-  @Expose()
+  @IsNotEmpty()
+  @IsDate()
   end_at: Date
 }
 

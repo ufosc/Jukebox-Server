@@ -31,10 +31,9 @@ export class AuthInterceptor implements NestInterceptor {
     try {
       this.network.setToken(token)
       request.user = await this.network.fetchUser()
-      console.log(request.user)
       return next.handle()
     } catch (e) {
-      throw new UnauthorizedException(e)
+      throw new UnauthorizedException("Could not validate user token", e)
     }
   }
 }

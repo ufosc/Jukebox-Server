@@ -60,13 +60,13 @@ describe('JukeboxController', () => {
     const club_id = 4
     const jukebox = await controller.create({ name, club_id })
 
-    const result = await controller.findOne(jukebox.id.toString())
+    const result = await controller.findOne(jukebox.id)
     expect(result.name).toEqual(name)
   })
 
   // TODO: ADD TESTING OF AUTO CREATION ON CLUB W/O JUKEBOX
   it('should find all jukeboxes with a clubId and create if none exist for admin', async () => {
-    const adminResult = await controller.findAll(adminClubId.toString())
+    const adminResult = await controller.findAll(adminClubId)
     expect(adminResult.length).toBeGreaterThanOrEqual(1)
     expect(adminResult[0].club_id).toEqual(adminClubId)
 
@@ -74,15 +74,15 @@ describe('JukeboxController', () => {
     const clubId1 = 5
     const jukebox1 = await controller.create({ name: name1, club_id: clubId1 })
 
-    const name2 = "FindAll1"
+    const name2 = "FindAll2"
     const jukebox2 = await controller.create({ name: name2, club_id: clubId1 })
 
-    const result1 = await controller.findAll(clubId1.toString())
+    const result1 = await controller.findAll(clubId1)
     expect(result1.length).toBeGreaterThanOrEqual(2)
     expect(result1.some((j) => j.id === jukebox1.id)).toBeTruthy()
     expect(result1.some((j) => j.id === jukebox2.id)).toBeTruthy()
 
-    const result2 = await controller.findAll("123123")
+    const result2 = await controller.findAll(123123)
     expect(result2.length).toEqual(0)
   })
 
@@ -104,7 +104,8 @@ describe('JukeboxController', () => {
     const updatedName = "NewName"
     const updatedTimeFormat = TimeFormat.HOUR_12
     const updatedQueueSize = 20
-    const updated = await controller.update(jukebox.id.toString(),
+    const updated = await controller.update(
+      jukebox.id,
       { name: updatedName, time_format: updatedTimeFormat, queue_size: updatedQueueSize }
     )
     expect(updated.name).toEqual(updatedName)
@@ -118,7 +119,7 @@ describe('JukeboxController', () => {
     const club_id = 10
     const jukebox = await controller.create({ name, club_id })
 
-    await controller.remove(jukebox.id.toString())
-    expect(async () => await controller.findOne(jukebox.id.toString())).rejects.toThrow(NotFoundException)
+    await controller.remove(jukebox.id)
+    expect(async () => await controller.findOne(jukebox.id)).rejects.toThrow(NotFoundException)
   })
 })

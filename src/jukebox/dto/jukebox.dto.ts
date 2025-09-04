@@ -2,6 +2,7 @@ import { OmitType, PartialType } from '@nestjs/swagger'
 import { EntityDtoBase } from 'src/config/dtos'
 import { Jukebox, TimeFormat } from '../entities/jukebox.entity'
 import { Expose } from 'class-transformer'
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator'
 
 export class JukeboxDto extends EntityDtoBase<Jukebox> {
   @Expose()
@@ -18,12 +19,19 @@ export class JukeboxDto extends EntityDtoBase<Jukebox> {
 }
 
 export class CreateJukeboxDto {
+  @IsString()
+  @IsNotEmpty()
   name: string
 
+  @IsNumber()
   club_id: number
 
+  @IsOptional()
+  @IsEnum(TimeFormat)
   time_format?: TimeFormat
 
+  @IsOptional()
+  @IsNumber()
   queue_size?: number
 }
 

@@ -41,12 +41,12 @@ describe('QueueController', () => {
   let accountLinkService: AccountLinkService
   let spotifyAuthService: SpotifyAuthService
 
-  let sessionId1: string
-  let sessionId2: string
-  let sessionId3: string
+  let sessionId1: number
+  let sessionId2: number
+  let sessionId3: number
 
   let queueTrackParams: Parameters<typeof controller.queueTrack>
-  
+
   beforeAll(() => {
     jest
       .spyOn(JukeSessionService.prototype, 'generateQrCode')
@@ -75,13 +75,13 @@ describe('QueueController', () => {
     jukeSessionMembership = await jukeSessionService.createMembership(jukeSession1.id, { user_id: 1 })
     accountLink = await accountLinkService.create(jukebox.id, { spotify_account: await spotifyAuthService.addAccount(mockSpotifyAccount) })
 
-    sessionId1 = jukeSession1.id.toString()
-    sessionId2 = jukeSession2.id.toString()
-    sessionId3 = jukeSession3.id.toString()
+    sessionId1 = jukeSession1.id
+    sessionId2 = jukeSession2.id
+    sessionId3 = jukeSession3.id
 
     queueTrackParams = [
       sessionId1,
-      jukebox.id.toString(),
+      jukebox.id,
       { spotify_track_id: mockCreateTrack.spotify_id, queued_by: { id: jukeSessionMembership.id } }
     ]
   })

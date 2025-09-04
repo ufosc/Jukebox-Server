@@ -122,11 +122,10 @@ export class JukeSessionService {
   }
 
   async update(
-    jukeboxId: number,
     id: number,
     updateJukeSessionDto: UpdateJukeSessionDto,
   ): Promise<JukeSessionDto> {
-    await this.jukeSessionRepo.update({ jukebox: { id: jukeboxId }, id }, updateJukeSessionDto)
+    await this.jukeSessionRepo.update({ id }, updateJukeSessionDto)
     return await this.findOne(id)
   }
 
@@ -162,15 +161,14 @@ export class JukeSessionService {
   }
 
   async getMembership(
-    jukeSessionId: number,
     membershipId: number,
   ): Promise<JukeSessionMembershipDto> {
     const membership = await this.membershipRepo.findOne({
-      where: { id: membershipId, juke_session: { id: jukeSessionId } },
+      where: { id: membershipId },
     })
     if (!membership) {
       throw new NotFoundException(
-        `Juke Session Membership with id ${membershipId} not found for juke session ${jukeSessionId}`,
+        `Juke Session Membership with id ${membershipId} not found`,
       )
     }
 
@@ -178,17 +176,15 @@ export class JukeSessionService {
   }
 
   async deleteMembership(
-    jukeSessionId: number,
     membershipId: number,
   ): Promise<JukeSessionMembershipDto> {
-    const membership = await this.getMembership(jukeSessionId, membershipId)
+    const membership = await this.getMembership(membershipId)
     await this.membershipRepo.delete({ id: membershipId })
 
     return membership
   }
 
   async addJukeSessionMemberByJoinCode(
-    jukeSessionId: number,
     joinCode: string,
     payload: CreateJukeSessionMembershipDto
   ): Promise<JukeSessionMembershipDto> {
@@ -213,8 +209,8 @@ export class JukeSessionService {
   /**
    * End Juke Session with ID
    */
-  async endSession(jukeboxId: number, id: number): Promise<JukeSessionDto> {
-    return await this.update(jukeboxId, id, { end_at: new Date() })
+  async endSession(id: number): Promise<JukeSessionDto> {
+    return await this.update(id, { end_at: new Date() })
   }
 
   /**

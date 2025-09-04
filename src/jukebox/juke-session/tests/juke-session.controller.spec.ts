@@ -115,7 +115,7 @@ describe('JukeSessionController', () => {
   })
 
   it('should create a juke session', async () => {
-    const result = await controller.create(String(jukebox.id), {
+    const result = await controller.create(jukebox.id, {
       end_at: getEndAtDate(),
     })
 
@@ -127,13 +127,13 @@ describe('JukeSessionController', () => {
 
   it('should get juke session', async () => {
     const session = await createTestJukeSession()
-    const result = await controller.findOne(String(jukebox.id), String(session.id))
+    const result = await controller.findOne(session.id)
     expect(result.end_at).toEqual(session.end_at)
   })
 
   it('should get current juke session', async () => {
     const session = await createTestJukeSession()
-    const result = await controller.getCurrentSession(String(jukebox.id))
+    const result = await controller.getCurrentSession(jukebox.id)
     expect(result.start_at).toEqual(session.start_at)
     expect(result.end_at).toEqual(session.end_at)
     expect(result.join_code).toEqual(session.join_code)
@@ -153,30 +153,28 @@ describe('JukeSessionController', () => {
       start_at: new Date('17:00:00 7/29/25'),
       end_at: new Date('19:00:00 7/29/25'),
     })
-    const result = await controller.findAll(String(jukebox.id))
+    const result = await controller.findAll(jukebox.id)
     expect(result.length).toEqual(2)
   })
 
   it('should update a juke session', async () => {
     const session = await createTestJukeSession()
     const newEndAt = getEndAtDate(3)
-    const result = await controller.update(String(jukebox.id), String(session.id), {
-      end_at: newEndAt,
-    })
+    const result = await controller.update(session.id, { end_at: newEndAt })
     expect(result.end_at).toEqual(newEndAt)
   })
 
   it('should delete a juke session', async () => {
     const session = await createTestJukeSession()
-    await controller.remove(String(jukebox.id), String(session.id))
-    expect(async () => await controller.findOne(String(jukebox.id), String(session.id))).rejects.toThrow(
+    await controller.remove(session.id)
+    expect(async () => await controller.findOne(session.id)).rejects.toThrow(
       NotFoundException,
     )
   })
 
   it('should end a juke session', async () => {
     const session = await createTestJukeSession()
-    const result = await controller.endJukeSession(String(jukebox.id), String(session.id))
+    const result = await controller.endJukeSession(session.id)
     expect(result.end_at).not.toEqual(session.end_at)
     expect(result.end_at.getHours()).toEqual(new Date().getHours())
     expect(result.end_at.getMinutes()).toEqual(new Date().getMinutes())
@@ -184,9 +182,7 @@ describe('JukeSessionController', () => {
 
   it('should add juke session members', async () => {
     const session = await createTestJukeSession()
-    const result = await controller.addJukeSessionMember(String(jukebox.id), String(session.id), {
-      user_id: 1,
-    })
+    const result = await controller.addJukeSessionMember(session.id, { user_id: 1, })
     expect(result.user_id).toEqual(1)
   })
 
@@ -197,7 +193,7 @@ describe('JukeSessionController', () => {
       await jukeSessionService.createMembership(session.id, { user_id: i + 1 })
     }
 
-    const result = await controller.getJukeSessionMembers(String(jukebox.id), String(session.id))
+    const result = await controller.getJukeSessionMembers(session.id)
     expect(result.length).toEqual(memberCount)
   })
 
@@ -206,11 +202,7 @@ describe('JukeSessionController', () => {
     const member = await jukeSessionService.createMembership(session.id, { user_id: 1 })
     await jukeSessionService.createMembership(session.id, { user_id: 2 })
 
-    const result = await controller.getJukeSessionMember(
-      String(jukebox.id),
-      String(session.id),
-      String(member.id),
-    )
+    const result = await controller.getJukeSessionMember(member.id)
     expect(result.user_id).toEqual(1)
   })
 
@@ -219,14 +211,10 @@ describe('JukeSessionController', () => {
     const member = await jukeSessionService.createMembership(session.id, { user_id: 1 })
     await jukeSessionService.createMembership(session.id, { user_id: 2 })
 
-    const result = await controller.deleteJukeSessionMembership(
-      String(jukebox.id),
-      String(session.id),
-      String(member.id),
-    )
+    const result = await controller.deleteJukeSessionMembership(member.id)
     expect(result.user_id).toEqual(1)
     expect(() =>
-      controller.getJukeSessionMember(String(jukebox.id), String(session.id), String(member.id)),
+      controller.getJukeSessionMember(member.id)
     ).rejects.toThrow(NotFoundException)
   })
 
@@ -234,8 +222,6 @@ describe('JukeSessionController', () => {
     const session = await createTestJukeSession()
     const testUserId = 3
     const membership = await controller.addJukeSessionMemberByJoinCode(
-      jukebox.id.toString(),
-      session.id.toString(),
       session.join_code,
       { user_id: testUserId }
     )

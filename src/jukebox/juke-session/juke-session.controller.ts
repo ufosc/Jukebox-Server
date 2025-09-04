@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger'
-import { Serialize } from 'src/utils'
-import { CreateJukeSessionDto, JukeSessionDto, UpdateJukeSessionDto } from './dto/juke-session.dto'
-import { CreateJukeSessionMembershipDto, JukeSessionMembershipDto } from './dto/membership.dto'
-import { JukeSessionService } from './juke-session.service'
-import { AuthInterceptor } from 'src/auth/auth.interceptor'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseInterceptors } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { Serialize } from 'src/utils';
+import { CreateJukeSessionDto, JukeSessionDto, UpdateJukeSessionDto } from './dto/juke-session.dto';
+import { CreateJukeSessionMembershipDto, JukeSessionMembershipDto } from './dto/membership.dto';
+import { JukeSessionService } from './juke-session.service';
+import { AuthInterceptor } from 'src/auth/auth.interceptor';
+import { NumberPipe } from 'src/pipes/int-pipe.pipe';
 
 @Controller(':jukebox_id/juke-session')
 export class JukeSessionController {
@@ -15,104 +16,95 @@ export class JukeSessionController {
   @UseInterceptors(AuthInterceptor)
   @ApiOperation({ summary: 'Start Juke Session' })
   create(
-    @Param('jukebox_id') jukeboxId: string,
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @Body() createJukeSessionDto: CreateJukeSessionDto,
   ) {
-    return this.jukeSessionService.create(+jukeboxId, createJukeSessionDto)
+    return this.jukeSessionService.create(jukeboxId, createJukeSessionDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get All Juke Sessions' })
-  findAll(@Param('jukebox_id') jukeboxId: string): Promise<JukeSessionDto[]> {
-    return this.jukeSessionService.findAll(+jukeboxId)
+  findAll(@Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number): Promise<JukeSessionDto[]> {
+    return this.jukeSessionService.findAll(jukeboxId);
   }
 
   @Get('current')
   @ApiOperation({ summary: 'Get Current Juke Session' })
-  getCurrentSession(@Param('jukebox_id') jukeboxId: string) {
-    return this.jukeSessionService.getCurrentSession(+jukeboxId)
+  getCurrentSession(@Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number) {
+    return this.jukeSessionService.getCurrentSession(jukeboxId);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a Juke Session' })
-  findOne(@Param('jukebox_id') jukeboxId: string, @Param('id') id: string) {
-    return this.jukeSessionService.findOne(+id)
+  findOne(@Param('id', new NumberPipe('id')) id: number) {
+    return this.jukeSessionService.findOne(id);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a Juke Session' })
   update(
-    @Param('jukebox_id') jukeboxId: string,
-    @Param('id') id: string,
+    @Param('id', new NumberPipe('id')) id: number,
     @Body() body: UpdateJukeSessionDto,
   ) {
-    return this.jukeSessionService.update(+jukeboxId, +id, body)
+    return this.jukeSessionService.update(id, body);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a Juke Session' })
-  remove(@Param('jukebox_id') jukeboxId: string, @Param('id') id: string) {
-    return this.jukeSessionService.remove(+id)
+  remove(@Param('id', new NumberPipe('id')) id: number) {
+    return this.jukeSessionService.remove(id);
   }
 
   @Post(':id/end')
   @ApiOperation({ summary: 'End Juke Session' })
-  endJukeSession(@Param('jukebox_id') jukeboxId: string, @Param('id') id: string) {
-    return this.jukeSessionService.endSession(+jukeboxId, +id)
+  endJukeSession(@Param('id', new NumberPipe('id')) id: number) {
+    return this.jukeSessionService.endSession(id);
   }
 
-  @Post(':juke_session_id/members')
+  @Post(':id/members/')
   @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: 'Add Juke Session Member' })
   addJukeSessionMember(
-    @Param('jukebox_id') jukeboxId: string,
-    @Param('juke_session_id') id: string,
+    @Param('id', new NumberPipe('id')) id: number,
     @Body() body: CreateJukeSessionMembershipDto,
   ) {
-    return this.jukeSessionService.createMembership(+id, body)
+    return this.jukeSessionService.createMembership(id, body);
   }
 
-  @Post(':juke_session_id/members/')
+  @Post(':id/members/code')
   @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: 'Add Juke Session Member With Join Code' })
   addJukeSessionMemberByJoinCode(
-    @Param('jukebox_id') jukeboxId: string,
-    @Param('juke_session_id') id: string,
     @Query('joinCode') joinCode: string,
     @Body() body: CreateJukeSessionMembershipDto,
   ) {
-    return this.jukeSessionService.addJukeSessionMemberByJoinCode(+id, joinCode, body)
+    return this.jukeSessionService.addJukeSessionMemberByJoinCode(joinCode, body);
   }
 
-  @Get(':juke_session_id/members')
+  @Get(':id/members')
   @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: 'Get Juke Session Members' })
   getJukeSessionMembers(
-    @Param('jukebox_id') jukeboxId: string,
-    @Param('juke_session_id') jukeSessionId: string,
+    @Param('id', new NumberPipe('id')) id: number,
   ) {
-    return this.jukeSessionService.getMemberships(+jukeSessionId)
+    return this.jukeSessionService.getMemberships(id);
   }
 
-  @Get(':juke_session_id/members/:id')
+  @Get(':id/members/:membership_id')
   @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: 'Get Juke Session Member' })
   getJukeSessionMember(
-    @Param('jukebox_id') jukeboxId: string,
-    @Param('juke_session_id') jukeSessionId: string,
-    @Param('id') id: string,
+    @Param('membership_id', new NumberPipe('membership_id')) membershipId: number,
   ) {
-    return this.jukeSessionService.getMembership(+jukeSessionId, +id)
+    return this.jukeSessionService.getMembership(membershipId);
   }
 
-  @Delete(':juke_session_id/members/:id')
+  @Delete(':id/members/:membership_id')
   @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: 'Delete Juke Session Membership' })
   deleteJukeSessionMembership(
-    @Param('jukebox_id') jukeboxId: string,
-    @Param('juke_session_id') jukeSessionId: string,
-    @Param('id') id: string,
+    @Param('membership_id', new NumberPipe('membership_id')) membershipId: number,
   ) {
-    return this.jukeSessionService.deleteMembership(+jukeSessionId, +id)
+    return this.jukeSessionService.deleteMembership(membershipId);
   }
 }

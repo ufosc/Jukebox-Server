@@ -25,10 +25,10 @@ describe('AccountLinkController', () => {
   let jukebox3: JukeboxDto
   let jukebox4: JukeboxDto
 
-  let jukeboxId1: string
-  let jukeboxId2: string
-  let jukeboxId3: string
-  let jukeboxId4: string
+  let jukeboxId1: number
+  let jukeboxId2: number
+  let jukeboxId3: number
+  let jukeboxId4: number
   const clubId = 1
 
   const createTestAccountLink = async (
@@ -64,7 +64,7 @@ describe('AccountLinkController', () => {
 
     controller = module.get<AccountLinkController>(AccountLinkController)
 
-    // services
+    // Services
     spotifyAuthService = module.get<SpotifyAuthService>(SpotifyAuthService)
     jukeboxService = module.get<JukeboxService>(JukeboxService)
 
@@ -74,10 +74,10 @@ describe('AccountLinkController', () => {
     jukebox3 = await jukeboxService.create({ club_id: clubId, name: 'Test Jukebox 1' })
     jukebox4 = await jukeboxService.create({ club_id: clubId, name: 'Test Jukebox 2' })
 
-    jukeboxId1 = jukebox1.id.toString()
-    jukeboxId2 = jukebox2.id.toString()
-    jukeboxId3 = jukebox3.id.toString()
-    jukeboxId4 = jukebox4.id.toString()
+    jukeboxId1 = jukebox1.id
+    jukeboxId2 = jukebox2.id
+    jukeboxId3 = jukebox3.id
+    jukeboxId4 = jukebox4.id
   })
 
   it('should be defined', () => {
@@ -88,7 +88,7 @@ describe('AccountLinkController', () => {
     const testAccountLinkDto1 = await createTestAccountLink()
 
     const result1 = await controller.create(jukeboxId1, testAccountLinkDto1)
-    expect(result1.jukebox_id).toEqual(+jukeboxId1)
+    expect(result1.jukebox_id).toEqual(jukeboxId1)
     expect(result1.active).toBeTruthy()
     expect(result1.spotify_account).toEqual(testAccountLinkDto1.spotify_account)
 
@@ -105,11 +105,10 @@ describe('AccountLinkController', () => {
     expect(result.length).toEqual(2)
   })
 
-  // Not sure what this test is supposed to do
   it('should get spotify account for a jukebox', async () => {
     const testAccountLinkDto = await createTestAccountLink()
     const link = await controller.create(jukeboxId2, testAccountLinkDto)
-    const result = await controller.findOne(jukeboxId2, link.id.toString())
+    const result = await controller.findOne(link.id)
     expect(result.jukebox_id).toEqual(link.jukebox_id)
     expect(result.active).toBeTruthy()
     expect(result.spotify_account).toEqual(link.spotify_account)
@@ -122,12 +121,11 @@ describe('AccountLinkController', () => {
     const result = await controller.create(jukeboxId1, testAccountLinkDto1)
     expect(result.spotify_account).toEqual(testAccountLinkDto1.spotify_account)
 
-    const updated1 = await controller.update(jukeboxId1, result.id.toString(), testAccountLinkDto2)
+    const updated1 = await controller.update(result.id, testAccountLinkDto2)
     expect(updated1.spotify_account).toEqual(testAccountLinkDto2.spotify_account)
 
     const updated2 = await controller.update(
-      jukeboxId1,
-      result.id.toString(),
+      result.id,
       { ...testAccountLinkDto2, spotify_account: undefined, active: false }
     )
     expect(updated2.active).toBeFalsy()
@@ -137,12 +135,12 @@ describe('AccountLinkController', () => {
   it('should remove a spotify account from a jukebox', async () => {
     const testAccountLinkDto = await createTestAccountLink()
     const link = await controller.create(jukeboxId1, testAccountLinkDto)
-    expect(link.jukebox_id).toEqual(+jukeboxId1)
+    expect(link.jukebox_id).toEqual(jukeboxId1)
     expect(link.active).toBeTruthy()
     expect(link.spotify_account).toEqual(testAccountLinkDto.spotify_account)
 
-    await controller.remove(link.jukebox_id.toString(), link.id.toString())
-    expect(async () => await controller.findOne(link.jukebox_id.toString(), link.id.toString())).rejects.toThrow(NotFoundException)
+    await controller.remove(link.id)
+    expect(async () => await controller.findOne(link.id)).rejects.toThrow(NotFoundException)
   })
 
   it('should get active spotify account for a jukebox', async () => {
@@ -153,8 +151,7 @@ describe('AccountLinkController', () => {
     const link2 = await controller.create(jukeboxId3, testAccountLinkDto2)
 
     await controller.update(
-      jukeboxId3,
-      link1.id.toString(),
+      link1.id,
       { ...testAccountLinkDto1, spotify_account: undefined, active: false }
     )
 
@@ -171,14 +168,12 @@ describe('AccountLinkController', () => {
     const link2 = await controller.create(jukeboxId4, testAccountLinkDto2)
 
     await controller.update(
-      jukeboxId3,
-      link1.id.toString(),
+      link1.id,
       { ...testAccountLinkDto1, spotify_account: undefined, active: false }
     )
 
     await controller.update(
-      jukeboxId3,
-      link2.id.toString(),
+      link2.id,
       { ...testAccountLinkDto2, spotify_account: undefined, active: false }
     )
 

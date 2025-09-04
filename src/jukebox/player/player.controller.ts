@@ -15,7 +15,7 @@ import { NumberPipe } from 'src/pipes/int-pipe.pipe'
 
 @Controller('jukebox/jukeboxes/:jukebox_id/player/')
 export class PlayerController {
-  constructor(private playerService: PlayerService) { }
+  constructor(private playerService: PlayerService) {}
 
   @Get()
   @Serialize(PlayerStateDto)

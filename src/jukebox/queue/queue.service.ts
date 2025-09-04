@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException, NotImplementedException } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  NotImplementedException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToInstance } from 'class-transformer'
 import { Repository } from 'typeorm'
@@ -16,8 +21,8 @@ export class QueueService {
     @InjectRepository(QueuedTrack) private queuedTrackRepo: Repository<QueuedTrack>,
     private jukeSessionService: JukeSessionService,
     private accountLinkService: AccountLinkService,
-    private spotifyService: SpotifyService
-  ) { }
+    private spotifyService: SpotifyService,
+  ) {}
 
   /**
    * This is for testing please stay away from this when creating queued tracks.
@@ -26,8 +31,15 @@ export class QueueService {
    * @param payload
    * @returns Creates a queued track for testing
    */
-  async createQueuedTrack(jukeSessionId: number, payload: CreateQueuedTrackDto): Promise<QueuedTrackDto> {
-    const preTrack = this.queuedTrackRepo.create({ ...payload, order: -1, juke_session: { id: jukeSessionId } })
+  async createQueuedTrack(
+    jukeSessionId: number,
+    payload: CreateQueuedTrackDto,
+  ): Promise<QueuedTrackDto> {
+    const preTrack = this.queuedTrackRepo.create({
+      ...payload,
+      order: -1,
+      juke_session: { id: jukeSessionId },
+    })
     const track = this.queuedTrackRepo.save(preTrack)
     return plainToInstance(QueuedTrackDto, track)
   }
@@ -43,7 +55,7 @@ export class QueueService {
         queued_by: true,
         track: true,
         interactions: true,
-      }
+      },
     })
 
     if (!query) {
@@ -56,9 +68,16 @@ export class QueueService {
   /**
    * Add track to a juke session's queue.
    */
-  async queueTrack(jukeSessionId: number, createQueuedTrackDto: CreateQueuedTrackDto): Promise<QueuedTrackDto> {
+  async queueTrack(
+    jukeSessionId: number,
+    createQueuedTrackDto: CreateQueuedTrackDto,
+  ): Promise<QueuedTrackDto> {
     const session = await this.checkSession(jukeSessionId)
-    const preQueuedTrack = this.queuedTrackRepo.create({ ...createQueuedTrackDto, juke_session: { id: jukeSessionId }, order: session.next_order })
+    const preQueuedTrack = this.queuedTrackRepo.create({
+      ...createQueuedTrackDto,
+      juke_session: { id: jukeSessionId },
+      order: session.next_order,
+    })
     await this.jukeSessionService.updateNextOrder(jukeSessionId, session.next_order + 1)
     const queuedTrack = await this.queuedTrackRepo.save(preQueuedTrack)
     return plainToInstance(QueuedTrackDto, await this.getQueuedTrackById(queuedTrack.id))
@@ -98,7 +117,7 @@ export class QueueService {
       AND qt.is_editable = true
       `,
       [ordering],
-    );
+    )
 
     const queue = await this.getQueue(jukeSessionId)
     await this.jukeSessionService.updateNextOrder(jukeSessionId, queue.tracks.length + 1)
@@ -109,10 +128,13 @@ export class QueueService {
    * Remove a track from the queue.
    */
   async removeTrackFromQueue(jukeSessionId: number, queuedTrackId: number) {
-    const result = await this.queuedTrackRepo.update({ id: queuedTrackId, is_editable: true, played: false }, { is_editable: false, played: true })
+    const result = await this.queuedTrackRepo.update(
+      { id: queuedTrackId, is_editable: true, played: false },
+      { is_editable: false, played: true },
+    )
     if (result.affected === 0) {
       throw new BadRequestException(
-        "Id does not exist for queued track or queued track cannot be edited because it is queued in spotify"
+        'Id does not exist for queued track or queued track cannot be edited because it is queued in spotify',
       )
     }
   }
@@ -136,10 +158,13 @@ export class QueueService {
     })
 
     if (!queuedTrack) {
-      throw new NotFoundException("The queue is empty, could not pop next track")
+      throw new NotFoundException('The queue is empty, could not pop next track')
     }
 
-    await this.queuedTrackRepo.update({ id: queuedTrack.id, is_editable: true, played: false }, { is_editable: false, played: true })
+    await this.queuedTrackRepo.update(
+      { id: queuedTrack.id, is_editable: true, played: false },
+      { is_editable: false, played: true },
+    )
 
     return plainToInstance(QueuedTrackDto, queuedTrack)
   }
@@ -163,7 +188,7 @@ export class QueueService {
     })
 
     if (!queuedTrack) {
-      throw new NotFoundException("The queue is empty, could not get next track")
+      throw new NotFoundException('The queue is empty, could not get next track')
     }
 
     return plainToInstance(QueuedTrackDto, queuedTrack)
@@ -192,7 +217,10 @@ export class QueueService {
    * Play a track by id, setting queued track played, is_editable, and played_at
    */
   async playQueuedTrack(queuedTrackId: number) {
-    await this.queuedTrackRepo.update({ id: queuedTrackId }, { played: true, is_editable: false, played_at: new Date() })
+    await this.queuedTrackRepo.update(
+      { id: queuedTrackId },
+      { played: true, is_editable: false, played_at: new Date() },
+    )
   }
 
   /**
@@ -205,7 +233,7 @@ export class QueueService {
     try {
       return await this.jukeSessionService.findOne(jukeSessionId)
     } catch (NotFoundException) {
-      throw new NotFoundException("Could not get queue for juke session that does not exist")
+      throw new NotFoundException('Could not get queue for juke session that does not exist')
     }
   }
 }

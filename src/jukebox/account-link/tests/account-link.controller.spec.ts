@@ -1,8 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing'
+import type { TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing'
 import { AccountLinkController } from '../account-link.controller'
 import { AccountLinkService } from '../account-link.service'
-import { CreateSpotifyAccountDto, SpotifyAccountDto } from 'src/spotify/dto'
-import { CreateAccountLinkDto } from '../dto'
+import type { CreateSpotifyAccountDto } from 'src/spotify/dto'
+import { SpotifyAccountDto } from 'src/spotify/dto'
+import type { CreateAccountLinkDto } from '../dto'
 import { NotFoundException } from '@nestjs/common'
 import { AxiosMockProvider, MockCacheProvider, mockSpotifyAccount } from 'src/utils/mock'
 import { DatabaseModule } from 'src/config/database.module'
@@ -12,7 +14,7 @@ import { JukeboxService } from 'src/jukebox/jukebox.service'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
-import { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
+import type { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
 import { NetworkService } from 'src/network/network.service'
 
 describe('AccountLinkController', () => {
@@ -32,25 +34,18 @@ describe('AccountLinkController', () => {
   const clubId = 1
 
   const createTestAccountLink = async (
-    createSpotifyAccountDto: CreateSpotifyAccountDto = mockSpotifyAccount
+    createSpotifyAccountDto: CreateSpotifyAccountDto = mockSpotifyAccount,
   ): Promise<CreateAccountLinkDto> => {
     const spotify_account = await spotifyAuthService.addAccount(createSpotifyAccountDto)
     return {
       spotify_account,
-      active: true
+      active: true,
     }
   }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        DatabaseModule,
-        TypeOrmModule.forFeature([
-          AccountLink,
-          SpotifyAccount,
-          Jukebox
-        ]),
-      ],
+      imports: [DatabaseModule, TypeOrmModule.forFeature([AccountLink, SpotifyAccount, Jukebox])],
       controllers: [AccountLinkController],
       providers: [
         AxiosMockProvider,
@@ -58,7 +53,7 @@ describe('AccountLinkController', () => {
         AccountLinkService,
         SpotifyAuthService,
         JukeboxService,
-        NetworkService
+        NetworkService,
       ],
     }).compile()
 
@@ -124,10 +119,11 @@ describe('AccountLinkController', () => {
     const updated1 = await controller.update(result.id, testAccountLinkDto2)
     expect(updated1.spotify_account).toEqual(testAccountLinkDto2.spotify_account)
 
-    const updated2 = await controller.update(
-      result.id,
-      { ...testAccountLinkDto2, spotify_account: undefined, active: false }
-    )
+    const updated2 = await controller.update(result.id, {
+      ...testAccountLinkDto2,
+      spotify_account: undefined,
+      active: false,
+    })
     expect(updated2.active).toBeFalsy()
     expect(updated2.spotify_account).toEqual(testAccountLinkDto2.spotify_account)
   })
@@ -150,10 +146,11 @@ describe('AccountLinkController', () => {
     const link1 = await controller.create(jukeboxId3, testAccountLinkDto1)
     const link2 = await controller.create(jukeboxId3, testAccountLinkDto2)
 
-    await controller.update(
-      link1.id,
-      { ...testAccountLinkDto1, spotify_account: undefined, active: false }
-    )
+    await controller.update(link1.id, {
+      ...testAccountLinkDto1,
+      spotify_account: undefined,
+      active: false,
+    })
 
     const result = await controller.getActiveAccount(jukeboxId3)
     expect(result.id).toEqual(link2.id)
@@ -167,16 +164,20 @@ describe('AccountLinkController', () => {
     const link1 = await controller.create(jukeboxId4, testAccountLinkDto1)
     const link2 = await controller.create(jukeboxId4, testAccountLinkDto2)
 
-    await controller.update(
-      link1.id,
-      { ...testAccountLinkDto1, spotify_account: undefined, active: false }
-    )
+    await controller.update(link1.id, {
+      ...testAccountLinkDto1,
+      spotify_account: undefined,
+      active: false,
+    })
 
-    await controller.update(
-      link2.id,
-      { ...testAccountLinkDto2, spotify_account: undefined, active: false }
-    )
+    await controller.update(link2.id, {
+      ...testAccountLinkDto2,
+      spotify_account: undefined,
+      active: false,
+    })
 
-    expect(async () => await controller.getActiveAccount(jukeboxId4)).rejects.toThrow(NotFoundException)
+    expect(async () => await controller.getActiveAccount(jukeboxId4)).rejects.toThrow(
+      NotFoundException,
+    )
   })
 })

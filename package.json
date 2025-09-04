@@ -53,9 +53,12 @@
     "yaml": "^2.8.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.34.0",
     "@nestjs/cli": "^11.0.10",
     "@nestjs/schematics": "^11.0.7",
     "@nestjs/testing": "^11.1.6",
+    "@swc/core": "^1.13.5",
+    "@swc/jest": "^0.2.39",
     "@types/express": "^5.0.3",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.3.0",

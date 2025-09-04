@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing'
+import type { TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { DatabaseModule } from 'src/config/database.module'
 import { QueuedTrack } from '../entities/queued-track.entity'
@@ -12,16 +13,16 @@ import { AccountLinkService } from 'src/jukebox/account-link/account-link.servic
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
 import { AxiosMockProvider, mockSpotifyAccount } from 'src/utils/mock'
-import { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
-import { JukeSessionDto } from 'src/jukebox/juke-session/dto/juke-session.dto'
-import { JukeSessionMembershipDto } from 'src/jukebox/juke-session/dto/membership.dto'
+import type { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
+import type { JukeSessionDto } from 'src/jukebox/juke-session/dto/juke-session.dto'
+import type { JukeSessionMembershipDto } from 'src/jukebox/juke-session/dto/membership.dto'
 import { TrackService } from 'src/track/track.service'
 import { JukeboxService } from 'src/jukebox/jukebox.service'
 import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
 import { mockCreateTrack } from 'src/utils/mock/mock-create-track'
 import { QueueController } from '../queue.controller'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
-import { AccountLinkDto } from 'src/jukebox/account-link/dto'
+import type { AccountLinkDto } from 'src/jukebox/account-link/dto'
 import { NetworkService } from 'src/network/network.service'
 
 describe('QueueService', () => {
@@ -48,14 +49,23 @@ describe('QueueService', () => {
   let queueTrackParams: Parameters<typeof controller.queueTrack>
 
   beforeAll(() => {
-    jest
-      .spyOn(JukeSessionService.prototype, 'generateQrCode')
-      .mockResolvedValue('');
+    jest.spyOn(JukeSessionService.prototype, 'generateQrCode').mockResolvedValue('')
   })
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [DatabaseModule, TypeOrmModule.forFeature([QueuedTrack, Track, JukeSessionMembership, JukeSession, Jukebox, AccountLink, SpotifyAccount])],
+      imports: [
+        DatabaseModule,
+        TypeOrmModule.forFeature([
+          QueuedTrack,
+          Track,
+          JukeSessionMembership,
+          JukeSession,
+          Jukebox,
+          AccountLink,
+          SpotifyAccount,
+        ]),
+      ],
       controllers: [QueueController],
       providers: [
         AxiosMockProvider,
@@ -67,7 +77,7 @@ describe('QueueService', () => {
         SpotifyService,
         SpotifyAuthService,
         NetworkService,
-        { provide: SpotifyService, useValue: { queueTrack: jest.fn().mockResolvedValue(true) } }
+        { provide: SpotifyService, useValue: { queueTrack: jest.fn().mockResolvedValue(true) } },
       ],
     }).compile()
 
@@ -80,12 +90,22 @@ describe('QueueService', () => {
     accountLinkService = module.get<AccountLinkService>(AccountLinkService)
     spotifyAuthService = module.get<SpotifyAuthService>(SpotifyAuthService)
 
-    jukebox = await jukeboxService.create({ name: "Test Jukebox", club_id: 1 })
-    jukeSession1 = await jukeSessionService.create(jukebox.id, { end_at: new Date(new Date().getTime() + 30 * 60 * 1000) })
-    jukeSession2 = await jukeSessionService.create(jukebox.id, { end_at: new Date(new Date().getTime() + 30 * 60 * 1000) })
-    jukeSession3 = await jukeSessionService.create(jukebox.id, { end_at: new Date(new Date().getTime() + 30 * 60 * 1000) })
-    jukeSessionMembership = await jukeSessionService.createMembership(jukeSession1.id, { user_id: 1 })
-    accountLink = await accountLinkService.create(jukebox.id, { spotify_account: await spotifyAuthService.addAccount(mockSpotifyAccount) })
+    jukebox = await jukeboxService.create({ name: 'Test Jukebox', club_id: 1 })
+    jukeSession1 = await jukeSessionService.create(jukebox.id, {
+      end_at: new Date(new Date().getTime() + 30 * 60 * 1000),
+    })
+    jukeSession2 = await jukeSessionService.create(jukebox.id, {
+      end_at: new Date(new Date().getTime() + 30 * 60 * 1000),
+    })
+    jukeSession3 = await jukeSessionService.create(jukebox.id, {
+      end_at: new Date(new Date().getTime() + 30 * 60 * 1000),
+    })
+    jukeSessionMembership = await jukeSessionService.createMembership(jukeSession1.id, {
+      user_id: 1,
+    })
+    accountLink = await accountLinkService.create(jukebox.id, {
+      spotify_account: await spotifyAuthService.addAccount(mockSpotifyAccount),
+    })
 
     sessionId1 = jukeSession1.id
     sessionId2 = jukeSession2.id
@@ -94,7 +114,7 @@ describe('QueueService', () => {
     queueTrackParams = [
       sessionId1,
       jukebox.id,
-      { spotify_track_id: mockCreateTrack.spotify_id, queued_by: { id: jukeSessionMembership.id } }
+      { spotify_track_id: mockCreateTrack.spotify_id, queued_by: { id: jukeSessionMembership.id } },
     ]
   })
 

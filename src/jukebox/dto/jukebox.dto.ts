@@ -35,4 +35,6 @@ export class CreateJukeboxDto {
   queue_size?: number
 }
 
-export class UpdateJukeboxDto extends PartialType(OmitType(CreateJukeboxDto, ['club_id'] as const)) { }
+export class UpdateJukeboxDto extends PartialType(
+  OmitType(CreateJukeboxDto, ['club_id'] as const),
+) {}

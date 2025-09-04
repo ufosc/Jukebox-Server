@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing'
+import type { TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { DatabaseModule } from 'src/config/database.module'
 import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
@@ -21,7 +22,16 @@ describe('PlayerController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [PlayerController],
-      imports: [DatabaseModule, TypeOrmModule.forFeature([PlayerInteraction, QueuedTrack, AccountLink, JukeSession, JukeSessionMembership])],
+      imports: [
+        DatabaseModule,
+        TypeOrmModule.forFeature([
+          PlayerInteraction,
+          QueuedTrack,
+          AccountLink,
+          JukeSession,
+          JukeSessionMembership,
+        ]),
+      ],
       providers: [
         PlayerService,
         AccountLinkService,

@@ -24,11 +24,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
         type: 'server_error',
         errors: [
           {
-            code: "Internal Server Error",
-            detail: "a server function has failed, check logs or create an issue",
+            code: 'Internal Server Error',
+            detail: 'a server function has failed, check logs or create an issue',
             attr: null,
-          }
-        ]
+          },
+        ],
       })
     }
 
@@ -44,8 +44,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
             code: name,
             detail: message,
             attr: null,
-          }
-        ]
+          },
+        ],
       })
     }
 
@@ -56,8 +56,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
           code: name,
           detail: message,
           attr: null,
-        }
-      ]
+        },
+      ],
     })
   }
 }

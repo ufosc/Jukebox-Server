@@ -1,8 +1,9 @@
 import { NotFoundException } from '@nestjs/common'
-import { Test, TestingModule } from '@nestjs/testing'
+import type { TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { DatabaseModule } from 'src/config/database.module'
-import { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
+import type { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
 import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
 import { JukeboxService } from 'src/jukebox/jukebox.service'
 import { PlayerInteraction } from 'src/jukebox/player/entity/player-interaction.entity'
@@ -10,11 +11,11 @@ import { PlayerService } from 'src/jukebox/player/player.service'
 import { QueuedTrack } from 'src/jukebox/queue/entities/queued-track.entity'
 import { QueueService } from 'src/jukebox/queue/queue.service'
 import { SpotifyService } from 'src/spotify/spotify.service'
-import { TrackDto } from 'src/track/dto/track.dto'
+import type { TrackDto } from 'src/track/dto/track.dto'
 import { Track } from 'src/track/entities/track.entity'
 import { TrackService } from 'src/track/track.service'
 import { AxiosMockProvider, MockCacheProvider } from 'src/utils/mock'
-import { CreateJukeSessionDto } from '../dto/juke-session.dto'
+import type { CreateJukeSessionDto } from '../dto/juke-session.dto'
 import { JukeSession } from '../entities/juke-session.entity'
 import { JukeSessionMembership } from '../entities/membership.entity'
 import { JukeSessionController } from '../juke-session.controller'
@@ -24,9 +25,7 @@ import { AccountLink } from 'src/jukebox/account-link/entities/account-link.enti
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 import { NetworkService } from 'src/network/network.service'
 
-function getEndAtDate(hours = 2) {
-  return new Date(new Date().getTime() + 1000 * 60 * 60 * hours)
-}
+const getEndAtDate = (hours = 2) => new Date(new Date().getTime() + 1000 * 60 * 60 * hours)
 
 describe('JukeSessionController', () => {
   let controller: JukeSessionController
@@ -44,9 +43,7 @@ describe('JukeSessionController', () => {
   const clubId = 3
 
   beforeAll(() => {
-    jest
-      .spyOn(JukeSessionService.prototype, 'generateQrCode')
-      .mockResolvedValue('');
+    jest.spyOn(JukeSessionService.prototype, 'generateQrCode').mockResolvedValue('')
   })
 
   const createTestJukeSession = async (
@@ -71,7 +68,7 @@ describe('JukeSessionController', () => {
           QueuedTrack,
           Track,
           AccountLink,
-          SpotifyAccount
+          SpotifyAccount,
         ]),
       ],
       controllers: [JukeSessionController],
@@ -167,9 +164,7 @@ describe('JukeSessionController', () => {
   it('should delete a juke session', async () => {
     const session = await createTestJukeSession()
     await controller.remove(session.id)
-    expect(async () => await controller.findOne(session.id)).rejects.toThrow(
-      NotFoundException,
-    )
+    expect(async () => await controller.findOne(session.id)).rejects.toThrow(NotFoundException)
   })
 
   it('should end a juke session', async () => {
@@ -182,7 +177,7 @@ describe('JukeSessionController', () => {
 
   it('should add juke session members', async () => {
     const session = await createTestJukeSession()
-    const result = await controller.addJukeSessionMember(session.id, { user_id: 1, })
+    const result = await controller.addJukeSessionMember(session.id, { user_id: 1 })
     expect(result.user_id).toEqual(1)
   })
 
@@ -213,18 +208,15 @@ describe('JukeSessionController', () => {
 
     const result = await controller.deleteJukeSessionMembership(member.id)
     expect(result.user_id).toEqual(1)
-    expect(() =>
-      controller.getJukeSessionMember(member.id)
-    ).rejects.toThrow(NotFoundException)
+    expect(() => controller.getJukeSessionMember(member.id)).rejects.toThrow(NotFoundException)
   })
 
   it('should add a member to a session by join code', async () => {
     const session = await createTestJukeSession()
     const testUserId = 3
-    const membership = await controller.addJukeSessionMemberByJoinCode(
-      session.join_code,
-      { user_id: testUserId }
-    )
+    const membership = await controller.addJukeSessionMemberByJoinCode(session.join_code, {
+      user_id: testUserId,
+    })
 
     expect(membership.user_id).toEqual(testUserId)
   })

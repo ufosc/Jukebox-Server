@@ -19,7 +19,7 @@ export class SpotifyController {
     protected spotifyService: SpotifyService,
     protected jukeboxService: JukeboxService,
     protected accountLinkService: AccountLinkService,
-  ) { }
+  ) {}
 
   @Get('login/')
   @UseInterceptors(AuthInterceptor)

@@ -18,16 +18,14 @@ const bootstrap = async () => {
 
   app.enableCors({ origin: ['http://localhost:3000'], credentials: true })
   const config = new DocumentBuilder()
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'Token',
-        description: 'Input your token',
-        name: 'Authorization',
-        in: 'header',
-      }
-    )
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'Token',
+      description: 'Input your token',
+      name: 'Authorization',
+      in: 'header',
+    })
     .addSecurityRequirements('TokenAuth')
     .setTitle('Jukebox API')
     .addGlobalResponse(...globalResponses)

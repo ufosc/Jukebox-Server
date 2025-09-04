@@ -1,5 +1,5 @@
-import { Type } from "class-transformer"
-import { IsNotEmpty, IsNumber, IsString, ValidateNested } from "class-validator"
+import { Type } from 'class-transformer'
+import { IsNotEmpty, IsNumber, IsString, ValidateNested } from 'class-validator'
 
 export class IdDto {
   @IsNotEmpty()
@@ -26,4 +26,3 @@ export class QueueUpTrackDto {
   @IsString()
   spotify_track_id: string
 }
-

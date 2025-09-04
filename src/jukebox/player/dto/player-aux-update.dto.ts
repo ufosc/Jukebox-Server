@@ -1,12 +1,12 @@
-import { Type } from "class-transformer"
-import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, ValidateNested } from "class-validator"
-import { TrackDto } from "src/track/dto/track.dto"
+import { Type } from 'class-transformer'
+import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, ValidateNested } from 'class-validator'
+import { TrackDto } from 'src/track/dto/track.dto'
 
 enum UpdateActionType {
   PLAYED = 'played',
   PAUSED = 'paused',
   CHANGED_TRACKS = 'changed_tracks',
-  OTHER = 'other'
+  OTHER = 'other',
 }
 
 export class PlayerAuxUpdateDto {

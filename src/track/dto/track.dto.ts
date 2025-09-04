@@ -31,4 +31,4 @@ export class CreateTrackDto {
   @Expose()
   spotify_uri?: string
 }
-export class UpdateTrackDto extends PartialType(CreateTrackDto) { }
+export class UpdateTrackDto extends PartialType(CreateTrackDto) {}

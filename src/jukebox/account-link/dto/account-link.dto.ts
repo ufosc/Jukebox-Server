@@ -30,4 +30,4 @@ export class AccountLinkDto extends EntityDtoBase {
   active: boolean
 }
 
-export class UpdateAccountLinkDto extends PartialType(CreateAccountLinkDto) { }
+export class UpdateAccountLinkDto extends PartialType(CreateAccountLinkDto) {}

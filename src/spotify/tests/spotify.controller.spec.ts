@@ -18,7 +18,11 @@ describe('SpotifyController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [NetworkModule, DatabaseModule, TypeOrmModule.forFeature([SpotifyAccount, Jukebox, AccountLink])],
+      imports: [
+        NetworkModule,
+        DatabaseModule,
+        TypeOrmModule.forFeature([SpotifyAccount, Jukebox, AccountLink]),
+      ],
       controllers: [SpotifyController],
       providers: [
         SpotifyAuthService,

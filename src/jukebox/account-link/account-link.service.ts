@@ -7,10 +7,16 @@ import { plainToInstance } from 'class-transformer'
 
 @Injectable()
 export class AccountLinkService {
-  constructor(@InjectRepository(AccountLink) private accountLinkRepo: Repository<AccountLink>) { }
+  constructor(@InjectRepository(AccountLink) private accountLinkRepo: Repository<AccountLink>) {}
 
-  async create(jukebox_id: number, createAccountLinkDto: CreateAccountLinkDto): Promise<AccountLinkDto> {
-    const preLink = this.accountLinkRepo.create({ ...createAccountLinkDto, jukebox: { id: jukebox_id } })
+  async create(
+    jukebox_id: number,
+    createAccountLinkDto: CreateAccountLinkDto,
+  ): Promise<AccountLinkDto> {
+    const preLink = this.accountLinkRepo.create({
+      ...createAccountLinkDto,
+      jukebox: { id: jukebox_id },
+    })
 
     let link: AccountLink | null
     try {
@@ -18,19 +24,22 @@ export class AccountLinkService {
       link = await this.accountLinkRepo.findOne({
         where: { id: createdLink.id },
         relations: { spotify_account: true },
-        loadRelationIds: { relations: ['jukebox'] }
+        loadRelationIds: { relations: ['jukebox'] },
       })
     } catch (err) {
       // Checks Postgres Unique Constraint Error Code
       if (err instanceof QueryFailedError && err.driverError?.code === '23505') {
         link = await this.accountLinkRepo.findOne({
-          where: { jukebox: { id: jukebox_id }, spotify_account: { id: createAccountLinkDto.spotify_account.id } },
+          where: {
+            jukebox: { id: jukebox_id },
+            spotify_account: { id: createAccountLinkDto.spotify_account.id },
+          },
           relations: { spotify_account: true },
-          loadRelationIds: { relations: ['jukebox'] }
+          loadRelationIds: { relations: ['jukebox'] },
         })
 
         if (!link) {
-          throw new NotFoundException("Could not find or create account link")
+          throw new NotFoundException('Could not find or create account link')
         }
       } else {
         throw err
@@ -44,7 +53,7 @@ export class AccountLinkService {
     const links = await this.accountLinkRepo.find({
       where: { jukebox: { id: jukebox_id } },
       relations: { spotify_account: true },
-      loadRelationIds: { relations: ['jukebox'] }
+      loadRelationIds: { relations: ['jukebox'] },
     })
     return plainToInstance(AccountLinkDto, links)
   }
@@ -53,7 +62,7 @@ export class AccountLinkService {
     const link = await this.accountLinkRepo.findOne({
       where: { id },
       relations: { spotify_account: true },
-      loadRelationIds: { relations: ['jukebox'] }
+      loadRelationIds: { relations: ['jukebox'] },
     })
     if (!link) {
       throw new NotFoundException()
@@ -79,11 +88,11 @@ export class AccountLinkService {
     const link = await this.accountLinkRepo.findOne({
       where: { jukebox: { id: jukeboxId }, active: true },
       relations: { spotify_account: true },
-      loadRelationIds: { relations: ['jukebox'] }
+      loadRelationIds: { relations: ['jukebox'] },
     })
 
     if (!link) {
-      throw new NotFoundException("Could not find active account link for jukeboxId: " + jukeboxId)
+      throw new NotFoundException('Could not find active account link for jukeboxId: ' + jukeboxId)
     }
 
     return plainToInstance(AccountLinkDto, link)

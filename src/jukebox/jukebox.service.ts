@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, NotFoundException, NotImplementedException } from '@nestjs/common'
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  NotImplementedException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToInstance } from 'class-transformer'
 import { Repository } from 'typeorm'
@@ -9,8 +14,10 @@ import { CLUBS_URL } from 'src/config'
 
 @Injectable()
 export class JukeboxService {
-  constructor(@InjectRepository(Jukebox) private jukeboxRepo: Repository<Jukebox>,
-    private networkService: NetworkService) { }
+  constructor(
+    @InjectRepository(Jukebox) private jukeboxRepo: Repository<Jukebox>,
+    private networkService: NetworkService,
+  ) {}
 
   async create(payload: CreateJukeboxDto): Promise<JukeboxDto> {
     const preJukebox = this.jukeboxRepo.create(payload)
@@ -22,16 +29,19 @@ export class JukeboxService {
     let result = await this.jukeboxRepo.find({ where: { club_id: clubId } })
 
     if (result.length === 0) {
-      const clubs = await this.networkService.sendRequest(
+      const clubs = (await this.networkService.sendRequest(
         `${CLUBS_URL}/api/v1/club/clubs/?is_admin=true`,
-        "GET",
-      ) as { status: number, description: string, data: { id: number, name: string }[] }
+        'GET',
+      )) as { status: number; description: string; data: { id: number; name: string }[] }
 
       if (clubs.status !== 200) {
         throw new InternalServerErrorException(
-          "Could not verify admin status: , " +
-          "Status Code: " + clubs.status + ", " +
-          "Description: " + clubs.description
+          'Could not verify admin status: , ' +
+            'Status Code: ' +
+            clubs.status +
+            ', ' +
+            'Description: ' +
+            clubs.description,
         )
       }
 
@@ -41,7 +51,7 @@ export class JukeboxService {
         return plainToInstance(JukeboxDto, result)
       }
 
-      await this.create({ name: clubDetails.name + " Jukebox", club_id: clubId })
+      await this.create({ name: clubDetails.name + ' Jukebox', club_id: clubId })
       result = await this.jukeboxRepo.find({ where: { club_id: clubId } })
     }
 
@@ -52,7 +62,7 @@ export class JukeboxService {
     const result = await this.jukeboxRepo.findOne({ where: { id } })
 
     if (!result) {
-      throw new NotFoundException("No jukebox found with id: " + id)
+      throw new NotFoundException('No jukebox found with id: ' + id)
     }
 
     return plainToInstance(JukeboxDto, result)

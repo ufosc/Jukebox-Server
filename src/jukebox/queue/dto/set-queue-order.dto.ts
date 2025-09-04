@@ -1,4 +1,4 @@
-import { ArrayNotEmpty, IsArray, IsNumber } from "class-validator";
+import { ArrayNotEmpty, IsArray, IsNumber } from 'class-validator'
 
 export class SetQueueOrderDto {
   @IsArray()

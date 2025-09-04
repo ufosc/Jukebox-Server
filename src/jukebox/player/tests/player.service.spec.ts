@@ -1,13 +1,14 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
-import { Test, TestingModule } from '@nestjs/testing'
+import type { TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { Cache } from 'cache-manager'
+import type { Cache } from 'cache-manager'
 import { plainToInstance } from 'class-transformer'
 import { DatabaseModule } from 'src/config/database.module'
-import { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
+import type { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
 import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
-import { JukeSessionDto } from 'src/jukebox/juke-session/dto/juke-session.dto'
-import { JukeSessionMembershipDto } from 'src/jukebox/juke-session/dto/membership.dto'
+import type { JukeSessionDto } from 'src/jukebox/juke-session/dto/juke-session.dto'
+import type { JukeSessionMembershipDto } from 'src/jukebox/juke-session/dto/membership.dto'
 import { JukeSession } from 'src/jukebox/juke-session/entities/juke-session.entity'
 import { JukeSessionMembership } from 'src/jukebox/juke-session/entities/membership.entity'
 import { JukeSessionService } from 'src/jukebox/juke-session/juke-session.service'
@@ -16,11 +17,11 @@ import { QueuedTrackDto } from 'src/jukebox/queue/dto'
 import { QueuedTrack } from 'src/jukebox/queue/entities/queued-track.entity'
 import { QueueService } from 'src/jukebox/queue/queue.service'
 import { SpotifyService } from 'src/spotify/spotify.service'
-import { TrackDto } from 'src/track/dto/track.dto'
+import type { TrackDto } from 'src/track/dto/track.dto'
 import { Track } from 'src/track/entities/track.entity'
 import { TrackService } from 'src/track/track.service'
 import { AxiosMockProvider, MockCacheProvider, mockUser } from 'src/utils/mock'
-import { PlayerStateDto } from '../dto'
+import type { PlayerStateDto } from '../dto'
 import { InteractionType, PlayerInteraction } from '../entity/player-interaction.entity'
 import { PlayerService } from '../player.service'
 import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
@@ -50,9 +51,7 @@ describe('PlayerService', () => {
   const clubId = 3
 
   beforeAll(() => {
-    jest
-      .spyOn(JukeSessionService.prototype, 'generateQrCode')
-      .mockResolvedValue('');
+    jest.spyOn(JukeSessionService.prototype, 'generateQrCode').mockResolvedValue('')
   })
 
   const createTestQueuedTrack = async () =>
@@ -73,7 +72,7 @@ describe('PlayerService', () => {
           JukeSessionMembership,
           Track,
           AccountLink,
-          SpotifyAccount
+          SpotifyAccount,
         ]),
       ],
       providers: [
@@ -87,7 +86,7 @@ describe('PlayerService', () => {
         JukeSessionService,
         TrackService,
         AccountLinkService,
-        SpotifyService
+        SpotifyService,
       ],
     }).compile()
 

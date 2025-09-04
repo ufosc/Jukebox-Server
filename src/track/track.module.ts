@@ -12,6 +12,6 @@ import { AccountLink } from 'src/jukebox/account-link/entities/account-link.enti
   imports: [TypeOrmModule.forFeature([Track, AccountLink])],
   controllers: [TrackController],
   providers: [AxiosProvider, TrackService, SpotifyService, AccountLinkService],
-  exports: [TrackService]
+  exports: [TrackService],
 })
-export class TrackModule { }
+export class TrackModule {}

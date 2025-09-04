@@ -1,4 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing'
+import type { TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { DatabaseModule } from 'src/config/database.module'
 import { Track } from '../entities/track.entity'
@@ -12,9 +13,9 @@ import { AccountLinkService } from 'src/jukebox/account-link/account-link.servic
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import { AxiosMockProvider, mockSpotifyAccount } from 'src/utils/mock'
-import { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
+import type { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
 import { mockTrackDetails } from 'src/utils/mock/mock-itrack-details'
-import { AccountLinkDto } from 'src/jukebox/account-link/dto'
+import type { AccountLinkDto } from 'src/jukebox/account-link/dto'
 import { NetworkService } from 'src/network/network.service'
 
 describe('TrackService', () => {
@@ -29,9 +30,22 @@ describe('TrackService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [DatabaseModule, TypeOrmModule.forFeature([Track, Jukebox, AccountLink, SpotifyAccount])],
-      providers: [AxiosMockProvider, TrackService, JukeboxService, NetworkService, AccountLinkService, SpotifyService, SpotifyAuthService,
-        { provide: SpotifyService, useValue: { getTrack: jest.fn().mockResolvedValue(mockTrackDetails) } }
+      imports: [
+        DatabaseModule,
+        TypeOrmModule.forFeature([Track, Jukebox, AccountLink, SpotifyAccount]),
+      ],
+      providers: [
+        AxiosMockProvider,
+        TrackService,
+        JukeboxService,
+        NetworkService,
+        AccountLinkService,
+        SpotifyService,
+        SpotifyAuthService,
+        {
+          provide: SpotifyService,
+          useValue: { getTrack: jest.fn().mockResolvedValue(mockTrackDetails) },
+        },
       ],
     }).compile()
 
@@ -41,8 +55,10 @@ describe('TrackService', () => {
     accountLinkService = module.get<AccountLinkService>(AccountLinkService)
     spotifyAuthService = module.get<SpotifyAuthService>(SpotifyAuthService)
 
-    jukebox = await jukeboxService.create({ name: "Test Jukebox", club_id: 1 })
-    accountLink = await accountLinkService.create(jukebox.id, { spotify_account: await spotifyAuthService.addAccount(mockSpotifyAccount) })
+    jukebox = await jukeboxService.create({ name: 'Test Jukebox', club_id: 1 })
+    accountLink = await accountLinkService.create(jukebox.id, {
+      spotify_account: await spotifyAuthService.addAccount(mockSpotifyAccount),
+    })
   })
 
   it('should be defined', () => {
@@ -56,7 +72,9 @@ describe('TrackService', () => {
     const foundTrack = await service.getTrack(track.spotify_id, jukebox.id)
     expect(foundTrack.spotify_id).toEqual(track.spotify_id)
 
-    expect(async () => await service.create({ ...mockCreateTrack, spotify_uri: '' })).rejects.toThrow(Error)
+    expect(
+      async () => await service.create({ ...mockCreateTrack, spotify_uri: '' }),
+    ).rejects.toThrow(Error)
   })
 
   it('should create a local reference to a track if it does not exist', async () => {

@@ -15,7 +15,7 @@ import { UserDto } from 'src/shared'
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
-  constructor(private network: NetworkService) { }
+  constructor(private network: NetworkService) {}
 
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const request: Request & { user: UserDto } = context.switchToHttp().getRequest()
@@ -33,7 +33,7 @@ export class AuthInterceptor implements NestInterceptor {
       request.user = await this.network.fetchUser()
       return next.handle()
     } catch (e) {
-      throw new UnauthorizedException("Could not validate user token", e)
+      throw new UnauthorizedException('Could not validate user token', e)
     }
   }
 }

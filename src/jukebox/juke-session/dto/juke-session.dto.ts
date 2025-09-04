@@ -38,4 +38,4 @@ export class CreateJukeSessionDto {
   end_at: Date
 }
 
-export class UpdateJukeSessionDto extends PartialType(CreateJukeSessionDto) { }
+export class UpdateJukeSessionDto extends PartialType(CreateJukeSessionDto) {}

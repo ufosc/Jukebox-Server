@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, NotFoundException, NotImplementedException } from '@nestjs/common'
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  NotImplementedException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToInstance } from 'class-transformer'
 import { QueryFailedError, Repository } from 'typeorm'
@@ -14,9 +19,10 @@ import { BASE_URL, CLUBS_URL } from 'src/config'
 export class JukeSessionService {
   constructor(
     @InjectRepository(JukeSession) private jukeSessionRepo: Repository<JukeSession>,
-    @InjectRepository(JukeSessionMembership) private membershipRepo: Repository<JukeSessionMembership>,
-    private networkService: NetworkService
-  ) { }
+    @InjectRepository(JukeSessionMembership)
+    private membershipRepo: Repository<JukeSessionMembership>,
+    private networkService: NetworkService,
+  ) {}
 
   // ============================================
   // MARK: CRUD Ops
@@ -31,8 +37,8 @@ export class JukeSessionService {
 
     // Generate Unique Join Code
     let session: JukeSession
-    const MAX_RETRIES = 25;
-    let retries = 0;
+    const MAX_RETRIES = 25
+    let retries = 0
 
     while (true) {
       try {
@@ -44,7 +50,7 @@ export class JukeSessionService {
         if (err instanceof QueryFailedError && err.driverError?.code === '23505') {
           ++retries
           if (retries > MAX_RETRIES) {
-            throw new InternalServerErrorException('Failed to generate a unique join code');
+            throw new InternalServerErrorException('Failed to generate a unique join code')
           }
         } else {
           throw err
@@ -57,46 +63,62 @@ export class JukeSessionService {
       where: { id: session.id },
       relations: {
         jukebox: true,
-      }
+      },
     })
 
     if (!createdSession) {
-      throw new InternalServerErrorException("Could not get jukebox for QR code creation")
+      throw new InternalServerErrorException('Could not get jukebox for QR code creation')
     }
 
     await this.jukeSessionRepo.update(
       { id: session.id },
-      { qr_code: await this.generateQrCode(createdSession.id, jukeboxId, createdSession.join_code, createdSession.jukebox.club_id) }
+      {
+        qr_code: await this.generateQrCode(
+          createdSession.id,
+          jukeboxId,
+          createdSession.join_code,
+          createdSession.jukebox.club_id,
+        ),
+      },
     )
 
     return await this.findOne(session.id)
   }
 
-  async generateQrCode(id: number, jukeboxId: number, joinCode: string, clubId: number): Promise<string> {
+  async generateQrCode(
+    id: number,
+    jukeboxId: number,
+    joinCode: string,
+    clubId: number,
+  ): Promise<string> {
     const link = await this.networkService.sendRequest(
       `${CLUBS_URL}/api/v1/analytics/links/`,
-      "POST",
+      'POST',
       {
         target_url: `${BASE_URL}/api/v1/${jukeboxId}/juke-session/${id}/members/?joinCode=${joinCode}`,
         display_name: `Session ${id}`,
-        club_id: clubId
-      }
+        club_id: clubId,
+      },
     )
 
     if (link.status !== 201) {
-      throw new InternalServerErrorException("Could not create QR code: " + link.description + ", " + link.data)
+      throw new InternalServerErrorException(
+        'Could not create QR code: ' + link.description + ', ' + link.data,
+      )
     }
 
     const qrCode = await this.networkService.sendRequest(
       `${CLUBS_URL}/api/v1/analytics/qrcode/`,
-      "POST",
+      'POST',
       {
-        link_id: link.data.id
-      }
+        link_id: link.data.id,
+      },
     )
 
     if (qrCode.status !== 201) {
-      throw new InternalServerErrorException("Could not create QR code with link: " + qrCode.description + ", " + qrCode.data)
+      throw new InternalServerErrorException(
+        'Could not create QR code with link: ' + qrCode.description + ', ' + qrCode.data,
+      )
     }
 
     return qrCode.data.image
@@ -112,7 +134,7 @@ export class JukeSessionService {
       where: { id },
       relations: {
         jukebox: true,
-      }
+      },
     })
     if (!session) {
       throw new NotFoundException(`Juke session not found with id ${id}`)
@@ -121,10 +143,7 @@ export class JukeSessionService {
     return plainToInstance(JukeSessionDto, session)
   }
 
-  async update(
-    id: number,
-    updateJukeSessionDto: UpdateJukeSessionDto,
-  ): Promise<JukeSessionDto> {
+  async update(id: number, updateJukeSessionDto: UpdateJukeSessionDto): Promise<JukeSessionDto> {
     await this.jukeSessionRepo.update({ id }, updateJukeSessionDto)
     return await this.findOne(id)
   }
@@ -160,24 +179,18 @@ export class JukeSessionService {
     return memberships.map((membership) => plainToInstance(JukeSessionMembershipDto, membership))
   }
 
-  async getMembership(
-    membershipId: number,
-  ): Promise<JukeSessionMembershipDto> {
+  async getMembership(membershipId: number): Promise<JukeSessionMembershipDto> {
     const membership = await this.membershipRepo.findOne({
       where: { id: membershipId },
     })
     if (!membership) {
-      throw new NotFoundException(
-        `Juke Session Membership with id ${membershipId} not found`,
-      )
+      throw new NotFoundException(`Juke Session Membership with id ${membershipId} not found`)
     }
 
     return plainToInstance(JukeSessionMembershipDto, membership)
   }
 
-  async deleteMembership(
-    membershipId: number,
-  ): Promise<JukeSessionMembershipDto> {
+  async deleteMembership(membershipId: number): Promise<JukeSessionMembershipDto> {
     const membership = await this.getMembership(membershipId)
     await this.membershipRepo.delete({ id: membershipId })
 
@@ -186,12 +199,12 @@ export class JukeSessionService {
 
   async addJukeSessionMemberByJoinCode(
     joinCode: string,
-    payload: CreateJukeSessionMembershipDto
+    payload: CreateJukeSessionMembershipDto,
   ): Promise<JukeSessionMembershipDto> {
     const session = await this.jukeSessionRepo.findOne({ where: { join_code: joinCode } })
 
     if (!session) {
-      throw new NotFoundException("Could Not Find Juke Session for Join Code: " + joinCode)
+      throw new NotFoundException('Could Not Find Juke Session for Join Code: ' + joinCode)
     }
 
     const preMembership = this.membershipRepo.create({

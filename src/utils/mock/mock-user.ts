@@ -1,4 +1,4 @@
-import { UserDto } from 'src/shared'
+import type { UserDto } from 'src/shared'
 
 export const mockUser: UserDto = {
   id: 0,

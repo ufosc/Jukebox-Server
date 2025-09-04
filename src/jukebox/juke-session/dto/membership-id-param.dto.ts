@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsNumber } from "class-validator";
+import { IsNotEmpty, IsNumber } from 'class-validator'
 
 export class MembershipIdParam {
-    @IsNotEmpty()
-    @IsNumber()
-    membershipId: number
+  @IsNotEmpty()
+  @IsNumber()
+  membershipId: number
 }

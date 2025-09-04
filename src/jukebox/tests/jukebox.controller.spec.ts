@@ -129,6 +129,6 @@ describe('JukeboxController', () => {
     const jukebox = await controller.create({ name, club_id })
 
     await controller.remove(jukebox.id)
-    expect(async () => await controller.findOne(jukebox.id)).rejects.toThrow(NotFoundException)
+    await expect(controller.findOne(jukebox.id)).rejects.toThrow(NotFoundException)
   })
 })

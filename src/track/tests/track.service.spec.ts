@@ -72,9 +72,7 @@ describe('TrackService', () => {
     const foundTrack = await service.getTrack(track.spotify_id, jukebox.id)
     expect(foundTrack.spotify_id).toEqual(track.spotify_id)
 
-    expect(
-      async () => await service.create({ ...mockCreateTrack, spotify_uri: '' }),
-    ).rejects.toThrow(Error)
+    await expect(service.create({ ...mockCreateTrack, spotify_uri: '' })).rejects.toThrow(Error)
   })
 
   it('should create a local reference to a track if it does not exist', async () => {

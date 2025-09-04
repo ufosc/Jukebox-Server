@@ -34,6 +34,7 @@ describe('QueueController', () => {
   let jukeSession2: JukeSessionDto
   let jukeSession3: JukeSessionDto
   let jukeSessionMembership: JukeSessionMembershipDto
+  let accountLink: AccountLinkDto
 
   let trackService: TrackService
   let jukeSessionService: JukeSessionService
@@ -101,6 +102,9 @@ describe('QueueController', () => {
     })
     jukeSessionMembership = await jukeSessionService.createMembership(jukeSession1.id, {
       user_id: 1,
+    })
+    accountLink = await accountLinkService.create(jukebox.id, {
+      spotify_account: await spotifyAuthService.addAccount(mockSpotifyAccount),
     })
 
     sessionId1 = jukeSession1.id

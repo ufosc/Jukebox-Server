@@ -20,6 +20,7 @@ jobs:
         run: npm run lint
 
   format-check:
+    needs: jest-testing
     runs-on: ubuntu-latest
 
     steps:
@@ -33,7 +34,7 @@ jobs:
   auto_format:
     permissions:
       contents: write
-    needs: [format-check, jest-testing]
+    needs: format-check
     if: failure()
     runs-on: ubuntu-latest
     steps:

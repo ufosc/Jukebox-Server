@@ -10,7 +10,6 @@ on:
 jobs:
   eslint-check:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,9 +19,7 @@ jobs:
         run: npm run lint
 
   format-check:
-    needs: jest-testing
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,4 +49,4 @@ jobs:
       - name: Auto Commit
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "style: auto format"
+          commit_message: "[skip ci] style: auto format"

@@ -18,4 +18,4 @@ jobs:
       - name: Build images
         run: docker-compose build
       - name: Run Test
-        run: docker-compose run --rm server sh -c "npm run test"
+        run: docker-compose run --rm server sh -c "npm run test:ci"

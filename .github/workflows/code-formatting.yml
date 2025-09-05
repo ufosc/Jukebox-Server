@@ -1,9 +1,11 @@
-name: "Code Formatting"
+name: Code Formatting
 
 on:
-  workflow_run:
-    workflows: ["Unit Tests"]
-    types: [completed]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - "feature/**"
+      - "main"
 
 jobs:
   format-check:

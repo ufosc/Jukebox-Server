@@ -1,4 +1,5 @@
 name: Unit Tests
+
 on:
   pull_request:
     branches:
@@ -18,4 +19,4 @@ jobs:
       - name: Build images
         run: docker-compose build
       - name: Run Test
-        run: docker-compose run --rm server sh -c "npm run test:ci"
+        run: docker-compose run --rm server sh -c "npm run test"

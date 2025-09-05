@@ -1,0 +1,40 @@
+name: "Code Formatting"
+
+on:
+  workflow_run:
+    workflows: ["Unit Tests"]
+    types: [completed]
+
+jobs:
+  format-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Packages
+        run: npm ci
+      - name: Run Prettier
+        run: npm run format
+
+  auto_format:
+    permissions:
+      contents: write
+    needs: format-check
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Packages
+        run: npm ci
+      - name: Format Code
+        run: npm run format:fix
+      - name: Add Code
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+      - name: Auto Commit
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: auto format"

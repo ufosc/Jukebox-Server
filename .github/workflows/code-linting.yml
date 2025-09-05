@@ -33,8 +33,8 @@ jobs:
   auto_format:
     permissions:
       contents: write
-    needs: format-check
-    if: ${{ failure() }}
+    needs: [format-check, jest-testing]
+    if: failure()
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

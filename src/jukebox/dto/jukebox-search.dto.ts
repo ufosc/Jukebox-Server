@@ -6,10 +6,10 @@ export class JukeboxSearchDto {
   trackQuery: string
 
   @IsNotEmpty()
- @IsString()
+  @IsString()
   albumQuery: string
 
   @IsNotEmpty()
-   @IsString()
-       artistQuery: string
+  @IsString()
+  artistQuery: string
 }

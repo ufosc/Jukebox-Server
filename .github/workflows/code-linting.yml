@@ -36,8 +36,6 @@ jobs:
     needs: format-check
     if: ${{ failure() }}
     runs-on: ubuntu-latest
-    env:
-      BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -50,7 +48,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "style: auto format"
-          git fetch origin "$BRANCH_NAME"
-          git rebase --autostash "origin/$BRANCH_NAME"
-          git push origin HEAD:"$BRANCH_NAME"
+      - name: Auto Commit
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: auto format"

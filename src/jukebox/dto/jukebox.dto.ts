@@ -23,11 +23,11 @@ export class CreateJukeboxDto {
   @IsNotEmpty()
   name: string
 
-    @IsNumber()
-   club_id: number
+  @IsNumber()
+  club_id: number
 
-   @IsOptional()
- @IsEnum(TimeFormat)
+  @IsOptional()
+  @IsEnum(TimeFormat)
   time_format?: TimeFormat
 
   @IsOptional()
@@ -37,4 +37,4 @@ export class CreateJukeboxDto {
 
 export class UpdateJukeboxDto extends PartialType(
   OmitType(CreateJukeboxDto, ['club_id'] as const),
-) { }
+) {}

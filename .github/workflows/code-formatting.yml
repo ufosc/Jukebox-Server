@@ -6,6 +6,7 @@ on:
     branches:
       - "feature/**"
       - "main"
+      - "production"
 
 jobs:
   format-check:
@@ -40,3 +41,18 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "style: auto format"
+
+  jest-testing:
+    runs-on: ubuntu-latest
+    needs: auto_format
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Docker Compose
+        run: |
+          sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+      - name: Build images
+        run: docker-compose build
+      - name: Run Test
+        run: docker-compose run --rm server sh -c "npm run test"

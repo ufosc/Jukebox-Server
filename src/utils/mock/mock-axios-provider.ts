@@ -5,7 +5,7 @@ export const AxiosProvider = {
   useValue: Axios.create(),
 }
 
-export const AxiosMockProvider = {
+export const MockAxiosProvider = {
   provide: Axios.Axios,
   useValue: Axios.create(),
 }

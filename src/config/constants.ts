@@ -32,4 +32,4 @@ export const DB_HOST = process.env.DB_HOST
 export const DB_PORT = +(process.env.DB_PORT ?? '5432')
 export const DB_USER = process.env.DB_USER ?? 'devuser'
 export const DB_PASS = process.env.DB_PASS ?? 'devpass'
-export const DB_NAME = process.env.DB_NAME ?? 'devdatabase'
+export const DB_NAME = NODE_ENV !== 'test' ? (process.env.DB_NAME ?? 'devdatabase') : 'test'

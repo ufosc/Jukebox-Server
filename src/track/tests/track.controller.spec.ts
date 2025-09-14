@@ -1,18 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { DatabaseModule } from 'src/config/database.module'
+import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
+import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
+import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
+import { JukeboxService } from 'src/jukebox/jukebox.service'
+import { NetworkService } from 'src/network/network.service'
+import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
+import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
+import { SpotifyService } from 'src/spotify/spotify.service'
+import { MockAxiosProvider } from 'src/utils/mock'
 import { Track } from '../entities/track.entity'
 import { TrackController } from '../track.controller'
 import { TrackService } from '../track.service'
-import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
-import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
-import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
-import { AxiosMockProvider } from 'src/utils/mock'
-import { JukeboxService } from 'src/jukebox/jukebox.service'
-import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
-import { SpotifyService } from 'src/spotify/spotify.service'
-import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
-import { NetworkService } from 'src/network/network.service'
 
 describe('TrackController', () => {
   let controller: TrackController
@@ -25,7 +25,7 @@ describe('TrackController', () => {
       ],
       controllers: [TrackController],
       providers: [
-        AxiosMockProvider,
+        MockAxiosProvider,
         TrackService,
         JukeboxService,
         NetworkService,

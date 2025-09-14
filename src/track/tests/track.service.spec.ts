@@ -12,7 +12,7 @@ import { NetworkService } from 'src/network/network.service'
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import { SpotifyService } from 'src/spotify/spotify.service'
-import { AxiosMockProvider, mockSpotifyAccount } from 'src/utils/mock'
+import { MockAxiosProvider, mockSpotifyAccount } from 'src/utils/mock'
 import { mockCreateTrack } from 'src/utils/mock/mock-create-track'
 import { mockTrackDetails } from 'src/utils/mock/mock-track-details'
 import { Track } from '../entities/track.entity'
@@ -35,7 +35,7 @@ describe('TrackService', () => {
         TypeOrmModule.forFeature([Track, Jukebox, AccountLink, SpotifyAccount]),
       ],
       providers: [
-        AxiosMockProvider,
+        MockAxiosProvider,
         TrackService,
         JukeboxService,
         NetworkService,
@@ -80,6 +80,6 @@ describe('TrackService', () => {
   it('should create a local reference to a track if it does not exist', async () => {
     const track = await service.getTrack('abc', jukebox.id)
     expect(track.id).toBeTruthy()
-    expect(track.album).toEqual(mockTrackDetails.album)
+    expect(track.album).toEqual(mockTrackDetails.album.name)
   })
 })

@@ -15,6 +15,8 @@ import { JukeSession } from 'src/jukebox/juke-session/entities/juke-session.enti
 import { JukeSessionService } from 'src/jukebox/juke-session/juke-session.service'
 import { JukeSessionMembership } from 'src/jukebox/juke-session/entities/membership.entity'
 import { NetworkService } from 'src/network/network.service'
+import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
+import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 
 describe('PlayerController', () => {
   let controller: PlayerController
@@ -30,10 +32,12 @@ describe('PlayerController', () => {
           AccountLink,
           JukeSession,
           JukeSessionMembership,
+          SpotifyAccount,
         ]),
       ],
       providers: [
         PlayerService,
+        SpotifyAuthService,
         AccountLinkService,
         QueueService,
         SpotifyService,

@@ -19,7 +19,7 @@ import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { Track } from 'src/track/entities/track.entity'
 import { TrackService } from 'src/track/track.service'
-import { AxiosMockProvider, mockSpotifyAccount } from 'src/utils/mock'
+import { MockAxiosProvider, mockSpotifyAccount } from 'src/utils/mock'
 import { mockCreateTrack } from 'src/utils/mock/mock-create-track'
 import { mockTrackDetails } from 'src/utils/mock/mock-track-details'
 import { QueuedTrack } from '../entities/queued-track.entity'
@@ -70,7 +70,7 @@ describe('QueueService', () => {
       ],
       controllers: [QueueController],
       providers: [
-        AxiosMockProvider,
+        MockAxiosProvider,
         QueueService,
         TrackService,
         JukeSessionService,

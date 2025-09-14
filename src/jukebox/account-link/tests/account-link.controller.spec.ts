@@ -10,7 +10,7 @@ import { NetworkService } from 'src/network/network.service'
 import type { CreateSpotifyAccountDto } from 'src/spotify/dto'
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
-import { AxiosMockProvider, MockCacheProvider, mockSpotifyAccount } from 'src/utils/mock'
+import { MockAxiosProvider, MockCacheProvider, mockSpotifyAccount } from 'src/utils/mock'
 import { AccountLinkController } from '../account-link.controller'
 import { AccountLinkService } from '../account-link.service'
 import type { CreateAccountLinkDto } from '../dto'
@@ -47,7 +47,7 @@ describe('AccountLinkController', () => {
       imports: [DatabaseModule, TypeOrmModule.forFeature([AccountLink, SpotifyAccount, Jukebox])],
       controllers: [AccountLinkController],
       providers: [
-        AxiosMockProvider,
+        MockAxiosProvider,
         MockCacheProvider,
         AccountLinkService,
         SpotifyAuthService,
@@ -178,8 +178,9 @@ describe('AccountLinkController', () => {
       active: false,
     })
 
-    expect(async () => await controller.getActiveAccount(jukeboxId4)).rejects.toThrow(
-      NotFoundException,
-    )
+    // Node/jest throws deprecation warning when using expect().rejects.toThrow()
+    await controller.getActiveAccount(jukeboxId4).catch((e) => {
+      expect(e).toBeInstanceOf(NotFoundException)
+    })
   })
 })

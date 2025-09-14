@@ -63,7 +63,6 @@ export class AccountLinkService {
   }
 
   async findOne(id: number): Promise<AccountLinkDto> {
-    console.log('id:', id)
     const link = await this.accountLinkRepo.findOne({
       where: { id },
       relations: { spotify_account: true },

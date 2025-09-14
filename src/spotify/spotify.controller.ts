@@ -8,7 +8,6 @@ import { UserDto } from 'src/shared'
 import { CurrentUser } from 'src/utils/decorators/current-user.decorator'
 import { SpotifyAuthService } from './spotify-auth.service'
 import { SpotifyService } from './spotify.service'
-import { NumberPipe } from 'src/pipes/int-pipe.pipe'
 
 @ApiTags('spotify')
 @ApiBearerAuth()
@@ -56,15 +55,15 @@ export class SpotifyController {
     }
   }
 
-  @Get('links/')
+  @Get('accounts/')
   @UseInterceptors(AuthInterceptor)
   async getSpotifyLinks(@CurrentUser() user: UserDto) {
     return this.spotifyAuthService.findUserAccounts(user.id)
   }
 
-  @Delete('links/:id/')
+  @Delete('accounts/:id/')
   @UseInterceptors(AuthInterceptor)
-  async deleteSpotifyLink(@Param('id', new NumberPipe('id')) id: number) {
+  async deleteSpotifyLink(@CurrentUser() user: UserDto, @Param('id') id: number) {
     const link = await this.spotifyAuthService.removeAccount(id)
     return link
   }

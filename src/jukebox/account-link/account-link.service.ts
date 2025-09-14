@@ -1,13 +1,17 @@
-import { Injectable, NotFoundException, NotImplementedException } from '@nestjs/common'
-import { AccountLinkDto, CreateAccountLinkDto, UpdateAccountLinkDto } from './dto/account-link.dto'
-import { QueryFailedError, Repository } from 'typeorm'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { AccountLink } from './entities/account-link.entity'
 import { plainToInstance } from 'class-transformer'
+import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
+import { QueryFailedError, Repository } from 'typeorm'
+import { AccountLinkDto, CreateAccountLinkDto, UpdateAccountLinkDto } from './dto/account-link.dto'
+import { AccountLink } from './entities/account-link.entity'
 
 @Injectable()
 export class AccountLinkService {
-  constructor(@InjectRepository(AccountLink) private accountLinkRepo: Repository<AccountLink>) {}
+  constructor(
+    private spotifyAuthService: SpotifyAuthService,
+    @InjectRepository(AccountLink) private accountLinkRepo: Repository<AccountLink>,
+  ) {}
 
   async create(
     jukebox_id: number,
@@ -59,6 +63,7 @@ export class AccountLinkService {
   }
 
   async findOne(id: number): Promise<AccountLinkDto> {
+    console.log('id:', id)
     const link = await this.accountLinkRepo.findOne({
       where: { id },
       relations: { spotify_account: true },
@@ -84,7 +89,11 @@ export class AccountLinkService {
     return plainToInstance(AccountLinkDto, link)
   }
 
-  async getActiveAccount(jukeboxId: number): Promise<AccountLinkDto> {
+  async refreshAccountLink(accountLink: AccountLinkDto) {
+    await this.spotifyAuthService.refreshSpotifyAccount(accountLink.spotify_account)
+  }
+
+  async getActiveAccount(jukeboxId: number, refresh?: boolean): Promise<AccountLinkDto> {
     const link = await this.accountLinkRepo.findOne({
       where: { jukebox: { id: jukeboxId }, active: true },
       relations: { spotify_account: true },
@@ -93,6 +102,11 @@ export class AccountLinkService {
 
     if (!link) {
       throw new NotFoundException('Could not find active account link for jukeboxId: ' + jukeboxId)
+    }
+
+    if (refresh) {
+      Logger.log(`Refreshing active account link for jukebox ${jukeboxId}...`)
+      await this.refreshAccountLink(link)
     }
 
     return plainToInstance(AccountLinkDto, link)

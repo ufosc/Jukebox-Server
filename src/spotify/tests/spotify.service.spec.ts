@@ -1,10 +1,9 @@
 import { BadRequestException } from '@nestjs/common'
-import type { TestingModule } from '@nestjs/testing'
-import { Test } from '@nestjs/testing'
+import { Test, TestingModule } from '@nestjs/testing'
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm'
 import { Axios } from 'axios'
 import { DatabaseModule } from 'src/config/database.module'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { SpotifyAccount } from '../entities/spotify-account.entity'
 import { SpotifyAuthService } from '../spotify-auth.service'
 

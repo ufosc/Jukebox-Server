@@ -32,7 +32,7 @@ export class JukeboxController {
   @UseInterceptors(AuthInterceptor)
   @Get()
   @ApiOperation({ summary: 'Find all jukeboxes for a club id' })
-  findAll(@Query('clubId', new NumberPipe('clubId')) clubId: number) {
+  findAll(@Query('club_id', new NumberPipe('club_id')) clubId: number) {
     return this.jukeboxService.findAll(clubId)
   }
 

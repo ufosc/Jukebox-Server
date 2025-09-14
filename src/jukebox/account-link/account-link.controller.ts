@@ -1,10 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common'
+import { ApiOperation } from '@nestjs/swagger'
 import { AccountLinkService } from './account-link.service'
 import { CreateAccountLinkDto, UpdateAccountLinkDto } from './dto/account-link.dto'
-import { ApiOperation } from '@nestjs/swagger'
-import { NumberPipe } from 'src/pipes/int-pipe.pipe'
 
-@Controller('jukebox/jukeboxes/:jukebox_id/account-link')
+@Controller('jukebox/jukeboxes/:jukebox_id/account-links')
 export class AccountLinkController {
   constructor(private readonly accountLinkService: AccountLinkService) {}
 
@@ -14,37 +13,38 @@ export class AccountLinkController {
       'Creates an Account Link or finds one if the account and jukebox id already exist on one',
   })
   create(
-    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
+    @Param('jukebox_id') jukeboxId: string,
     @Body() createAccountLinkDto: CreateAccountLinkDto,
   ) {
-    return this.accountLinkService.create(jukeboxId, createAccountLinkDto)
+    return this.accountLinkService.create(+jukeboxId, createAccountLinkDto)
   }
 
   @Get()
-  findAll(@Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number) {
-    return this.accountLinkService.findAll(jukeboxId)
+  findAll(@Param('jukebox_id') jukeboxId: string) {
+    return this.accountLinkService.findAll(+jukeboxId)
+  }
+
+  @Get('active')
+  getActiveAccount(@Param('jukebox_id') jukeboxId: string, @Query('refresh') refresh?: boolean) {
+    return this.accountLinkService.getActiveAccount(+jukeboxId, refresh)
   }
 
   @Get(':id')
-  findOne(@Param('id', new NumberPipe('id')) id: number) {
-    return this.accountLinkService.findOne(id)
+  findOne(@Param('jukebox_id') jukeboxId: string, @Param('id') id: string) {
+    return this.accountLinkService.findOne(+id)
   }
 
   @Patch(':id')
   update(
-    @Param('id', new NumberPipe('id')) id: number,
+    @Param('jukebox_id') jukeboxId: string,
+    @Param('id') id: string,
     @Body() updateAccountLinkDto: UpdateAccountLinkDto,
   ) {
-    return this.accountLinkService.update(id, updateAccountLinkDto)
+    return this.accountLinkService.update(+id, updateAccountLinkDto)
   }
 
   @Delete(':id')
-  remove(@Param('id', new NumberPipe('id')) id: number) {
-    return this.accountLinkService.remove(id)
-  }
-
-  @Get('active')
-  getActiveAccount(@Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number) {
-    return this.accountLinkService.getActiveAccount(jukeboxId)
+  remove(@Param('jukebox_id') jukeboxId: string, @Param('id') id: string) {
+    return this.accountLinkService.remove(+id)
   }
 }

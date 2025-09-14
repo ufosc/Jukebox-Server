@@ -33,7 +33,7 @@ services:
       - redis
     volumes:
       - ./src:/app/src
-      - ./packages:/app/packages
+      # - ./packages:/app/packages
       - ./package.json:/app/package.json
     command: npm run start:network
 

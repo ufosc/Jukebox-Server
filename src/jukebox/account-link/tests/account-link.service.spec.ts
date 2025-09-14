@@ -1,5 +1,4 @@
-import type { TestingModule } from '@nestjs/testing'
-import { Test } from '@nestjs/testing'
+import { Test, TestingModule } from '@nestjs/testing'
 import { AccountLinkService } from '../account-link.service'
 import { DatabaseModule } from 'src/config/database.module'
 import { TypeOrmModule } from '@nestjs/typeorm'

@@ -13,7 +13,7 @@ RUN npm install -g npm && \
 COPY ./tsconfig*.json ./
 COPY ./nest-cli.json ./
 COPY ./src ./src
-COPY ./packages ./packages
+# COPY ./packages ./packages
 
 RUN npm run build
 

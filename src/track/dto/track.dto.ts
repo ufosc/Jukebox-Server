@@ -1,7 +1,7 @@
 import { PartialType } from '@nestjs/swagger'
+import { Expose } from 'class-transformer'
 import { EntityDtoBase } from 'src/config/dtos'
 import { Track } from '../entities/track.entity'
-import { Expose } from 'class-transformer'
 
 export class TrackDto extends EntityDtoBase<Track> {
   name: string
@@ -10,6 +10,9 @@ export class TrackDto extends EntityDtoBase<Track> {
   artists: string[]
   spotify_id: string
   spotify_uri: string
+  duration_ms: number
+  is_explicit: boolean
+  preview_url: string | null
 }
 
 export class CreateTrackDto {
@@ -30,5 +33,14 @@ export class CreateTrackDto {
 
   @Expose()
   spotify_uri?: string
+
+  @Expose()
+  duration_ms: number
+
+  @Expose()
+  is_explicit: boolean
+
+  @Expose()
+  preview_url: string | null
 }
 export class UpdateTrackDto extends PartialType(CreateTrackDto) {}

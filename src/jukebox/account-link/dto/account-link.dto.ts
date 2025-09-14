@@ -1,20 +1,13 @@
 import { PartialType } from '@nestjs/swagger'
-import { Expose, Type } from 'class-transformer'
-import { IsBoolean, IsNumber, IsOptional, ValidateNested } from 'class-validator'
+import { Expose, Transform } from 'class-transformer'
 import { EntityDtoBase } from 'src/config/dtos'
 import { SpotifyAccountDto } from 'src/spotify/dto'
 
 export class CreateAccountLinkDto {
-  @IsOptional()
-  @IsNumber()
-  jukebox_id?: number
-
-  @ValidateNested()
-  @Type(() => SpotifyAccountDto)
+  @Expose()
   spotify_account: SpotifyAccountDto
 
-  @IsOptional()
-  @IsBoolean()
+  @Expose()
   active?: boolean
 }
 

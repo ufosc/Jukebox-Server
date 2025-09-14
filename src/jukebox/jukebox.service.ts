@@ -1,16 +1,11 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  NotImplementedException,
-} from '@nestjs/common'
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToInstance } from 'class-transformer'
+import { CLUBS_URL } from 'src/config'
+import { NetworkService } from 'src/network/network.service'
 import { Repository } from 'typeorm'
 import { CreateJukeboxDto, JukeboxDto, UpdateJukeboxDto } from './dto/jukebox.dto'
 import { Jukebox } from './entities/jukebox.entity'
-import { NetworkService } from 'src/network/network.service'
-import { CLUBS_URL } from 'src/config'
 
 @Injectable()
 export class JukeboxService {
@@ -32,7 +27,11 @@ export class JukeboxService {
       const clubs = (await this.networkService.sendRequest(
         `${CLUBS_URL}/api/v1/club/clubs/?is_admin=true`,
         'GET',
-      )) as { status: number; description: string; data: { id: number; name: string }[] }
+      )) as {
+        status: number
+        description: string
+        data: { id: number; name: string; alias?: string }[]
+      }
 
       if (clubs.status !== 200) {
         throw new InternalServerErrorException(
@@ -51,7 +50,10 @@ export class JukeboxService {
         return plainToInstance(JukeboxDto, result)
       }
 
-      await this.create({ name: clubDetails.name + ' Jukebox', club_id: clubId })
+      await this.create({
+        name: (clubDetails.alias ?? clubDetails.name) + ' Jukebox',
+        club_id: clubId,
+      })
       result = await this.jukeboxRepo.find({ where: { club_id: clubId } })
     }
 

@@ -33,6 +33,8 @@ const bootstrap = async () => {
 
   const documentFactory = () => SwaggerModule.createDocument(app, config)
 
+  console.log(documentFactory)
+
   SwaggerModule.setup('api/v1/docs', app, documentFactory, {
     yamlDocumentUrl: '/api/v1/schema/jukebox/',
   })

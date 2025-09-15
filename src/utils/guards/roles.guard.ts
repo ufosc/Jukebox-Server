@@ -18,7 +18,7 @@ export class RolesGuard implements CanActivate {
     private jukeboxService: JukeboxService,
     private networkService: NetworkService,
     private reflector: Reflector,
-  ) { }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     if (!TokenGuard.checkToken(context, this.networkService)) return false
@@ -31,10 +31,10 @@ export class RolesGuard implements CanActivate {
     let clubId = body?.club_id ?? query?.clubId ?? params?.club_id ?? null
 
     if (clubId === null) {
-      const jukeboxId =  params.jukebox_id
+      const jukeboxId = params?.jukebox_id ?? query?.jukeboxId ?? null
 
       if (!jukeboxId) {
-         throw new BadRequestException('Must include jukebox_id or club_id in this request')
+        throw new BadRequestException('Must include jukebox_id or club_id in this request')
       }
 
       const jukebox = await this.jukeboxService.findOne(jukeboxId)

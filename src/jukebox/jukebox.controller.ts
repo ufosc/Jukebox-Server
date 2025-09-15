@@ -1,23 +1,12 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common'
 import { CreateJukeboxDto, UpdateJukeboxDto } from './dto/jukebox.dto'
 import { JukeboxService } from './jukebox.service'
-import { AuthInterceptor } from 'src/auth/auth.interceptor'
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { RolesGuard } from 'src/utils/guards/roles.guard'
 import { NumberPipe } from 'src/pipes/int-pipe.pipe'
 import { Roles } from 'src/utils/decorators/roles.decorator'
 
+@ApiTags('Jukebox')
 @ApiBearerAuth()
 @Controller('jukebox/jukeboxes/')
 export class JukeboxController {
@@ -26,16 +15,15 @@ export class JukeboxController {
   @Roles('admin')
   @UseGuards(RolesGuard)
   @Post()
-  @ApiOperation({ summary: 'Create a jukebox entity' })
+  @ApiOperation({ summary: '[ADMIN] Create a jukebox entity' })
   create(@Body() createJukeboxDto: CreateJukeboxDto) {
     return this.jukeboxService.create(createJukeboxDto)
   }
 
   @Roles('member')
   @UseGuards(RolesGuard)
-  @UseInterceptors(AuthInterceptor)
   @Get()
-  @ApiOperation({ summary: 'Find all jukeboxes for a club id' })
+  @ApiOperation({ summary: '[MEMBER] Find all jukeboxes for a club id' })
   findAll(@Query('clubId', new NumberPipe('clubId')) clubId: number) {
     return this.jukeboxService.findAll(clubId)
   }
@@ -43,7 +31,7 @@ export class JukeboxController {
   @Roles('member')
   @UseGuards(RolesGuard)
   @Get(':jukebox_id')
-  @ApiOperation({ summary: 'Find a jukebox by id' })
+  @ApiOperation({ summary: '[MEMBER] Find a jukebox by id' })
   findOne(@Param('jukebox_id', new NumberPipe('jukebox_id')) id: number) {
     return this.jukeboxService.findOne(id)
   }
@@ -51,7 +39,7 @@ export class JukeboxController {
   @Roles('admin')
   @UseGuards(RolesGuard)
   @Patch(':jukebox_id')
-  @ApiOperation({ summary: 'Update a jukebox by id' })
+  @ApiOperation({ summary: '[ADMIN] Update a jukebox by id' })
   update(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) id: number,
     @Body() updateJukeboxDto: UpdateJukeboxDto,
@@ -62,7 +50,7 @@ export class JukeboxController {
   @Roles('admin')
   @UseGuards(RolesGuard)
   @Delete(':jukebox_id')
-  @ApiOperation({ summary: 'Delete a jukebox by id' })
+  @ApiOperation({ summary: '[ADMIN] Delete a jukebox by id' })
   remove(@Param('jukebox_id', new NumberPipe('jukebox_id')) id: number) {
     return this.jukeboxService.remove(id)
   }

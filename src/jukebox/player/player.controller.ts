@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common'
-import { ApiOperation } from '@nestjs/swagger'
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { UserDto } from 'src/shared'
 import { Serialize } from 'src/utils'
 import { ActiveAccount, CurrentUser } from 'src/utils/decorators'
@@ -12,21 +12,29 @@ import {
 } from './dto'
 import { PlayerService } from './player.service'
 import { NumberPipe } from 'src/pipes/int-pipe.pipe'
+import { Roles } from 'src/utils/decorators/roles.decorator'
+import { RolesGuard } from 'src/utils/guards/roles.guard'
 
+@ApiTags('Player')
+@ApiBearerAuth()
 @Controller('jukebox/jukeboxes/:jukebox_id/player/')
 export class PlayerController {
   constructor(private playerService: PlayerService) {}
 
+  @Roles('member')
+  @UseGuards(RolesGuard)
   @Get()
   @Serialize(PlayerStateDto)
-  @ApiOperation({ summary: 'Get Player State' })
+  @ApiOperation({ summary: '[MEMBER] Get player state' })
   getPlayerState(@Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number) {
     return this.playerService.getPlayerState(jukeboxId)
   }
 
+  @Roles('admin')
+  @UseGuards(RolesGuard)
   @Post('device')
   @Serialize(PlayerStateDto)
-  @ApiOperation({ summary: 'Set Player Device' })
+  @ApiOperation({ summary: '[ADMIN] Set player device' })
   setPlayerDevice(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @ActiveAccount() account: AccountLinkDto,
@@ -35,9 +43,11 @@ export class PlayerController {
     return this.playerService.setPlayerDeviceId(jukeboxId, account, body)
   }
 
+  @Roles('member')
+  @UseGuards(RolesGuard)
   @Post('interaction') // like/dislike
   @Serialize(PlayerStateDto)
-  @ApiOperation({ summary: 'Add Player Interaction' })
+  @ApiOperation({ summary: '[MEMBER] Add player interaction' })
   addInteraction(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @CurrentUser() user: UserDto,
@@ -46,9 +56,11 @@ export class PlayerController {
     return this.playerService.addInteraction(jukeboxId, user, body.interaction_type)
   }
 
+  @Roles('admin')
+  @UseGuards(RolesGuard)
   @Post('action') // play/pause/etc
   @Serialize(PlayerStateDto)
-  @ApiOperation({ summary: 'Execute Player Action' })
+  @ApiOperation({ summary: '[ADMIN] Execute player action' })
   async executeAction(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @ActiveAccount() account: AccountLinkDto,

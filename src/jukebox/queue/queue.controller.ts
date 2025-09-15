@@ -1,24 +1,35 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, UseGuards } from '@nestjs/common'
 import { TrackService } from 'src/track/track.service'
 import { QueueDto, QueuedTrackDto, QueueUpTrackDto, SetQueueOrderDto } from './dto'
 import { QueueService } from './queue.service'
 import { NumberPipe } from 'src/pipes/int-pipe.pipe'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { Roles } from 'src/utils/decorators/roles.decorator'
+import { RolesGuard } from 'src/utils/guards/roles.guard'
 
-@Controller('jukebox/jukesessions/:juke_session_id/queue/')
+@ApiTags('Queue')
+@ApiBearerAuth()
+@Controller('jukebox/:jukebox_id/jukesessions/:juke_session_id/queue/')
 export class QueueController {
   constructor(
     private queueService: QueueService,
     private trackService: TrackService,
   ) {}
 
+  @Roles('member')
+  @UseGuards(RolesGuard)
   @Get()
+  @ApiOperation({ summary: '[MEMBER] Get queued tracks for a juke session' })
   async getQueuedTracks(
     @Param('juke_session_id', new NumberPipe('juke_session_id')) jukeSessionId: number,
   ): Promise<QueueDto> {
     return await this.queueService.getQueue(jukeSessionId)
   }
 
-  @Post(':jukebox_id')
+  @Roles('admin')
+  @UseGuards(RolesGuard)
+  @Post()
+  @ApiOperation({ summary: '[ADMIN] Queue a track to a juke session' })
   async queueTrack(
     @Param('juke_session_id', new NumberPipe('juke_session_id')) jukeSessionId: number,
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
@@ -29,7 +40,10 @@ export class QueueController {
     return this.queueService.queueTrack(jukeSessionId, { queued_by, track })
   }
 
+  @Roles('admin')
+  @UseGuards(RolesGuard)
   @Put()
+  @ApiOperation({ summary: '[ADMIN] Set queued track order for a juke session' })
   async setQueueOrder(
     @Param('juke_session_id', new NumberPipe('juke_session_id')) jukeSessionId: number,
     @Body() body: SetQueueOrderDto,
@@ -37,7 +51,10 @@ export class QueueController {
     return await this.queueService.setQueueOrder(jukeSessionId, body.ordering)
   }
 
+  @Roles('admin')
+  @UseGuards(RolesGuard)
   @Delete()
+  @ApiOperation({ summary: '[ADMIN] Clear the queued tracks for a juke session' })
   async clearQueue(
     @Param('juke_session_id', new NumberPipe('juke_session_id')) jukeSessionId: number,
   ) {

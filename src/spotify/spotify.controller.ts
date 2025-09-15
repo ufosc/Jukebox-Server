@@ -10,7 +10,7 @@ import { SpotifyAuthService } from './spotify-auth.service'
 import { SpotifyService } from './spotify.service'
 import { NumberPipe } from 'src/pipes/int-pipe.pipe'
 
-@ApiTags('spotify')
+@ApiTags('Spotify')
 @ApiBearerAuth()
 @Controller('spotify/')
 export class SpotifyController {

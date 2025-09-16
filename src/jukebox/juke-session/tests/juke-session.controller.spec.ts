@@ -24,6 +24,7 @@ import { AccountLinkService } from 'src/jukebox/account-link/account-link.servic
 import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 import { NetworkService } from 'src/network/network.service'
+import { MEMBERSHIP_PAGE_LENGTH } from '../utils/constants'
 
 const getEndAtDate = (hours = 2) => new Date(new Date().getTime() + 1000 * 60 * 60 * hours)
 
@@ -183,13 +184,27 @@ describe('JukeSessionController', () => {
 
   it('should get members for a juke session', async () => {
     const session = await createTestJukeSession()
-    const memberCount = 3
+    const memberCount = 25
     for (let i = 0; i < memberCount; i++) {
       await jukeSessionService.createMembership(session.id, { user_id: i + 1 })
     }
 
-    const result = await controller.getJukeSessionMembers(session.id)
-    expect(result.length).toEqual(memberCount)
+    let result = await controller.getJukeSessionMembers(session.id, 0)
+    expect(result.memberships.length).toEqual(MEMBERSHIP_PAGE_LENGTH)
+    expect(result.memberships[0].user_id).toBeLessThan(result.memberships[1].user_id)
+    expect(result.count).toEqual(memberCount)
+
+    result = await controller.getJukeSessionMembers(session.id, 1)
+    expect(result.memberships.length).toEqual(MEMBERSHIP_PAGE_LENGTH)
+    expect(result.memberships[0].user_id).toBeLessThan(result.memberships[1].user_id)
+
+    result = await controller.getJukeSessionMembers(session.id, 2)
+    expect(result.memberships.length).toEqual(MEMBERSHIP_PAGE_LENGTH)
+    expect(result.memberships[0].user_id).toBeLessThan(result.memberships[1].user_id)
+
+    result = await controller.getJukeSessionMembers(session.id, 3)
+    expect(result.memberships.length).toEqual(1)
+    expect(result.count).toEqual(memberCount)
   })
 
   it('should get single member for a juke session', async () => {

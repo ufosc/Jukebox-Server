@@ -23,6 +23,14 @@ export class JukeSessionMembershipDto extends EntityDtoBase<JukeSessionMembershi
   queued_tracks: number[]
 }
 
+export class JukeSessionMembershipCountDto {
+  @Expose()
+  memberships: JukeSessionMembershipDto[]
+
+  @Expose()
+  count: number
+}
+
 export class CreateJukeSessionMembershipDto {
   @IsNotEmpty()
   @IsNumber()

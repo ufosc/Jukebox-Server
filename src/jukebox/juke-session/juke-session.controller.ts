@@ -12,7 +12,7 @@ import { RolesGuard } from 'src/utils/guards/roles.guard'
 @ApiBearerAuth()
 @Controller(':jukebox_id/juke-session')
 export class JukeSessionController {
-  constructor(private readonly jukeSessionService: JukeSessionService) {}
+  constructor(private readonly jukeSessionService: JukeSessionService) { }
 
   @Roles('admin')
   @UseGuards(RolesGuard)
@@ -103,9 +103,12 @@ export class JukeSessionController {
   @UseGuards(RolesGuard)
   @Get(':id/members')
   @Serialize(JukeSessionMembershipDto)
-  @ApiOperation({ summary: '[MEMBER] Get members/memberships of a juke session' })
-  getJukeSessionMembers(@Param('id', new NumberPipe('id')) id: number) {
-    return this.jukeSessionService.getMemberships(id)
+  @ApiOperation({ summary: '[MEMBER] (PAGINATED: 0-indexed) Get members/memberships of a juke session' })
+  getJukeSessionMembers(
+    @Param('id', new NumberPipe('id')) id: number,
+    @Query('page', new NumberPipe('page')) page: number
+  ) {
+    return this.jukeSessionService.getMemberships(id, page)
   }
 
   @Roles('member')

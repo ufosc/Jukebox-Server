@@ -21,7 +21,7 @@ export class JukeSessionService {
     @InjectRepository(JukeSessionMembership)
     private membershipRepo: Repository<JukeSessionMembership>,
     private networkService: NetworkService,
-  ) { }
+  ) {}
 
   // ============================================
   // MARK: CRUD Ops
@@ -174,7 +174,7 @@ export class JukeSessionService {
   async getMemberships(
     jukeSessionId: number,
     page: number,
-    rows: number
+    rows: number,
   ): Promise<JukeSessionMembershipCountDto> {
     const membershipsToSkip = page * rows
     const [membershipsData, count] = await this.membershipRepo.findAndCount({

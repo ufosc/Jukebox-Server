@@ -12,7 +12,7 @@ import { RolesGuard } from 'src/utils/guards/roles.guard'
 @ApiBearerAuth()
 @Controller(':jukebox_id/juke-session')
 export class JukeSessionController {
-  constructor(private readonly jukeSessionService: JukeSessionService) { }
+  constructor(private readonly jukeSessionService: JukeSessionService) {}
 
   @Roles('admin')
   @UseGuards(RolesGuard)

@@ -13,7 +13,6 @@ import { JukeSessionMembership } from './entities/membership.entity'
 import { generateJoinCode } from './utils/generate-join-code'
 import { NetworkService } from 'src/network/network.service'
 import { BASE_URL, CLUBS_URL } from 'src/config'
-import { MEMBERSHIP_PAGE_LENGTH } from './utils/constants'
 
 @Injectable()
 export class JukeSessionService {
@@ -22,7 +21,7 @@ export class JukeSessionService {
     @InjectRepository(JukeSessionMembership)
     private membershipRepo: Repository<JukeSessionMembership>,
     private networkService: NetworkService,
-  ) {}
+  ) { }
 
   // ============================================
   // MARK: CRUD Ops
@@ -175,11 +174,12 @@ export class JukeSessionService {
   async getMemberships(
     jukeSessionId: number,
     page: number,
+    rows: number
   ): Promise<JukeSessionMembershipCountDto> {
-    const membershipsToSkip = page * MEMBERSHIP_PAGE_LENGTH
+    const membershipsToSkip = page * rows
     const [membershipsData, count] = await this.membershipRepo.findAndCount({
       skip: membershipsToSkip,
-      take: MEMBERSHIP_PAGE_LENGTH,
+      take: rows,
       where: { juke_session: { id: jukeSessionId } },
       order: { user_id: 'ASC' },
     })
@@ -188,7 +188,7 @@ export class JukeSessionService {
       memberships: membershipsData.map((membership) =>
         plainToInstance(JukeSessionMembershipDto, membership),
       ),
-      count,
+      count: count,
     }
   }
 

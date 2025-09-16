@@ -1,1 +1,0 @@
-export const MEMBERSHIP_PAGE_LENGTH = 8

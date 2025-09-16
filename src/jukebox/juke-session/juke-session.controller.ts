@@ -12,7 +12,7 @@ import { RolesGuard } from 'src/utils/guards/roles.guard'
 @ApiBearerAuth()
 @Controller(':jukebox_id/juke-session')
 export class JukeSessionController {
-  constructor(private readonly jukeSessionService: JukeSessionService) {}
+  constructor(private readonly jukeSessionService: JukeSessionService) { }
 
   @Roles('admin')
   @UseGuards(RolesGuard)
@@ -108,9 +108,10 @@ export class JukeSessionController {
   })
   getJukeSessionMembers(
     @Param('id', new NumberPipe('id')) id: number,
-    @Query('page', new NumberPipe('page')) page: number,
+    @Query('page', new NumberPipe('page')) page: number = 0,
+    @Query('rows', new NumberPipe('rows')) rows: number = 7,
   ) {
-    return this.jukeSessionService.getMemberships(id, page)
+    return this.jukeSessionService.getMemberships(id, page, rows)
   }
 
   @Roles('member')

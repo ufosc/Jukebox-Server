@@ -1,13 +1,13 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common'
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToInstance } from 'class-transformer'
 import { QueryFailedError, Repository } from 'typeorm'
 import { CreateJukeSessionDto, JukeSessionDto, UpdateJukeSessionDto } from './dto/juke-session.dto'
-import { CreateJukeSessionMembershipDto, JukeSessionMembershipCountDto, JukeSessionMembershipDto } from './dto/membership.dto'
+import {
+  CreateJukeSessionMembershipDto,
+  JukeSessionMembershipCountDto,
+  JukeSessionMembershipDto,
+} from './dto/membership.dto'
 import { JukeSession } from './entities/juke-session.entity'
 import { JukeSessionMembership } from './entities/membership.entity'
 import { generateJoinCode } from './utils/generate-join-code'
@@ -22,7 +22,7 @@ export class JukeSessionService {
     @InjectRepository(JukeSessionMembership)
     private membershipRepo: Repository<JukeSessionMembership>,
     private networkService: NetworkService,
-  ) { }
+  ) {}
 
   // ============================================
   // MARK: CRUD Ops
@@ -172,18 +172,23 @@ export class JukeSessionService {
     return plainToInstance(JukeSessionMembershipDto, membership)
   }
 
-  async getMemberships(jukeSessionId: number, page: number): Promise<JukeSessionMembershipCountDto> {
+  async getMemberships(
+    jukeSessionId: number,
+    page: number,
+  ): Promise<JukeSessionMembershipCountDto> {
     const membershipsToSkip = page * MEMBERSHIP_PAGE_LENGTH
     const [membershipsData, count] = await this.membershipRepo.findAndCount({
       skip: membershipsToSkip,
       take: MEMBERSHIP_PAGE_LENGTH,
       where: { juke_session: { id: jukeSessionId } },
-      order: { user_id: 'ASC' }
+      order: { user_id: 'ASC' },
     })
 
     return {
-      memberships: membershipsData.map((membership) => plainToInstance(JukeSessionMembershipDto, membership)),
-      count
+      memberships: membershipsData.map((membership) =>
+        plainToInstance(JukeSessionMembershipDto, membership),
+      ),
+      count,
     }
   }
 

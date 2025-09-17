@@ -125,28 +125,28 @@ describe('QueueController', () => {
   it('should add track to queue', async () => {
     queueTrackParams[0] = sessionId2
 
-    let queue = await controller.getQueuedTracks(sessionId2)
+    let queue = await controller.getQueuedTracks(sessionId2, jukebox.id)
     expect(queue.tracks.length).toEqual(0)
 
     await controller.queueTrack(...queueTrackParams)
-    queue = await controller.getQueuedTracks(sessionId2)
+    queue = await controller.getQueuedTracks(sessionId2, jukebox.id)
     expect(queue.tracks.length).toEqual(1)
 
     await controller.queueTrack(...queueTrackParams)
-    queue = await controller.getQueuedTracks(sessionId2)
+    queue = await controller.getQueuedTracks(sessionId2, jukebox.id)
     expect(queue.tracks.length).toEqual(2)
   })
 
   it('should get track queue', async () => {
-    let queue = await controller.getQueuedTracks(sessionId1)
+    let queue = await controller.getQueuedTracks(sessionId1, jukebox.id)
     expect(queue.tracks.length).toEqual(0)
 
     await controller.queueTrack(...queueTrackParams)
-    queue = await controller.getQueuedTracks(sessionId1)
+    queue = await controller.getQueuedTracks(sessionId1, jukebox.id)
     expect(queue.tracks.length).toEqual(1)
 
     await controller.queueTrack(...queueTrackParams)
-    queue = await controller.getQueuedTracks(sessionId1)
+    queue = await controller.getQueuedTracks(sessionId1, jukebox.id)
     expect(queue.tracks.length).toEqual(2)
   })
 
@@ -157,12 +157,12 @@ describe('QueueController', () => {
     const track2 = await trackService.createTestTrack({ ...mockCreateTrack, spotify_id: 'bbcd' })
     const track3 = await trackService.createTestTrack({ ...mockCreateTrack, spotify_id: 'cbcd' })
 
-    let queue = await controller.getQueuedTracks(sessionId3)
+    let queue = await controller.getQueuedTracks(sessionId3, jukebox.id)
     expect(queue.tracks.length).toEqual(0)
 
     queueTrackParams[2].spotify_track_id = track1.spotify_id
     const queueTrack1 = await controller.queueTrack(...queueTrackParams)
-    queue = await controller.getQueuedTracks(sessionId3)
+    queue = await controller.getQueuedTracks(sessionId3, jukebox.id)
     let q1 = await queueService.getQueuedTrackById(queueTrack1.id)
     expect(queue.tracks.length).toEqual(1)
     expect(queue.tracks[0]).toEqual(queueTrack1)
@@ -170,7 +170,7 @@ describe('QueueController', () => {
 
     queueTrackParams[2].spotify_track_id = track2.spotify_id
     const queueTrack2 = await controller.queueTrack(...queueTrackParams)
-    queue = await controller.getQueuedTracks(sessionId3)
+    queue = await controller.getQueuedTracks(sessionId3, jukebox.id)
     q1 = await queueService.getQueuedTrackById(queueTrack1.id)
     let q2 = await queueService.getQueuedTrackById(queueTrack2.id)
     expect(queue.tracks.length).toEqual(2)
@@ -179,8 +179,10 @@ describe('QueueController', () => {
     expect(q1.order).toEqual(1)
     expect(q2.order).toEqual(2)
 
-    await controller.setQueueOrder(sessionId3, { ordering: [queueTrack2.id, queueTrack1.id] })
-    queue = await controller.getQueuedTracks(sessionId3)
+    await controller.setQueueOrder(sessionId3, jukebox.id, {
+      ordering: [queueTrack2.id, queueTrack1.id],
+    })
+    queue = await controller.getQueuedTracks(sessionId3, jukebox.id)
     q1 = await queueService.getQueuedTrackById(queueTrack1.id)
     q2 = await queueService.getQueuedTrackById(queueTrack2.id)
     expect(queue.tracks[0]).toEqual(q2)
@@ -190,12 +192,12 @@ describe('QueueController', () => {
 
     queueTrackParams[2].spotify_track_id = track3.spotify_id
     const queueTrack3 = await controller.queueTrack(...queueTrackParams)
-    queue = await controller.getQueuedTracks(sessionId3)
+    queue = await controller.getQueuedTracks(sessionId3, jukebox.id)
     expect(queue.tracks.length).toEqual(3)
-    await controller.setQueueOrder(sessionId3, {
+    await controller.setQueueOrder(sessionId3, jukebox.id, {
       ordering: [queueTrack3.id, queueTrack2.id, queueTrack1.id],
     })
-    queue = await controller.getQueuedTracks(sessionId3)
+    queue = await controller.getQueuedTracks(sessionId3, jukebox.id)
     q1 = await queueService.getQueuedTrackById(queueTrack1.id)
     q2 = await queueService.getQueuedTrackById(queueTrack2.id)
     const q3 = await queueService.getQueuedTrackById(queueTrack3.id)
@@ -210,11 +212,11 @@ describe('QueueController', () => {
   it('should clear tracks from queue', async () => {
     await controller.queueTrack(...queueTrackParams)
     await controller.queueTrack(...queueTrackParams)
-    let queue = await controller.getQueuedTracks(sessionId1)
+    let queue = await controller.getQueuedTracks(sessionId1, jukebox.id)
     expect(queue.tracks.length).toEqual(2)
 
-    await controller.clearQueue(sessionId1)
-    queue = await controller.getQueuedTracks(sessionId1)
+    await controller.clearQueue(sessionId1, jukebox.id)
+    queue = await controller.getQueuedTracks(sessionId1, jukebox.id)
     expect(queue.tracks.length).toEqual(0)
   })
 })

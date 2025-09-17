@@ -9,7 +9,7 @@ import { CurrentUser } from 'src/utils/decorators/current-user.decorator'
 import { SpotifyAuthService } from './spotify-auth.service'
 import { SpotifyService } from './spotify.service'
 
-@ApiTags('spotify')
+@ApiTags('Spotify')
 @ApiBearerAuth()
 @Controller('spotify/')
 export class SpotifyController {

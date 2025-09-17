@@ -28,7 +28,9 @@
     // "typeRoots": ["./node_modules/@types", "./src/types", "./node_modules/@spotify/node_modules/@spotify/web-api-ts-sdk/dist/mjs/",],
     "paths": {
       "src/*": [
-        "./src/*",
+        "src/*"
+      ],
+      "@/*": [
         "src/*"
       ]
     }

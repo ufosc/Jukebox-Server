@@ -26,10 +26,10 @@ describe('AccountLinkController', () => {
   let jukebox3: JukeboxDto
   let jukebox4: JukeboxDto
 
-  let jukeboxId1: string
-  let jukeboxId2: string
-  let jukeboxId3: string
-  let jukeboxId4: string
+  let jukeboxId1: number
+  let jukeboxId2: number
+  let jukeboxId3: number
+  let jukeboxId4: number
   const clubId = 1
 
   const createTestAccountLink = async (
@@ -37,7 +37,7 @@ describe('AccountLinkController', () => {
   ): Promise<CreateAccountLinkDto> => {
     const spotify_account = await spotifyAuthService.addAccount(createSpotifyAccountDto)
     return {
-      spotify_account,
+      spotify_account_id: spotify_account.id,
       active: true,
     }
   }
@@ -58,7 +58,7 @@ describe('AccountLinkController', () => {
 
     controller = module.get<AccountLinkController>(AccountLinkController)
 
-    // services
+    // Services
     spotifyAuthService = module.get<SpotifyAuthService>(SpotifyAuthService)
     jukeboxService = module.get<JukeboxService>(JukeboxService)
 
@@ -68,10 +68,10 @@ describe('AccountLinkController', () => {
     jukebox3 = await jukeboxService.create({ club_id: clubId, name: 'Test Jukebox 1' })
     jukebox4 = await jukeboxService.create({ club_id: clubId, name: 'Test Jukebox 2' })
 
-    jukeboxId1 = jukebox1.id.toString()
-    jukeboxId2 = jukebox2.id.toString()
-    jukeboxId3 = jukebox3.id.toString()
-    jukeboxId4 = jukebox4.id.toString()
+    jukeboxId1 = jukebox1.id
+    jukeboxId2 = jukebox2.id
+    jukeboxId3 = jukebox3.id
+    jukeboxId4 = jukebox4.id
   })
 
   it('should be defined', () => {
@@ -82,9 +82,9 @@ describe('AccountLinkController', () => {
     const testAccountLinkDto1 = await createTestAccountLink()
 
     const result1 = await controller.create(jukeboxId1, testAccountLinkDto1)
-    expect(result1.jukebox_id).toEqual(+jukeboxId1)
+    expect(result1.jukebox_id).toEqual(jukeboxId1)
     expect(result1.active).toBeTruthy()
-    expect(result1.spotify_account).toEqual(testAccountLinkDto1.spotify_account)
+    expect(result1.spotify_account.id).toEqual(testAccountLinkDto1.spotify_account_id)
 
     const result2 = await controller.create(jukeboxId1, testAccountLinkDto1)
     expect(result1).toEqual(result2)
@@ -99,11 +99,10 @@ describe('AccountLinkController', () => {
     expect(result.length).toEqual(2)
   })
 
-  // Not sure what this test is supposed to do
   it('should get spotify account for a jukebox', async () => {
     const testAccountLinkDto = await createTestAccountLink()
     const link = await controller.create(jukeboxId2, testAccountLinkDto)
-    const result = await controller.findOne(jukeboxId2, link.id.toString())
+    const result = await controller.findOne(link.id, jukeboxId1)
     expect(result.jukebox_id).toEqual(link.jukebox_id)
     expect(result.active).toBeTruthy()
     expect(result.spotify_account).toEqual(link.spotify_account)
@@ -114,31 +113,29 @@ describe('AccountLinkController', () => {
     const testAccountLinkDto2 = await createTestAccountLink()
 
     const result = await controller.create(jukeboxId1, testAccountLinkDto1)
-    expect(result.spotify_account).toEqual(testAccountLinkDto1.spotify_account)
+    expect(result.spotify_account.id).toEqual(testAccountLinkDto1.spotify_account_id)
 
-    const updated1 = await controller.update(jukeboxId1, result.id.toString(), testAccountLinkDto2)
-    expect(updated1.spotify_account).toEqual(testAccountLinkDto2.spotify_account)
+    const updated1 = await controller.update(result.id, jukeboxId1, testAccountLinkDto2)
+    expect(updated1.spotify_account.id).toEqual(testAccountLinkDto2.spotify_account_id)
 
-    const updated2 = await controller.update(jukeboxId1, result.id.toString(), {
+    const updated2 = await controller.update(result.id, jukeboxId1, {
       ...testAccountLinkDto2,
-      spotify_account: undefined,
+      spotify_account_id: undefined,
       active: false,
     })
     expect(updated2.active).toBeFalsy()
-    expect(updated2.spotify_account).toEqual(testAccountLinkDto2.spotify_account)
+    expect(updated2.spotify_account.id).toEqual(testAccountLinkDto2.spotify_account_id)
   })
 
   it('should remove a spotify account from a jukebox', async () => {
     const testAccountLinkDto = await createTestAccountLink()
     const link = await controller.create(jukeboxId1, testAccountLinkDto)
-    expect(link.jukebox_id).toEqual(+jukeboxId1)
+    expect(link.jukebox_id).toEqual(jukeboxId1)
     expect(link.active).toBeTruthy()
-    expect(link.spotify_account).toEqual(testAccountLinkDto.spotify_account)
+    expect(link.spotify_account.id).toEqual(testAccountLinkDto.spotify_account_id)
 
-    await controller.remove(link.jukebox_id.toString(), link.id.toString())
-    expect(
-      async () => await controller.findOne(link.jukebox_id.toString(), link.id.toString()),
-    ).rejects.toThrow(NotFoundException)
+    await controller.remove(link.id, jukeboxId1)
+    await expect(controller.findOne(link.id, jukeboxId1)).rejects.toThrow(NotFoundException)
   })
 
   it('should get active spotify account for a jukebox', async () => {
@@ -148,9 +145,9 @@ describe('AccountLinkController', () => {
     const link1 = await controller.create(jukeboxId3, testAccountLinkDto1)
     const link2 = await controller.create(jukeboxId3, testAccountLinkDto2)
 
-    await controller.update(jukeboxId3, link1.id.toString(), {
+    await controller.update(link1.id, jukeboxId1, {
       ...testAccountLinkDto1,
-      spotify_account: undefined,
+      spotify_account_id: undefined,
       active: false,
     })
 
@@ -166,21 +163,18 @@ describe('AccountLinkController', () => {
     const link1 = await controller.create(jukeboxId4, testAccountLinkDto1)
     const link2 = await controller.create(jukeboxId4, testAccountLinkDto2)
 
-    await controller.update(jukeboxId3, link1.id.toString(), {
+    await controller.update(link1.id, jukeboxId1, {
       ...testAccountLinkDto1,
-      spotify_account: undefined,
+      spotify_account_id: undefined,
       active: false,
     })
 
-    await controller.update(jukeboxId3, link2.id.toString(), {
+    await controller.update(link2.id, jukeboxId1, {
       ...testAccountLinkDto2,
-      spotify_account: undefined,
+      spotify_account_id: undefined,
       active: false,
     })
 
-    // Node/jest throws deprecation warning when using expect().rejects.toThrow()
-    await controller.getActiveAccount(jukeboxId4).catch((e) => {
-      expect(e).toBeInstanceOf(NotFoundException)
-    })
+    await expect(controller.getActiveAccount(jukeboxId4)).rejects.toThrow(NotFoundException)
   })
 })

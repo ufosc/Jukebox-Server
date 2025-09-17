@@ -1,60 +1,57 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common'
 import { CreateJukeboxDto, UpdateJukeboxDto } from './dto/jukebox.dto'
 import { JukeboxService } from './jukebox.service'
-import { AuthInterceptor } from 'src/auth/auth.interceptor'
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger'
-import { IsAdminGuard } from 'src/guards/is-admin.guard'
-import { TokenGuard } from 'src/guards/token.guard'
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { RolesGuard } from 'src/utils/guards/roles.guard'
 import { NumberPipe } from 'src/pipes/int-pipe.pipe'
+import { Roles } from 'src/utils/decorators/roles.decorator'
 
+@ApiTags('Jukebox')
+@ApiBearerAuth()
 @Controller('jukebox/jukeboxes/')
 export class JukeboxController {
   constructor(private readonly jukeboxService: JukeboxService) {}
 
+  @Roles('admin')
+  @UseGuards(RolesGuard)
   @Post()
-  @ApiOperation({ summary: 'Create a jukebox entity' })
+  @ApiOperation({ summary: '[ADMIN] Create a jukebox entity' })
   create(@Body() createJukeboxDto: CreateJukeboxDto) {
     return this.jukeboxService.create(createJukeboxDto)
   }
 
-  @ApiBearerAuth()
-  @UseInterceptors(AuthInterceptor)
+  @Roles('member')
+  @UseGuards(RolesGuard)
   @Get()
-  @ApiOperation({ summary: 'Find all jukeboxes for a club id' })
-  findAll(@Query('club_id', new NumberPipe('club_id')) clubId: number) {
+  @ApiOperation({ summary: '[MEMBER] Find all jukeboxes for a club id' })
+  findAll(@Query('club_id', new NumberPipe('clubId')) clubId: number) {
     return this.jukeboxService.findAll(clubId)
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Find a jukebox by id' })
-  findOne(@Param('id', new NumberPipe('id')) id: number) {
+  @Roles('member')
+  @UseGuards(RolesGuard)
+  @Get(':jukebox_id')
+  @ApiOperation({ summary: '[MEMBER] Find a jukebox by id' })
+  findOne(@Param('jukebox_id', new NumberPipe('jukebox_id')) id: number) {
     return this.jukeboxService.findOne(id)
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Update a jukebox by id' })
+  @Roles('admin')
+  @UseGuards(RolesGuard)
+  @Patch(':jukebox_id')
+  @ApiOperation({ summary: '[ADMIN] Update a jukebox by id' })
   update(
-    @Param('id', new NumberPipe('id')) id: number,
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) id: number,
     @Body() updateJukeboxDto: UpdateJukeboxDto,
   ) {
     return this.jukeboxService.update(id, updateJukeboxDto)
   }
 
-  @UseGuards(TokenGuard, IsAdminGuard)
-  @Delete(':id')
-  @ApiOperation({ summary: 'Delete a jukebox by id' })
-  remove(@Param('id', new NumberPipe('id')) id: number) {
+  @Roles('admin')
+  @UseGuards(RolesGuard)
+  @Delete(':jukebox_id')
+  @ApiOperation({ summary: '[ADMIN] Delete a jukebox by id' })
+  remove(@Param('jukebox_id', new NumberPipe('jukebox_id')) id: number) {
     return this.jukeboxService.remove(id)
   }
 }

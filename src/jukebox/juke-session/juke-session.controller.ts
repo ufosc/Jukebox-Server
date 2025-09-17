@@ -10,7 +10,7 @@ import { RolesGuard } from 'src/utils/guards/roles.guard'
 
 @ApiTags('JukeSession')
 @ApiBearerAuth()
-@Controller(':jukebox_id/juke-session')
+@Controller('jukebox/jukeboxes/:jukebox_id/juke-session')
 export class JukeSessionController {
   constructor(private readonly jukeSessionService: JukeSessionService) {}
 
@@ -47,7 +47,10 @@ export class JukeSessionController {
   @UseGuards(RolesGuard)
   @Get(':id')
   @ApiOperation({ summary: '[MEMBER] Get a juke session' })
-  findOne(@Param('id', new NumberPipe('id')) id: number) {
+  findOne(
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
+    @Param('id', new NumberPipe('id')) id: number,
+  ) {
     return this.jukeSessionService.findOne(id)
   }
 
@@ -55,7 +58,11 @@ export class JukeSessionController {
   @UseGuards(RolesGuard)
   @Patch(':id')
   @ApiOperation({ summary: '[ADMIN] Update a juke session' })
-  update(@Param('id', new NumberPipe('id')) id: number, @Body() body: UpdateJukeSessionDto) {
+  update(
+    @Param('id', new NumberPipe('id')) id: number,
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
+    @Body() body: UpdateJukeSessionDto,
+  ) {
     return this.jukeSessionService.update(id, body)
   }
 
@@ -63,7 +70,10 @@ export class JukeSessionController {
   @UseGuards(RolesGuard)
   @Delete(':id')
   @ApiOperation({ summary: '[ADMIN] Delete a juke session' })
-  remove(@Param('id', new NumberPipe('id')) id: number) {
+  remove(
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
+    @Param('id', new NumberPipe('id')) id: number,
+  ) {
     return this.jukeSessionService.remove(id)
   }
 
@@ -71,7 +81,10 @@ export class JukeSessionController {
   @UseGuards(RolesGuard)
   @Post(':id/end')
   @ApiOperation({ summary: '[ADMIN] End juke session' })
-  endJukeSession(@Param('id', new NumberPipe('id')) id: number) {
+  endJukeSession(
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
+    @Param('id', new NumberPipe('id')) id: number,
+  ) {
     return this.jukeSessionService.endSession(id)
   }
 
@@ -81,6 +94,7 @@ export class JukeSessionController {
   @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: '[ADMIN] Add juke session member' })
   addJukeSessionMember(
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @Param('id', new NumberPipe('id')) id: number,
     @Body() body: CreateJukeSessionMembershipDto,
   ) {
@@ -93,6 +107,7 @@ export class JukeSessionController {
   @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: '[MEMBER] Add juke session member by join code' })
   addJukeSessionMemberByJoinCode(
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @Query('joinCode') joinCode: string,
     @Body() body: CreateJukeSessionMembershipDto,
   ) {
@@ -107,6 +122,7 @@ export class JukeSessionController {
     summary: '[MEMBER] (PAGINATED: 0-indexed) Get members/memberships of a juke session',
   })
   getJukeSessionMembers(
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @Param('id', new NumberPipe('id')) id: number,
     @Query('page', new NumberPipe('page')) page: number = 0,
     @Query('rows', new NumberPipe('rows')) rows: number = 7,
@@ -120,6 +136,7 @@ export class JukeSessionController {
   @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: '[MEMBER] Get member/membership for a juke session' })
   getJukeSessionMember(
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @Param('membership_id', new NumberPipe('membership_id')) membershipId: number,
   ) {
     return this.jukeSessionService.getMembership(membershipId)
@@ -131,6 +148,7 @@ export class JukeSessionController {
   @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: '[ADMIN] Delete member/membership for a juke session' })
   deleteJukeSessionMembership(
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @Param('membership_id', new NumberPipe('membership_id')) membershipId: number,
   ) {
     return this.jukeSessionService.deleteMembership(membershipId)

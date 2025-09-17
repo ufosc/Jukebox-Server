@@ -42,7 +42,10 @@ export class AccountLinkController {
   @ApiOperation({
     summary: '[MEMBER] Find an account link for a jukebox',
   })
-  findOne(@Param('id', new NumberPipe('id')) id: number) {
+  findOne(
+    @Param('id', new NumberPipe('id')) id: number,
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
+  ) {
     return this.accountLinkService.findOne(id)
   }
 
@@ -54,6 +57,7 @@ export class AccountLinkController {
   })
   update(
     @Param('id', new NumberPipe('id')) id: number,
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @Body() updateAccountLinkDto: UpdateAccountLinkDto,
   ) {
     return this.accountLinkService.update(id, updateAccountLinkDto)
@@ -65,7 +69,10 @@ export class AccountLinkController {
   @ApiOperation({
     summary: '[ADMIN] Remove an account link',
   })
-  remove(@Param('id', new NumberPipe('id')) id: number) {
+  remove(
+    @Param('id', new NumberPipe('id')) id: number,
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
+  ) {
     return this.accountLinkService.remove(id)
   }
 

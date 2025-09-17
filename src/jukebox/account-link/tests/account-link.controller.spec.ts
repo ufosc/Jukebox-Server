@@ -103,7 +103,7 @@ describe('AccountLinkController', () => {
   it('should get spotify account for a jukebox', async () => {
     const testAccountLinkDto = await createTestAccountLink()
     const link = await controller.create(jukeboxId2, testAccountLinkDto)
-    const result = await controller.findOne(link.id)
+    const result = await controller.findOne(link.id, jukeboxId1)
     expect(result.jukebox_id).toEqual(link.jukebox_id)
     expect(result.active).toBeTruthy()
     expect(result.spotify_account).toEqual(link.spotify_account)
@@ -116,10 +116,10 @@ describe('AccountLinkController', () => {
     const result = await controller.create(jukeboxId1, testAccountLinkDto1)
     expect(result.spotify_account).toEqual(testAccountLinkDto1.spotify_account)
 
-    const updated1 = await controller.update(result.id, testAccountLinkDto2)
+    const updated1 = await controller.update(result.id, jukeboxId1, testAccountLinkDto2)
     expect(updated1.spotify_account).toEqual(testAccountLinkDto2.spotify_account)
 
-    const updated2 = await controller.update(result.id, {
+    const updated2 = await controller.update(result.id, jukeboxId1, {
       ...testAccountLinkDto2,
       spotify_account: undefined,
       active: false,
@@ -135,8 +135,8 @@ describe('AccountLinkController', () => {
     expect(link.active).toBeTruthy()
     expect(link.spotify_account).toEqual(testAccountLinkDto.spotify_account)
 
-    await controller.remove(link.id)
-    await expect(controller.findOne(link.id)).rejects.toThrow(NotFoundException)
+    await controller.remove(link.id, jukeboxId1)
+    await expect(controller.findOne(link.id, jukeboxId1)).rejects.toThrow(NotFoundException)
   })
 
   it('should get active spotify account for a jukebox', async () => {
@@ -146,7 +146,7 @@ describe('AccountLinkController', () => {
     const link1 = await controller.create(jukeboxId3, testAccountLinkDto1)
     const link2 = await controller.create(jukeboxId3, testAccountLinkDto2)
 
-    await controller.update(link1.id, {
+    await controller.update(link1.id, jukeboxId1, {
       ...testAccountLinkDto1,
       spotify_account: undefined,
       active: false,
@@ -164,13 +164,13 @@ describe('AccountLinkController', () => {
     const link1 = await controller.create(jukeboxId4, testAccountLinkDto1)
     const link2 = await controller.create(jukeboxId4, testAccountLinkDto2)
 
-    await controller.update(link1.id, {
+    await controller.update(link1.id, jukeboxId1, {
       ...testAccountLinkDto1,
       spotify_account: undefined,
       active: false,
     })
 
-    await controller.update(link2.id, {
+    await controller.update(link2.id, jukeboxId1, {
       ...testAccountLinkDto2,
       spotify_account: undefined,
       active: false,

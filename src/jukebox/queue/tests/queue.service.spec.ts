@@ -129,7 +129,7 @@ describe('QueueService', () => {
     let queuedTrackToRemain = await controller.queueTrack(...queueTrackParams)
     const queuedTrackToBeRemoved = await controller.queueTrack(...queueTrackParams)
 
-    let queue = await controller.getQueuedTracks(sessionId1)
+    let queue = await controller.getQueuedTracks(sessionId1, jukebox.id)
     const getQueuedTrack = await service.getNextTrack(sessionId1)
     expect(getQueuedTrack).toEqual(queue.tracks[0])
 
@@ -137,12 +137,12 @@ describe('QueueService', () => {
     const queueLengthBeforePop = queue.tracks.length
     expect(popQueuedTrack).toEqual(queue.tracks[0])
 
-    queue = await controller.getQueuedTracks(sessionId1)
+    queue = await controller.getQueuedTracks(sessionId1, jukebox.id)
     expect(queueLengthBeforePop - 1).toEqual(queue.tracks.length)
 
     await service.removeTrackFromQueue(sessionId1, queuedTrackToBeRemoved.id)
     const queueLengthBeforeRemove = queue.tracks.length
-    queue = await controller.getQueuedTracks(sessionId1)
+    queue = await controller.getQueuedTracks(sessionId1, jukebox.id)
     expect(queueLengthBeforeRemove - 1).toEqual(queue.tracks.length)
 
     queuedTrackToRemain = await service.getQueuedTrackById(queuedTrackToRemain.id)
@@ -165,7 +165,7 @@ describe('QueueService', () => {
 
     await controller.queueTrack(...queueTrackParams)
     await service.queueNextTrackToSpotify(jukebox.id, sessionId3)
-    const queue = await controller.getQueuedTracks(sessionId3)
+    const queue = await controller.getQueuedTracks(sessionId3, jukebox.id)
     expect(queue.tracks[0].is_editable).toBeFalsy()
   })
 })

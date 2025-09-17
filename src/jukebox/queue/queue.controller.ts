@@ -9,7 +9,7 @@ import { RolesGuard } from 'src/utils/guards/roles.guard'
 
 @ApiTags('Queue')
 @ApiBearerAuth()
-@Controller('jukebox/:jukebox_id/jukesessions/:juke_session_id/queue/')
+@Controller('jukebox/jukeboxes/:jukebox_id/juke-sessions/:juke_session_id/queue/')
 export class QueueController {
   constructor(
     private queueService: QueueService,
@@ -22,6 +22,7 @@ export class QueueController {
   @ApiOperation({ summary: '[MEMBER] Get queued tracks for a juke session' })
   async getQueuedTracks(
     @Param('juke_session_id', new NumberPipe('juke_session_id')) jukeSessionId: number,
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
   ): Promise<QueueDto> {
     return await this.queueService.getQueue(jukeSessionId)
   }
@@ -46,6 +47,7 @@ export class QueueController {
   @ApiOperation({ summary: '[ADMIN] Set queued track order for a juke session' })
   async setQueueOrder(
     @Param('juke_session_id', new NumberPipe('juke_session_id')) jukeSessionId: number,
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @Body() body: SetQueueOrderDto,
   ): Promise<QueueDto> {
     return await this.queueService.setQueueOrder(jukeSessionId, body.ordering)
@@ -57,6 +59,7 @@ export class QueueController {
   @ApiOperation({ summary: '[ADMIN] Clear the queued tracks for a juke session' })
   async clearQueue(
     @Param('juke_session_id', new NumberPipe('juke_session_id')) jukeSessionId: number,
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
   ) {
     return this.queueService.clearQueue(jukeSessionId)
   }

@@ -57,7 +57,7 @@ describe('TrackService', () => {
 
     jukebox = await jukeboxService.create({ name: 'Test Jukebox', club_id: 1 })
     accountLink = await accountLinkService.create(jukebox.id, {
-      spotify_account: await spotifyAuthService.addAccount(mockSpotifyAccount),
+      spotify_account_id: (await spotifyAuthService.addAccount(mockSpotifyAccount)).id,
     })
   })
 

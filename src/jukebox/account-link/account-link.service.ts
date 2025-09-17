@@ -77,7 +77,12 @@ export class AccountLinkService {
   }
 
   async update(id: number, updateAccountLinkDto: UpdateAccountLinkDto): Promise<AccountLinkDto> {
-    await this.accountLinkRepo.update({ id }, updateAccountLinkDto)
+    const payload: any = { active: updateAccountLinkDto.active }
+    if (updateAccountLinkDto.spotify_account_id != null) {
+      payload.spotify_account = { id: updateAccountLinkDto.spotify_account_id }
+    }
+
+    await this.accountLinkRepo.update({ id }, payload)
     const link = await this.findOne(id)
     return plainToInstance(AccountLinkDto, link)
   }

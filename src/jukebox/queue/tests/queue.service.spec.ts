@@ -106,7 +106,7 @@ describe('QueueService', () => {
       user_id: 1,
     })
     accountLink = await accountLinkService.create(jukebox.id, {
-      spotify_account: await spotifyAuthService.addAccount(mockSpotifyAccount),
+      spotify_account_id: (await spotifyAuthService.addAccount(mockSpotifyAccount)).id,
     })
 
     sessionId1 = jukeSession1.id

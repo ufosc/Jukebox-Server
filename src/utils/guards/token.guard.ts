@@ -8,6 +8,10 @@ export class TokenGuard implements CanActivate {
   constructor(private networkService: NetworkService) {}
 
   canActivate(context: ExecutionContext): boolean {
+    return TokenGuard.checkToken(context, this.networkService)
+  }
+
+  public static checkToken(context: ExecutionContext, networkService: NetworkService): boolean {
     if (NODE_ENV === 'dev') {
       return true
     }
@@ -17,7 +21,7 @@ export class TokenGuard implements CanActivate {
 
     if (!token) return false
 
-    this.networkService.setToken(token)
+    networkService.setToken(token)
     return true
   }
 }

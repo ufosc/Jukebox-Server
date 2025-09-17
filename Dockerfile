@@ -8,12 +8,13 @@ USER root
 
 RUN npm install -g npm && \
     npm install -g typescript && \
-    npm install 
+    npm install
 
 COPY ./tsconfig*.json ./
 COPY ./nest-cli.json ./
 COPY ./src ./src
 COPY ./packages ./packages
+COPY ./test ./test
 
 RUN npm run build
 

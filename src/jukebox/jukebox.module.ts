@@ -1,7 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { SpotifyModule } from 'src/spotify/spotify.module'
-import { TrackService } from 'src/track/track.service'
+import { SpotifyModule } from '../spotify/spotify.module'
 import { AccountLinkModule } from './account-link/account-link.module'
 import { JukeSessionModule } from './juke-session/juke-session.module'
 import { JukeboxController } from './jukebox.controller'
@@ -13,9 +12,9 @@ import { QueuedTrack } from './queue/entities/queued-track.entity'
 import { QueueController } from './queue/queue.controller'
 import { QueueService } from './queue/queue.service'
 import { Jukebox } from './entities/jukebox.entity'
-import { TrackModule } from 'src/track/track.module'
-import { NetworkService } from 'src/network/network.service'
-import { AxiosProvider } from 'src/utils/mock'
+import { TrackModule } from '../track/track.module'
+import { NetworkService } from '../network/network.service'
+import { AxiosProvider } from '../utils/mock'
 
 @Module({
   imports: [

@@ -15,6 +15,8 @@ import { JukeSession } from 'src/jukebox/juke-session/entities/juke-session.enti
 import { JukeSessionService } from 'src/jukebox/juke-session/juke-session.service'
 import { JukeSessionMembership } from 'src/jukebox/juke-session/entities/membership.entity'
 import { NetworkService } from 'src/network/network.service'
+import { JukeboxService } from 'src/jukebox/jukebox.service'
+import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
 
 describe('PlayerController', () => {
   let controller: PlayerController
@@ -28,11 +30,13 @@ describe('PlayerController', () => {
           PlayerInteraction,
           QueuedTrack,
           AccountLink,
+          Jukebox,
           JukeSession,
           JukeSessionMembership,
         ]),
       ],
       providers: [
+        JukeboxService,
         PlayerService,
         AccountLinkService,
         QueueService,

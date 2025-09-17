@@ -1,0 +1,3 @@
+npm run format:fix
+npm run lint:fix
+git add .

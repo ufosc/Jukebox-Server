@@ -1,14 +1,13 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  NotImplementedException,
-} from '@nestjs/common'
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToInstance } from 'class-transformer'
 import { QueryFailedError, Repository } from 'typeorm'
 import { CreateJukeSessionDto, JukeSessionDto, UpdateJukeSessionDto } from './dto/juke-session.dto'
-import { CreateJukeSessionMembershipDto, JukeSessionMembershipDto } from './dto/membership.dto'
+import {
+  CreateJukeSessionMembershipDto,
+  JukeSessionMembershipCountDto,
+  JukeSessionMembershipDto,
+} from './dto/membership.dto'
 import { JukeSession } from './entities/juke-session.entity'
 import { JukeSessionMembership } from './entities/membership.entity'
 import { generateJoinCode } from './utils/generate-join-code'
@@ -172,11 +171,25 @@ export class JukeSessionService {
     return plainToInstance(JukeSessionMembershipDto, membership)
   }
 
-  async getMemberships(jukeSessionId: number): Promise<JukeSessionMembershipDto[]> {
-    const memberships = await this.membershipRepo.find({
+  async getMemberships(
+    jukeSessionId: number,
+    page: number,
+    rows: number,
+  ): Promise<JukeSessionMembershipCountDto> {
+    const membershipsToSkip = page * rows
+    const [membershipsData, count] = await this.membershipRepo.findAndCount({
+      skip: membershipsToSkip,
+      take: rows,
       where: { juke_session: { id: jukeSessionId } },
+      order: { user_id: 'ASC' },
     })
-    return memberships.map((membership) => plainToInstance(JukeSessionMembershipDto, membership))
+
+    return {
+      memberships: membershipsData.map((membership) =>
+        plainToInstance(JukeSessionMembershipDto, membership),
+      ),
+      count: count,
+    }
   }
 
   async getMembership(membershipId: number): Promise<JukeSessionMembershipDto> {

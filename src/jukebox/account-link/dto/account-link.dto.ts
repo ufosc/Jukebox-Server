@@ -5,7 +5,7 @@ import { SpotifyAccountDto } from 'src/spotify/dto'
 
 export class CreateAccountLinkDto {
   @Expose()
-  spotify_account: SpotifyAccountDto
+  spotify_account_id: number
 
   @Expose()
   active?: boolean

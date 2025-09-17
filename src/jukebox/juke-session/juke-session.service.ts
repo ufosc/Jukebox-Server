@@ -1,19 +1,14 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-  NotImplementedException,
-} from '@nestjs/common'
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToInstance } from 'class-transformer'
+import { BASE_URL, CLUBS_URL } from 'src/config'
+import { NetworkService } from 'src/network/network.service'
 import { QueryFailedError, Repository } from 'typeorm'
 import { CreateJukeSessionDto, JukeSessionDto, UpdateJukeSessionDto } from './dto/juke-session.dto'
 import { CreateJukeSessionMembershipDto, JukeSessionMembershipDto } from './dto/membership.dto'
 import { JukeSession } from './entities/juke-session.entity'
 import { JukeSessionMembership } from './entities/membership.entity'
 import { generateJoinCode } from './utils/generate-join-code'
-import { NetworkService } from 'src/network/network.service'
-import { BASE_URL, CLUBS_URL } from 'src/config'
 
 @Injectable()
 export class JukeSessionService {
@@ -185,6 +180,20 @@ export class JukeSessionService {
     })
     if (!membership) {
       throw new NotFoundException(`Juke Session Membership with id ${membershipId} not found`)
+    }
+
+    return plainToInstance(JukeSessionMembershipDto, membership)
+  }
+
+  async getMembershipForUser(
+    jukeSessionId: number,
+    userId: number,
+  ): Promise<JukeSessionMembershipDto> {
+    const membership = await this.membershipRepo.findOne({
+      where: { user_id: userId, juke_session: { id: jukeSessionId } },
+    })
+    if (!membership) {
+      throw new NotFoundException(`User ${userId} is not a member of juke session ${jukeSessionId}`)
     }
 
     return plainToInstance(JukeSessionMembershipDto, membership)

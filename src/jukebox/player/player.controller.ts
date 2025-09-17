@@ -29,10 +29,9 @@ export class PlayerController {
   @ApiOperation({ summary: 'Set Player Device' })
   setPlayerDevice(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
-    @ActiveAccount() account: AccountLinkDto,
     @Body() body: SetPlayerDeviceDto,
   ) {
-    return this.playerService.setPlayerDeviceId(jukeboxId, account, body)
+    return this.playerService.setPlayerDeviceId(jukeboxId, body)
   }
 
   @Post('interaction') // like/dislike
@@ -51,9 +50,8 @@ export class PlayerController {
   @ApiOperation({ summary: 'Execute Player Action' })
   async executeAction(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
-    @ActiveAccount() account: AccountLinkDto,
     @Body() body: PlayerActionDto,
   ) {
-    return this.playerService.executeAction(jukeboxId, account, body)
+    return this.playerService.executeAction(jukeboxId, body)
   }
 }

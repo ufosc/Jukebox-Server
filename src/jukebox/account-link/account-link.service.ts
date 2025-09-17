@@ -18,7 +18,8 @@ export class AccountLinkService {
     createAccountLinkDto: CreateAccountLinkDto,
   ): Promise<AccountLinkDto> {
     const preLink = this.accountLinkRepo.create({
-      ...createAccountLinkDto,
+      active: createAccountLinkDto.active,
+      spotify_account: { id: createAccountLinkDto.spotify_account_id },
       jukebox: { id: jukebox_id },
     })
 
@@ -36,7 +37,7 @@ export class AccountLinkService {
         link = await this.accountLinkRepo.findOne({
           where: {
             jukebox: { id: jukebox_id },
-            spotify_account: { id: createAccountLinkDto.spotify_account.id },
+            spotify_account: { id: createAccountLinkDto.spotify_account_id },
           },
           relations: { spotify_account: true },
           loadRelationIds: { relations: ['jukebox'] },

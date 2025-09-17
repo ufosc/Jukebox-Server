@@ -10,12 +10,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger'
+import { AuthInterceptor } from 'src/auth/auth.interceptor'
+import { NumberPipe } from 'src/pipes/int-pipe.pipe'
+import { UserDto } from 'src/shared'
 import { Serialize } from 'src/utils'
+import { CurrentUser } from 'src/utils/decorators'
 import { CreateJukeSessionDto, JukeSessionDto, UpdateJukeSessionDto } from './dto/juke-session.dto'
 import { CreateJukeSessionMembershipDto, JukeSessionMembershipDto } from './dto/membership.dto'
 import { JukeSessionService } from './juke-session.service'
-import { AuthInterceptor } from 'src/auth/auth.interceptor'
-import { NumberPipe } from 'src/pipes/int-pipe.pipe'
 
 @Controller(':jukebox_id/juke-session')
 export class JukeSessionController {
@@ -70,6 +72,16 @@ export class JukeSessionController {
     return this.jukeSessionService.endSession(id)
   }
 
+  @Get(':id/membership/')
+  @Serialize(JukeSessionMembershipDto)
+  @ApiOperation({ summary: 'Get Juke Session Membership for Current User' })
+  getJukeSessionMembership(
+    @Param('id', new NumberPipe('id')) id: number,
+    @CurrentUser() user: UserDto,
+  ) {
+    return this.jukeSessionService.getMembershipForUser(id, user.id)
+  }
+
   @Post(':id/members/')
   @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: 'Add Juke Session Member' })
@@ -78,6 +90,13 @@ export class JukeSessionController {
     @Body() body: CreateJukeSessionMembershipDto,
   ) {
     return this.jukeSessionService.createMembership(id, body)
+  }
+
+  @Post(':id/members/join/')
+  @Serialize(JukeSessionMembershipDto)
+  @ApiOperation({ summary: 'Add Juke Session Member' })
+  joinJukeSession(@Param('id', new NumberPipe('id')) id: number, @CurrentUser() user: UserDto) {
+    return this.jukeSessionService.createMembership(id, { user_id: user.id })
   }
 
   @Post(':id/members/code')

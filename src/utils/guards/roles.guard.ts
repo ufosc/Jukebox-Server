@@ -1,15 +1,15 @@
 import {
-  Injectable,
+  BadRequestException,
   CanActivate,
   ExecutionContext,
+  Injectable,
   InternalServerErrorException,
-  BadRequestException,
 } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
-import { CLUBS_URL, NODE_ENV } from 'src/config'
+import { CLUBS_URL } from 'src/config'
+import { JukeboxService } from 'src/jukebox/jukebox.service'
 import { NetworkService } from 'src/network/network.service'
 import { Role } from '../decorators/roles.decorator'
-import { JukeboxService } from 'src/jukebox/jukebox.service'
 import { TokenGuard } from './token.guard'
 
 @Injectable()
@@ -28,7 +28,7 @@ export class RolesGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest()
     const { body, query, params } = request
-    let clubId = body?.club_id ?? query?.clubId ?? params?.club_id ?? null
+    let clubId = body?.club_id ?? query?.club_id ?? params?.club_id ?? null
 
     if (clubId === null) {
       const jukeboxId = params?.jukebox_id ?? query?.jukeboxId ?? null

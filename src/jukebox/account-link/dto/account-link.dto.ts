@@ -1,10 +1,10 @@
 import { PartialType } from '@nestjs/swagger'
-import { Expose, Transform } from 'class-transformer'
+import { Expose } from 'class-transformer'
 import { EntityDtoBase } from 'src/config/dtos'
 import { SpotifyAccountDto } from 'src/spotify/dto'
 
 export class CreateAccountLinkDto {
-  @Expose()
+  @Expose({ name: 'spotify_account' })
   spotify_account_id: number
 
   @Expose()

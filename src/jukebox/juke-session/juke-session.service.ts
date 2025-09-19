@@ -259,6 +259,7 @@ export class JukeSessionService {
   async getCurrentSession(jukeboxId: number): Promise<JukeSessionDto> {
     const session = await this.jukeSessionRepo.findOne({
       where: { jukebox: { id: jukeboxId }, is_active: true },
+      relations: { jukebox: true },
     })
     if (!session) {
       throw new NotFoundException(`No Current Juke session Found for jukebox ${jukeboxId}`)

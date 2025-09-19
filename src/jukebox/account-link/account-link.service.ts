@@ -57,7 +57,7 @@ export class AccountLinkService {
   async findAll(jukebox_id: number): Promise<AccountLinkDto[]> {
     const links = await this.accountLinkRepo.find({
       where: { jukebox: { id: jukebox_id } },
-      relations: { spotify_account: true },
+      relations: { spotify_account: true, jukebox: true },
       loadRelationIds: { relations: ['jukebox'] },
     })
     return plainToInstance(AccountLinkDto, links)
@@ -94,14 +94,14 @@ export class AccountLinkService {
     return plainToInstance(AccountLinkDto, link)
   }
 
-  async refreshAccountLink(accountLink: AccountLinkDto) {
+  async refreshAccountLink(accountLink: AccountLink) {
     await this.spotifyAuthService.refreshSpotifyAccount(accountLink.spotify_account)
   }
 
   async getActiveAccount(jukeboxId: number, refresh?: boolean): Promise<AccountLinkDto> {
     const link = await this.accountLinkRepo.findOne({
       where: { jukebox: { id: jukeboxId }, active: true },
-      relations: { spotify_account: true },
+      relations: { spotify_account: true, jukebox: true },
       loadRelationIds: { relations: ['jukebox'] },
     })
 

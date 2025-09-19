@@ -1,18 +1,31 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { AuthInterceptor } from 'src/auth/auth.interceptor'
+import { NumberPipe } from 'src/pipes/int-pipe.pipe'
+import { UserDto } from 'src/shared'
 import { Serialize } from 'src/utils'
 import { CurrentUser } from 'src/utils/decorators'
+import { Roles } from 'src/utils/decorators/roles.decorator'
+import { RolesGuard } from 'src/utils/guards/roles.guard'
 import { CreateJukeSessionDto, JukeSessionDto, UpdateJukeSessionDto } from './dto/juke-session.dto'
 import { CreateJukeSessionMembershipDto, JukeSessionMembershipDto } from './dto/membership.dto'
 import { JukeSessionService } from './juke-session.service'
-import { NumberPipe } from 'src/pipes/int-pipe.pipe'
-import { Roles } from 'src/utils/decorators/roles.decorator'
-import { RolesGuard } from 'src/utils/guards/roles.guard'
-import { UserDto } from 'src/shared'
 
 @ApiTags('JukeSession')
 @ApiBearerAuth()
-@Controller('jukebox/jukeboxes/:jukebox_id/juke-session')
+@Controller('jukebox/jukeboxes/:jukebox_id/juke-sessions')
+@UseInterceptors(AuthInterceptor)
 export class JukeSessionController {
   constructor(private readonly jukeSessionService: JukeSessionService) {}
 
@@ -90,6 +103,8 @@ export class JukeSessionController {
     return this.jukeSessionService.endSession(id)
   }
 
+  @Roles('member')
+  @UseGuards(RolesGuard)
   @Get(':id/membership/')
   @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: 'Get Juke Session Membership for Current User' })
@@ -113,6 +128,8 @@ export class JukeSessionController {
     return this.jukeSessionService.createMembership(id, body)
   }
 
+  @Roles('member')
+  @UseGuards(RolesGuard)
   @Post(':id/members/join/')
   @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: 'Add Juke Session Member' })

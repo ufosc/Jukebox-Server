@@ -124,7 +124,10 @@ export class JukeSessionService {
   }
 
   async findAll(jukeboxId: number): Promise<JukeSessionDto[]> {
-    const sessions = await this.jukeSessionRepo.find({ where: { jukebox: { id: jukeboxId } } })
+    const sessions = await this.jukeSessionRepo.find({
+      where: { jukebox: { id: jukeboxId } },
+      relations: { jukebox: true },
+    })
     return sessions.map((session) => plainToInstance(JukeSessionDto, session))
   }
 

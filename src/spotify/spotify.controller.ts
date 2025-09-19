@@ -4,6 +4,7 @@ import { Response } from 'express'
 import { AuthInterceptor } from 'src/auth/auth.interceptor'
 import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
 import { JukeboxService } from 'src/jukebox/jukebox.service'
+import { NumberPipe } from 'src/pipes/int-pipe.pipe'
 import { UserDto } from 'src/shared'
 import { CurrentUser } from 'src/utils/decorators/current-user.decorator'
 import { SpotifyAuthService } from './spotify-auth.service'
@@ -63,7 +64,10 @@ export class SpotifyController {
 
   @Delete('accounts/:id/')
   @UseInterceptors(AuthInterceptor)
-  async deleteSpotifyLink(@CurrentUser() user: UserDto, @Param('id') id: number) {
+  async deleteSpotifyLink(
+    @CurrentUser() user: UserDto,
+    @Param('id', new NumberPipe('id')) id: number,
+  ) {
     const link = await this.spotifyAuthService.removeAccount(id)
     return link
   }

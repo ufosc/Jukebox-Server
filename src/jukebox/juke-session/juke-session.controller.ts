@@ -109,6 +109,7 @@ export class JukeSessionController {
   @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: 'Get Juke Session Membership for Current User' })
   getJukeSessionMembership(
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @Param('id', new NumberPipe('id')) id: number,
     @CurrentUser() user: UserDto,
   ) {

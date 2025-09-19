@@ -37,10 +37,9 @@ export class PlayerController {
   @ApiOperation({ summary: '[ADMIN] Set player device' })
   setPlayerDevice(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
-    @ActiveAccount() account: AccountLinkDto,
     @Body() body: SetPlayerDeviceDto,
   ) {
-    return this.playerService.setPlayerDeviceId(jukeboxId, account, body)
+    return this.playerService.setPlayerDeviceId(jukeboxId, body)
   }
 
   @Roles('member')
@@ -63,9 +62,8 @@ export class PlayerController {
   @ApiOperation({ summary: '[ADMIN] Execute player action' })
   async executeAction(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
-    @ActiveAccount() account: AccountLinkDto,
     @Body() body: PlayerActionDto,
   ) {
-    return this.playerService.executeAction(jukeboxId, account, body)
+    return this.playerService.executeAction(jukeboxId, body)
   }
 }

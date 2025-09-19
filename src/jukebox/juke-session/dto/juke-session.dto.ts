@@ -6,7 +6,7 @@ import { EntityDtoBase } from 'src/config/dtos'
 export class JukeSessionDto extends EntityDtoBase {
   // Transforms JukeboxSession Entity Into Just The Jukebox Id
   @Expose()
-  @Transform(({ obj }) => obj.jukebox?.id)
+  @Transform(({ obj }) => obj.jukebox.id)
   jukebox_id: number
 
   @Expose()

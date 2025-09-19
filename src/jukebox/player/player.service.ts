@@ -6,7 +6,7 @@ import { UserDto } from 'src/shared'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { TrackDto } from 'src/track/dto/track.dto'
 import { Repository } from 'typeorm'
-import { AccountLinkDto } from '../account-link/dto'
+import { AccountLinkService } from '../account-link/account-link.service'
 import { QueuedTrackDto } from '../queue/dto'
 import { QueueService } from '../queue/queue.service'
 import { ActionType, PlayerActionDto, PlayerStateDto, SetPlayerDeviceDto } from './dto'
@@ -18,6 +18,7 @@ export class PlayerService {
     @InjectRepository(PlayerInteraction) private repo: Repository<PlayerInteraction>,
     @Inject(CACHE_MANAGER) private cache: Cache,
     private spotifyService: SpotifyService,
+    private accountLinkService: AccountLinkService,
     private queueService: QueueService,
   ) {}
 
@@ -71,13 +72,9 @@ export class PlayerService {
    * Transfer playback to the device with id in spotify.
    * Save this id as the current device id in the player state.
    */
-  async setPlayerDeviceId(
-    jukeboxId: number,
-    activeAccount: AccountLinkDto,
-    payload: SetPlayerDeviceDto,
-  ): Promise<PlayerStateDto> {
+  async setPlayerDeviceId(jukeboxId: number, payload: SetPlayerDeviceDto): Promise<PlayerStateDto> {
     const { device_id } = payload
-
+    const activeAccount = await this.accountLinkService.getActiveAccount(jukeboxId)
     await this.spotifyService.setPlayerDevice(activeAccount.spotify_account, device_id)
     return await this.updatePlayerState(jukeboxId, { current_device_id: device_id })
   }
@@ -175,14 +172,14 @@ export class PlayerService {
    * Change the playback state of the player in spotify,
    * update player state cache.
    */
-  async executeAction(jukeboxId: number, activeAccount: AccountLinkDto, action: PlayerActionDto) {
+  async executeAction(jukeboxId: number, action: PlayerActionDto) {
     const { action_type } = action
     const { current_device_id, juke_session_id } = await this.getPlayerState(+jukeboxId)
 
     if (!current_device_id) {
       throw new BadRequestException('Current device is not set, transfer playback to control audio')
     }
-
+    const activeAccount = await this.accountLinkService.getActiveAccount(jukeboxId)
     const { spotify_account } = activeAccount
 
     switch (action_type) {

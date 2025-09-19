@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
+import { Request } from 'express'
 import { NODE_ENV } from 'src/config'
 import { NetworkService } from 'src/network/network.service'
-import { Request } from 'express'
 
 @Injectable()
 export class TokenGuard implements CanActivate {

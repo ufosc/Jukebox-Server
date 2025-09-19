@@ -33,7 +33,7 @@ services:
       - redis
     volumes:
       - ./src:/app/src
-      - ./packages:/app/packages
+      # - ./packages:/app/packages
       - ./package.json:/app/package.json
     command: npm run start:network
 
@@ -46,6 +46,8 @@ services:
       - POSTGRES_DB=devdatabase
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=devpass
+    ports:
+      - 5432:5432
     networks:
       - cluster
 
@@ -70,12 +72,60 @@ services:
   #     - pgadmin-network-data:/var/lib/pgadmin
   #   networks:
   #     - cluster
+  
+  pgadmin:
+    # Config adapted from: https://stackoverflow.com/a/77519799/10914922
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    attach: false
+    ports:
+      - '8888:80'
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=changeme
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+    user: root
+    depends_on:
+      - postgres
+    entrypoint: /bin/sh -c "chmod 600 /pgpass; /entrypoint.sh;"
+    volumes:
+      - pgadmin-jukebox-dev:/var/lib/pgadmin
+    configs:
+      - source: servers.json
+        target: /pgadmin4/servers.json
+      - source: pgpass
+        target: /pgpass
+        
+    networks:
+      - cluster
 
 volumes:
   jukebox-network-pg-data:
-  pgadmin-network-data:
+  pgadmin-jukebox-dev:
 
 networks:
   cluster:
     name: clubs_cluster
     external: true
+    
+configs:
+  pgpass:
+    content: jbx-network-db:5432:*:devuser:devpass
+  servers.json:
+    content: |
+      {
+        "Servers": {
+            "1": {
+                "Group": "Servers",
+                "Name": "Docker",
+                "Host": "jbx-network-db",
+                "Port": 5432,
+                "MaintenanceDB": "devdatabase",
+                "Username": "devuser",
+                "PassFile": "/pgpass",
+                "SSLMode": "prefer",
+                "Favorite": true
+            }
+        }
+      }

@@ -1,6 +1,6 @@
 import { EntityBase } from 'src/config/entities'
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
-import { Column, Entity, Index, ManyToOne } from 'typeorm'
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm'
 import { Jukebox } from '../../entities/jukebox.entity'
 
 @Entity('account_link')

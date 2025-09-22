@@ -1,12 +1,11 @@
-import { Injectable, NotImplementedException } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
+import { plainToInstance } from 'class-transformer'
+import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
+import { SpotifyService } from 'src/spotify/spotify.service'
 import { Repository } from 'typeorm'
 import { CreateTrackDto, TrackDto } from './dto/track.dto'
 import { Track } from './entities/track.entity'
-import { plainToInstance } from 'class-transformer'
-import { SpotifyService } from 'src/spotify/spotify.service'
-import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
-import { JukeboxSearchDto } from 'src/jukebox/dto/jukebox-search.dto'
 
 @Injectable()
 export class TrackService {
@@ -82,15 +81,13 @@ export class TrackService {
         album: trackDetails.album.name,
         artists: trackDetails.artists.map((artist) => artist.name),
         spotify_uri: trackDetails.uri,
+        duration_ms: trackDetails.duration_ms,
+        is_explicit: trackDetails.explicit,
+        preview_url: trackDetails.preview_url,
       })
     }
 
     return plainToInstance(TrackDto, result ?? track)
-  }
-
-  async searchTracks(jukeboxId: number, payload: JukeboxSearchDto) {
-    const link = await this.accountLinkService.getActiveAccount(jukeboxId)
-    return await this.spotifyService.searchTracks(link.spotify_account, payload)
   }
 
   /**

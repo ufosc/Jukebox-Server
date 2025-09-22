@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import type { Cache } from 'cache-manager'
 import { plainToInstance } from 'class-transformer'
 import { DatabaseModule } from 'src/config/database.module'
+import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
+import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
 import type { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
 import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
 import type { JukeSessionDto } from 'src/jukebox/juke-session/dto/juke-session.dto'
@@ -16,18 +18,17 @@ import { JukeboxService } from 'src/jukebox/jukebox.service'
 import { QueuedTrackDto } from 'src/jukebox/queue/dto'
 import { QueuedTrack } from 'src/jukebox/queue/entities/queued-track.entity'
 import { QueueService } from 'src/jukebox/queue/queue.service'
+import { NetworkService } from 'src/network/network.service'
+import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
+import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import type { TrackDto } from 'src/track/dto/track.dto'
 import { Track } from 'src/track/entities/track.entity'
 import { TrackService } from 'src/track/track.service'
-import { AxiosMockProvider, MockCacheProvider, mockUser } from 'src/utils/mock'
+import { MockAxiosProvider, MockCacheProvider, mockUser } from 'src/utils/mock'
 import type { PlayerStateDto } from '../dto'
 import { InteractionType, PlayerInteraction } from '../entity/player-interaction.entity'
 import { PlayerService } from '../player.service'
-import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
-import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
-import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
-import { NetworkService } from 'src/network/network.service'
 
 describe('PlayerService', () => {
   let service: PlayerService
@@ -76,7 +77,7 @@ describe('PlayerService', () => {
         ]),
       ],
       providers: [
-        AxiosMockProvider,
+        MockAxiosProvider,
         MockCacheProvider,
         PlayerService,
         SpotifyService,
@@ -87,6 +88,7 @@ describe('PlayerService', () => {
         TrackService,
         AccountLinkService,
         SpotifyService,
+        SpotifyAuthService,
       ],
     }).compile()
 
@@ -111,6 +113,9 @@ describe('PlayerService', () => {
       artists: ['Acme Music'],
       release_year: 2025,
       spotify_id: 'abc123',
+      duration_ms: 0,
+      is_explicit: false,
+      preview_url: null,
     })
 
     queuedTrack = await createTestQueuedTrack()

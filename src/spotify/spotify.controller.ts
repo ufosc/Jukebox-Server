@@ -4,11 +4,11 @@ import { Response } from 'express'
 import { AuthInterceptor } from 'src/auth/auth.interceptor'
 import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
 import { JukeboxService } from 'src/jukebox/jukebox.service'
+import { NumberPipe } from 'src/pipes/int-pipe.pipe'
 import { UserDto } from 'src/shared'
 import { CurrentUser } from 'src/utils/decorators/current-user.decorator'
 import { SpotifyAuthService } from './spotify-auth.service'
 import { SpotifyService } from './spotify.service'
-import { NumberPipe } from 'src/pipes/int-pipe.pipe'
 
 @ApiTags('Spotify')
 @ApiBearerAuth()
@@ -44,7 +44,7 @@ export class SpotifyController {
     if (jukeboxId != null) {
       // await this.jukeboxService.addLinkToJukebox(jukeboxId, account)
       this.accountLinkService.create(jukeboxId, {
-        spotify_account: account,
+        spotify_account_id: account.id,
         active: true,
       })
     }
@@ -56,15 +56,18 @@ export class SpotifyController {
     }
   }
 
-  @Get('links/')
+  @Get('accounts/')
   @UseInterceptors(AuthInterceptor)
   async getSpotifyLinks(@CurrentUser() user: UserDto) {
     return this.spotifyAuthService.findUserAccounts(user.id)
   }
 
-  @Delete('links/:id/')
+  @Delete('accounts/:id/')
   @UseInterceptors(AuthInterceptor)
-  async deleteSpotifyLink(@Param('id', new NumberPipe('id')) id: number) {
+  async deleteSpotifyLink(
+    @CurrentUser() user: UserDto,
+    @Param('id', new NumberPipe('id')) id: number,
+  ) {
     const link = await this.spotifyAuthService.removeAccount(id)
     return link
   }

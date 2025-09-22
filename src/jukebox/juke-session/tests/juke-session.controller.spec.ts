@@ -3,6 +3,8 @@ import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { DatabaseModule } from 'src/config/database.module'
+import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
+import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
 import type { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
 import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
 import { JukeboxService } from 'src/jukebox/jukebox.service'
@@ -10,20 +12,19 @@ import { PlayerInteraction } from 'src/jukebox/player/entity/player-interaction.
 import { PlayerService } from 'src/jukebox/player/player.service'
 import { QueuedTrack } from 'src/jukebox/queue/entities/queued-track.entity'
 import { QueueService } from 'src/jukebox/queue/queue.service'
+import { NetworkService } from 'src/network/network.service'
+import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import type { TrackDto } from 'src/track/dto/track.dto'
 import { Track } from 'src/track/entities/track.entity'
 import { TrackService } from 'src/track/track.service'
-import { AxiosMockProvider, MockCacheProvider } from 'src/utils/mock'
+import { MockAxiosProvider, MockCacheProvider } from 'src/utils/mock'
 import type { CreateJukeSessionDto } from '../dto/juke-session.dto'
 import { JukeSession } from '../entities/juke-session.entity'
 import { JukeSessionMembership } from '../entities/membership.entity'
 import { JukeSessionController } from '../juke-session.controller'
 import { JukeSessionService } from '../juke-session.service'
-import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
-import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
-import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
-import { NetworkService } from 'src/network/network.service'
+import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 
 const getEndAtDate = (hours = 2) => new Date(new Date().getTime() + 1000 * 60 * 60 * hours)
 
@@ -73,7 +74,7 @@ describe('JukeSessionController', () => {
       ],
       controllers: [JukeSessionController],
       providers: [
-        AxiosMockProvider,
+        MockAxiosProvider,
         MockCacheProvider,
         JukeSessionService,
         PlayerService,
@@ -84,6 +85,7 @@ describe('JukeSessionController', () => {
         TrackService,
         AccountLinkService,
         SpotifyService,
+        SpotifyAuthService,
       ],
     }).compile()
 
@@ -104,6 +106,9 @@ describe('JukeSessionController', () => {
       artists: ['Acme Music'],
       release_year: 2025,
       spotify_id: 'abc123',
+      duration_ms: 0,
+      is_explicit: false,
+      preview_url: null,
     })
   })
 

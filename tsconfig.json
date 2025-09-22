@@ -20,8 +20,8 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "types": [
-      "jukebox-types",
-      "./src/types",
+      // "jukebox-types",
+      // "./src/types",
       "@spotify/web-api-ts-sdk",
       "jest"
     ],

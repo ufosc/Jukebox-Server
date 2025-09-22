@@ -3,15 +3,15 @@ import { Test } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { DatabaseModule } from 'src/config/database.module'
 import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
+import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
+import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
 import { JukeboxService } from 'src/jukebox/jukebox.service'
 import { NetworkModule } from 'src/network/network.module'
-import { AxiosMockProvider } from 'src/utils/mock'
+import { MockAxiosProvider } from 'src/utils/mock'
 import { SpotifyAccount } from '../entities/spotify-account.entity'
 import { SpotifyAuthService } from '../spotify-auth.service'
 import { SpotifyController } from '../spotify.controller'
 import { SpotifyService } from '../spotify.service'
-import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
-import { AccountLink } from 'src/jukebox/account-link/entities/account-link.entity'
 
 describe('SpotifyController', () => {
   let controller: SpotifyController
@@ -28,7 +28,7 @@ describe('SpotifyController', () => {
         SpotifyAuthService,
         SpotifyService,
         AccountLinkService,
-        AxiosMockProvider,
+        MockAxiosProvider,
         JukeboxService,
       ],
     }).compile()

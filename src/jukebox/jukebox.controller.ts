@@ -24,7 +24,7 @@ export class JukeboxController {
   @UseGuards(RolesGuard)
   @Get()
   @ApiOperation({ summary: '[MEMBER] Find all jukeboxes for a club id' })
-  findAll(@Query('clubId', new NumberPipe('clubId')) clubId: number) {
+  findAll(@Query('club_id', new NumberPipe('clubId')) clubId: number) {
     return this.jukeboxService.findAll(clubId)
   }
 

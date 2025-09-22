@@ -35,18 +35,18 @@ services:
     container_name: jbx-dev-db
     volumes:
       - jukebox-pg-data:/var/lib/postgresql/data
-      # - ./scripts/create-multiple-postgres-databases:/docker-entrypoint-initdb.d
+      - ./scripts/create-multiple-postgres-databases.sh:/docker-entrypoint-initdb.d/create-multiple-postgres-databases.sh
     environment:
-      - POSTGRES_DB=devdatabase
-      # - POSTGRES_MULTIPLE_DATABASES=devdatabase,test
+      # - POSTGRES_DB=devdatabase
+      - POSTGRES_MULTIPLE_DATABASES=devdatabase,test
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=devpass
       
   redis:
     image: redis:alpine
     container_name: jbx-redis
-    ports:
-      - 6379:6379
+    # ports:
+    #   - 6379:6379
 
 volumes:
   jukebox-pg-data:

@@ -1,20 +1,25 @@
-import { Injectable, NotFoundException, NotImplementedException } from '@nestjs/common'
-import { AccountLinkDto, CreateAccountLinkDto, UpdateAccountLinkDto } from './dto/account-link.dto'
-import { QueryFailedError, Repository } from 'typeorm'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { AccountLink } from './entities/account-link.entity'
 import { plainToInstance } from 'class-transformer'
+import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
+import { QueryFailedError, Repository } from 'typeorm'
+import { AccountLinkDto, CreateAccountLinkDto, UpdateAccountLinkDto } from './dto/account-link.dto'
+import { AccountLink } from './entities/account-link.entity'
 
 @Injectable()
 export class AccountLinkService {
-  constructor(@InjectRepository(AccountLink) private accountLinkRepo: Repository<AccountLink>) {}
+  constructor(
+    private spotifyAuthService: SpotifyAuthService,
+    @InjectRepository(AccountLink) private accountLinkRepo: Repository<AccountLink>,
+  ) {}
 
   async create(
     jukebox_id: number,
     createAccountLinkDto: CreateAccountLinkDto,
   ): Promise<AccountLinkDto> {
     const preLink = this.accountLinkRepo.create({
-      ...createAccountLinkDto,
+      active: createAccountLinkDto.active,
+      spotify_account: { id: createAccountLinkDto.spotify_account_id },
       jukebox: { id: jukebox_id },
     })
 
@@ -32,7 +37,7 @@ export class AccountLinkService {
         link = await this.accountLinkRepo.findOne({
           where: {
             jukebox: { id: jukebox_id },
-            spotify_account: { id: createAccountLinkDto.spotify_account.id },
+            spotify_account: { id: createAccountLinkDto.spotify_account_id },
           },
           relations: { spotify_account: true },
           loadRelationIds: { relations: ['jukebox'] },
@@ -52,7 +57,7 @@ export class AccountLinkService {
   async findAll(jukebox_id: number): Promise<AccountLinkDto[]> {
     const links = await this.accountLinkRepo.find({
       where: { jukebox: { id: jukebox_id } },
-      relations: { spotify_account: true },
+      relations: { spotify_account: true, jukebox: true },
       loadRelationIds: { relations: ['jukebox'] },
     })
     return plainToInstance(AccountLinkDto, links)
@@ -72,7 +77,12 @@ export class AccountLinkService {
   }
 
   async update(id: number, updateAccountLinkDto: UpdateAccountLinkDto): Promise<AccountLinkDto> {
-    await this.accountLinkRepo.update({ id }, updateAccountLinkDto)
+    const payload: any = { active: updateAccountLinkDto.active }
+    if (updateAccountLinkDto.spotify_account_id != null) {
+      payload.spotify_account = { id: updateAccountLinkDto.spotify_account_id }
+    }
+
+    await this.accountLinkRepo.update({ id }, payload)
     const link = await this.findOne(id)
     return plainToInstance(AccountLinkDto, link)
   }
@@ -84,15 +94,24 @@ export class AccountLinkService {
     return plainToInstance(AccountLinkDto, link)
   }
 
-  async getActiveAccount(jukeboxId: number): Promise<AccountLinkDto> {
+  async refreshAccountLink(accountLink: AccountLink) {
+    await this.spotifyAuthService.refreshSpotifyAccount(accountLink.spotify_account)
+  }
+
+  async getActiveAccount(jukeboxId: number, refresh?: boolean): Promise<AccountLinkDto> {
     const link = await this.accountLinkRepo.findOne({
       where: { jukebox: { id: jukeboxId }, active: true },
-      relations: { spotify_account: true },
+      relations: { spotify_account: true, jukebox: true },
       loadRelationIds: { relations: ['jukebox'] },
     })
 
     if (!link) {
       throw new NotFoundException('Could not find active account link for jukeboxId: ' + jukeboxId)
+    }
+
+    if (refresh) {
+      Logger.log(`Refreshing active account link for jukebox ${jukeboxId}...`)
+      await this.refreshAccountLink(link)
     }
 
     return plainToInstance(AccountLinkDto, link)

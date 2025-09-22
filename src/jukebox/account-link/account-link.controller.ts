@@ -1,14 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common'
-import { AccountLinkService } from './account-link.service'
-import { CreateAccountLinkDto, UpdateAccountLinkDto } from './dto/account-link.dto'
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { NumberPipe } from 'src/pipes/int-pipe.pipe'
 import { Roles } from 'src/utils/decorators/roles.decorator'
 import { RolesGuard } from 'src/utils/guards/roles.guard'
+import { AccountLinkService } from './account-link.service'
+import { CreateAccountLinkDto, UpdateAccountLinkDto } from './dto/account-link.dto'
 
 @ApiTags('AccountLink')
 @ApiBearerAuth()
-@Controller('jukebox/jukeboxes/:jukebox_id/account-link')
+@Controller('jukebox/jukeboxes/:jukebox_id/account-links')
 export class AccountLinkController {
   constructor(private readonly accountLinkService: AccountLinkService) {}
 
@@ -36,6 +36,19 @@ export class AccountLinkController {
     return this.accountLinkService.findAll(jukeboxId)
   }
 
+  @Roles('admin')
+  @UseGuards(RolesGuard)
+  @Get('active')
+  @ApiOperation({
+    summary: '[ADMIN] Get an active account link for a jukebox',
+  })
+  getActiveAccount(
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
+    @Query('refresh') refresh: boolean = false,
+  ) {
+    return this.accountLinkService.getActiveAccount(jukeboxId, refresh)
+  }
+
   @Roles('member')
   @UseGuards(RolesGuard)
   @Get(':id')
@@ -60,7 +73,7 @@ export class AccountLinkController {
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @Body() updateAccountLinkDto: UpdateAccountLinkDto,
   ) {
-    return this.accountLinkService.update(id, updateAccountLinkDto)
+    return this.accountLinkService.update(+id, updateAccountLinkDto)
   }
 
   @Roles('admin')
@@ -74,15 +87,5 @@ export class AccountLinkController {
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
   ) {
     return this.accountLinkService.remove(id)
-  }
-
-  @Roles('admin')
-  @UseGuards(RolesGuard)
-  @Get('active')
-  @ApiOperation({
-    summary: '[ADMIN] Get an active account link for a jukebox',
-  })
-  getActiveAccount(@Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number) {
-    return this.accountLinkService.getActiveAccount(jukeboxId)
   }
 }

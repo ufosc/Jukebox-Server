@@ -25,11 +25,11 @@ export class SpotifyService extends SpotifyBaseService implements ISpotifyServic
     return await sdk.currentUser.profile()
   }
 
-  async getTrack(spotifyAuth: SpotifyTokensDto, trackId: string): Promise<ITrackDetails> {
+  async getTrack(spotifyAuth: SpotifyTokensDto, trackId: string) {
     const sdk = this.getSdk(spotifyAuth)
     const track = await sdk.tracks.get(trackId)
 
-    return track as ITrackDetails
+    return track
   }
 
   async queueTrack(spotifyAuth: SpotifyTokensDto, track_uri: string) {

@@ -6,7 +6,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
-import { CLUBS_URL } from 'src/config'
+import { CLUBS_URL, NODE_ENV } from 'src/config'
 import { JukeboxService } from 'src/jukebox/jukebox.service'
 import { NetworkService } from 'src/network/network.service'
 import { Role } from '../decorators/roles.decorator'

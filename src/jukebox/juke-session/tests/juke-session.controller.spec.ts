@@ -169,8 +169,9 @@ describe('JukeSessionController', () => {
 
   it('should end a juke session', async () => {
     const session = await createTestJukeSession()
-    const result = await controller.endJukeSession(jukebox.id, session.id)
+    const result = await controller.update(session.id, jukebox.id, { is_active: false })
     expect(result.end_at).not.toEqual(session.end_at)
+    expect(result.is_active).toBeFalsy()
     expect(result.end_at.getHours()).toEqual(new Date().getHours())
     expect(result.end_at.getMinutes()).toEqual(new Date().getMinutes())
   })

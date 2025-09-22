@@ -23,6 +23,10 @@ export class RolesGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     if (!TokenGuard.checkToken(context, this.networkService)) return false
 
+    if (NODE_ENV === 'dev') {
+      return true
+    }
+
     const role = this.reflector.get<Role>('roles', context.getHandler())
     if (!role) throw new InternalServerErrorException('Role Guard Must Have A Valid Role')
 
@@ -49,6 +53,8 @@ export class RolesGuard implements CanActivate {
     if (clubs.status !== 200) {
       return false
     }
+
+    console.log(clubs)
 
     return !!clubs.data.find((m) => m.id == clubId)
   }

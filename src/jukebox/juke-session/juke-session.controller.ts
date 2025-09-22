@@ -79,17 +79,6 @@ export class JukeSessionController {
 
   @Roles('admin')
   @UseGuards(RolesGuard)
-  @Post(':id/end')
-  @ApiOperation({ summary: '[ADMIN] End juke session' })
-  endJukeSession(
-    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
-    @Param('id', new NumberPipe('id')) id: number,
-  ) {
-    return this.jukeSessionService.endSession(id)
-  }
-
-  @Roles('admin')
-  @UseGuards(RolesGuard)
   @Post(':id/members/')
   @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: '[ADMIN] Add juke session member' })

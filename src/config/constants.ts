@@ -1,6 +1,6 @@
 import 'dotenv/config'
 
-type nodenv = 'dev' | 'production' | 'test' | 'network'
+type nodenv = 'dev' | 'production' | 'test' | 'network' | 'e2e'
 
 export const NODE_ENV: nodenv = (process.env.NODE_ENV as nodenv) || 'dev'
 export const HOST: string = process.env.HOST || 'localhost'

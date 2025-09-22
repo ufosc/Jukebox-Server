@@ -1,6 +1,6 @@
-import { PartialType } from '@nestjs/swagger'
+import { OmitType, PartialType } from '@nestjs/swagger'
 import { Expose, Transform } from 'class-transformer'
-import { IsDate, IsNotEmpty, IsOptional } from 'class-validator'
+import { IsBoolean, IsDate, IsNotEmpty, IsOptional } from 'class-validator'
 import { EntityDtoBase } from 'src/config/dtos'
 
 export class JukeSessionDto extends EntityDtoBase {
@@ -38,4 +38,10 @@ export class CreateJukeSessionDto {
   end_at: Date
 }
 
-export class UpdateJukeSessionDto extends PartialType(CreateJukeSessionDto) {}
+export class UpdateJukeSessionDto extends PartialType(
+  OmitType(CreateJukeSessionDto, ['start_at' as const]),
+) {
+  @IsOptional()
+  @IsBoolean()
+  is_active?: boolean
+}

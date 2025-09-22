@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToInstance } from 'class-transformer'
 import { QueryFailedError, Repository } from 'typeorm'
@@ -143,7 +148,27 @@ export class JukeSessionService {
   }
 
   async update(id: number, updateJukeSessionDto: UpdateJukeSessionDto): Promise<JukeSessionDto> {
-    await this.jukeSessionRepo.update({ id }, updateJukeSessionDto)
+    let currUpdateDto = updateJukeSessionDto
+    const session = await this.findOne(id)
+
+    if (!session.is_active) {
+      throw new BadRequestException('Cannot modify deactivated juke session')
+    }
+
+    if ('is_active' in currUpdateDto) {
+      if (
+        (session.is_active && !currUpdateDto.is_active) ||
+        (currUpdateDto.end_at && currUpdateDto.end_at < new Date())
+      ) {
+        currUpdateDto = { end_at: new Date(), is_active: false }
+      } else if (currUpdateDto.is_active) {
+        throw new BadRequestException(
+          'Cannot attempt to reactivate juke session once it is deactivated. Create a new one',
+        )
+      }
+    }
+
+    await this.jukeSessionRepo.update({ id }, currUpdateDto)
     return await this.findOne(id)
   }
 
@@ -231,13 +256,6 @@ export class JukeSessionService {
   // ============================================
   // MARK: Business Logic
   // ============================================
-
-  /**
-   * End Juke Session with ID
-   */
-  async endSession(id: number): Promise<JukeSessionDto> {
-    return await this.update(id, { end_at: new Date() })
-  }
 
   /**
    * Get Current Juke Session, or throw 404.

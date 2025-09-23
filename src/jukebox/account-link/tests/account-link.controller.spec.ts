@@ -15,8 +15,10 @@ import { AccountLinkController } from '../account-link.controller'
 import { AccountLinkService } from '../account-link.service'
 import type { CreateAccountLinkDto } from '../dto'
 import { AccountLink } from '../entities/account-link.entity'
+import { DataSource } from 'typeorm'
 
 describe('AccountLinkController', () => {
+  let module: TestingModule
   let controller: AccountLinkController
 
   let jukeboxService: JukeboxService
@@ -43,7 +45,7 @@ describe('AccountLinkController', () => {
   }
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule, TypeOrmModule.forFeature([AccountLink, SpotifyAccount, Jukebox])],
       controllers: [AccountLinkController],
       providers: [
@@ -72,6 +74,11 @@ describe('AccountLinkController', () => {
     jukeboxId2 = jukebox2.id
     jukeboxId3 = jukebox3.id
     jukeboxId4 = jukebox4.id
+  })
+
+  afterEach(async () => {
+    const datasource = module.get<DataSource>(DataSource)
+    await datasource.dropDatabase()
   })
 
   it('should be defined', () => {

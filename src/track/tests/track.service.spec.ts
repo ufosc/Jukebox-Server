@@ -17,8 +17,10 @@ import { mockCreateTrack } from 'src/utils/mock/mock-create-track'
 import { mockTrackDetails } from 'src/utils/mock/mock-track-details'
 import { Track } from '../entities/track.entity'
 import { TrackService } from '../track.service'
+import { DataSource } from 'typeorm'
 
 describe('TrackService', () => {
+  let module: TestingModule
   let service: TrackService
 
   let jukeboxService: JukeboxService
@@ -29,7 +31,7 @@ describe('TrackService', () => {
   let accountLink: AccountLinkDto
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
         TypeOrmModule.forFeature([Track, Jukebox, AccountLink, SpotifyAccount]),
@@ -61,6 +63,11 @@ describe('TrackService', () => {
     })
   })
 
+  afterEach(async () => {
+    const datasource = module.get<DataSource>(DataSource)
+    await datasource.dropDatabase()
+  })
+
   it('should be defined', () => {
     expect(service).toBeDefined()
   })
@@ -72,9 +79,7 @@ describe('TrackService', () => {
     const foundTrack = await service.getTrack(track.spotify_id, jukebox.id)
     expect(foundTrack.spotify_id).toEqual(track.spotify_id)
 
-    expect(
-      async () => await service.create({ ...mockCreateTrack, spotify_uri: '' }),
-    ).rejects.toThrow(Error)
+    await expect(service.create({ ...mockCreateTrack, spotify_uri: '' })).rejects.toThrow(Error)
   })
 
   it('should create a local reference to a track if it does not exist', async () => {

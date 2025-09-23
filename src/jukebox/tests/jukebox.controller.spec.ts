@@ -7,14 +7,16 @@ import { JukeboxController } from '../jukebox.controller'
 import { JukeboxService } from '../jukebox.service'
 import { NotFoundException } from '@nestjs/common'
 import { NetworkService } from 'src/network/network.service'
+import { DataSource } from 'typeorm'
 
 describe('JukeboxController', () => {
+  let module: TestingModule
   let controller: JukeboxController
 
   const adminClubId = 20
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule, TypeOrmModule.forFeature([Jukebox])],
       controllers: [JukeboxController],
       providers: [
@@ -34,6 +36,11 @@ describe('JukeboxController', () => {
     }).compile()
 
     controller = module.get<JukeboxController>(JukeboxController)
+  })
+
+  afterEach(async () => {
+    const datasource = module.get<DataSource>(DataSource)
+    await datasource.dropDatabase()
   })
 
   it('should be defined', () => {

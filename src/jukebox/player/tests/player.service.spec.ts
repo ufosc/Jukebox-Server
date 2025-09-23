@@ -29,6 +29,7 @@ import { MockAxiosProvider, MockCacheProvider, mockUser } from 'src/utils/mock'
 import type { PlayerStateDto } from '../dto'
 import { InteractionType, PlayerInteraction } from '../entity/player-interaction.entity'
 import { PlayerService } from '../player.service'
+import { DataSource } from 'typeorm'
 
 describe('PlayerService', () => {
   let service: PlayerService
@@ -131,6 +132,8 @@ describe('PlayerService', () => {
   })
 
   afterEach(async () => {
+    const datasource = module.get<DataSource>(DataSource)
+    await datasource.dropDatabase()
     await module.close()
   })
 

@@ -50,11 +50,18 @@ export class JukeSessionService {
         session = await this.jukeSessionRepo.save(preSession)
         break
       } catch (err) {
+        const dbError = err.driverError
         // Checks Postgres Unique Constraint Error Code
-        if (err instanceof QueryFailedError && err.driverError?.code === '23505') {
-          ++retries
-          if (retries > MAX_RETRIES) {
-            throw new InternalServerErrorException('Failed to generate a unique join code')
+        if (err instanceof QueryFailedError && dbError?.code === '23505') {
+          if (dbError.constraint === 'unique_active_session_per_jukebox') {
+            throw new InternalServerErrorException(
+              'Failed to generate juke session, an active one exists for this jukebox',
+            )
+          } else if (dbError.constraint === 'unique_join_code') {
+            ++retries
+            if (retries > MAX_RETRIES) {
+              throw new InternalServerErrorException('Failed to generate a unique join code')
+            }
           }
         } else {
           throw err

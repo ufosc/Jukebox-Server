@@ -1,12 +1,12 @@
 # Taskfile docs: https://taskfile.dev/
-version: '3'
+version: "3"
 
 tasks:
   #########################################
   # Server Commands
   #########################################
   build:
-    desc: 'Build docker image if necessary'
+    desc: "Build docker image if necessary"
     sources:
       - ./Dockerfile
       - ./package*.json
@@ -23,54 +23,69 @@ tasks:
       - docker-compose -f docker-compose.network.yml build
 
   dev:
-    desc: 'Run the servers config in dev mode'
+    desc: "Run the servers config in dev mode"
     deps:
       - build
     cmds:
       - docker-compose up
 
   network:
-    desc: 'Run server in network mode'
+    desc: "Run server in network mode"
     deps:
       - build:network
     cmds:
       - docker-compose -f docker-compose.network.yml up
 
   push-docker:
-    desc: 'Push docker image'
+    desc: "Push docker image"
     cmds:
       - docker buildx build --platform=linux/amd64,linux/arm64 -t ikehunter5/jukebox-server:latest -f ./Dockerfile . --push
 
   seed:
-    desc: 'Add mock data to the database'
+    desc: "Add mock data to the database"
     deps:
       - build
     cmds:
       - docker-compose run --rm server sh -c "npm run seed"
 
   seed:network:
-    desc: 'Add mock data to the network database'
+    desc: "Add mock data to the network database"
     deps:
       - build:network
     cmds:
       - docker-compose -f docker-compose.network.yml run --rm server sh -c "npm run seed"
 
   test:
-    desc: 'Run unit tests'
+    desc: "Run unit tests"
     deps:
       - build
     cmds:
       - docker-compose run --rm server sh -c "npm run test -- {{.CLI_ARGS}}"
 
+  e2e:
+    desc: "Run e2e tests"
+    deps:
+      - build
+    cmds:
+      - docker-compose run --build --rm server sh -c "npm run test:e2e -- {{.CLI_ARGS}}"
+
+  test:all:
+    desc: "Run all tests"
+    deps:
+      - build
+    cmds:
+      - docker-compose run --build --rm server sh -c "npm run test -- {{.CLI_ARGS}}"
+      - docker-compose run --rm server sh -c "npm run test:e2e -- {{.CLI_ARGS}}"
+
   test:cov:
-    desc: 'Run unit tests and compile coverate report'
+    desc: "Run unit tests and compile coverate report"
     deps:
       - build
     cmds:
       - docker-compose run --rm server sh -c "npm run test:cov"
 
   clean:
-    desc: 'Remove container and volumes'
+    desc: "Remove container and volumes"
     cmds:
       - docker-compose down --remove-orphans -v
 
@@ -79,13 +94,13 @@ tasks:
   #########################################
 
   publish-types:
-    summary: 'Publish types package version to GitHub packages'
+    summary: "Publish types package version to GitHub packages"
     desc: |
       Example usage: "task publish-types -- 1.0.0". Must login to NPM using "npm login", and
       must have write permissions for the package: https://www.npmjs.com/package/jukebox-types.
       This command writes a new version to the package.json.
     vars:
-      V: '{{.CLI_ARGS}}'
+      V: "{{.CLI_ARGS}}"
     cmds:
       - npm version {{.V}} --workspace jukebox-types
       - npm publish --workspace jukebox-types --access public

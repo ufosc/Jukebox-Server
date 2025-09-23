@@ -4,12 +4,16 @@ import { Column, Entity, Index, ManyToOne, OneToMany } from 'typeorm'
 import { JukeSessionMembership } from './membership.entity'
 
 @Entity('juke_session')
+@Index('unique_active_session_per_jukebox', ['jukebox'], {
+  unique: true,
+  where: `"is_active" = true`,
+})
 export class JukeSession extends EntityBase {
   @ManyToOne(() => Jukebox, (jukebox) => jukebox.juke_sessions)
   jukebox: Jukebox
 
-  @Index()
-  @Column({ unique: true })
+  @Index('unique_join_code', ['join_code'], { unique: true })
+  @Column()
   join_code: string
 
   @Column({ default: '' })

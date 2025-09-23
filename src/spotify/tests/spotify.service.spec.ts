@@ -1,15 +1,17 @@
 import { BadRequestException } from '@nestjs/common'
-import { Test, TestingModule } from '@nestjs/testing'
+import type { TestingModule } from '@nestjs/testing'
+import { Test } from '@nestjs/testing'
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm'
 import { Axios } from 'axios'
 import { DatabaseModule } from 'src/config/database.module'
-import { Repository } from 'typeorm'
+import { DataSource, type Repository } from 'typeorm'
 import { SpotifyAccount } from '../entities/spotify-account.entity'
 import { SpotifyAuthService } from '../spotify-auth.service'
 
 jest.mock('axios')
 
 describe('SpotifyAuthService', () => {
+  let module: TestingModule
   let service: SpotifyAuthService
   let repo: Repository<SpotifyAccount>
   let axios: jest.Mocked<Axios>
@@ -19,7 +21,7 @@ describe('SpotifyAuthService', () => {
       post: jest.fn(),
     } as any
 
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule, TypeOrmModule.forFeature([SpotifyAccount])],
       providers: [
         SpotifyAuthService,
@@ -31,6 +33,11 @@ describe('SpotifyAuthService', () => {
 
     service = module.get<SpotifyAuthService>(SpotifyAuthService)
     repo = module.get<Repository<SpotifyAccount>>(getRepositoryToken(SpotifyAccount))
+  })
+
+  afterEach(async () => {
+    const datasource = module.get<DataSource>(DataSource)
+    await datasource.dropDatabase()
   })
 
   it('should return a valid Spotify redirect URI', () => {

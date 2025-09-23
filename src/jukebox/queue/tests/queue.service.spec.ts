@@ -25,15 +25,15 @@ import { mockTrackDetails } from 'src/utils/mock/mock-track-details'
 import { QueuedTrack } from '../entities/queued-track.entity'
 import { QueueController } from '../queue.controller'
 import { QueueService } from '../queue.service'
+import { DataSource } from 'typeorm'
 
 describe('QueueService', () => {
+  let module: TestingModule
   let controller: QueueController
   let service: QueueService
 
   let jukebox: JukeboxDto
-  let jukeSession1: JukeSessionDto
-  let jukeSession2: JukeSessionDto
-  let jukeSession3: JukeSessionDto
+  let jukeSession: JukeSessionDto
   let jukeSessionMembership: JukeSessionMembershipDto
   let accountLink: AccountLinkDto
 
@@ -43,19 +43,12 @@ describe('QueueService', () => {
   let accountLinkService: AccountLinkService
   let spotifyAuthService: SpotifyAuthService
 
-  let sessionId1: number
-  let sessionId2: number
-  let sessionId3: number
+  let sessionId: number
 
   let queueTrackParams: Parameters<typeof controller.queueTrack>
 
-  beforeAll(() => {
-    jest.spyOn(JukeSessionService.prototype, 'generateQrCode').mockResolvedValue('')
-    jest.spyOn(SpotifyService.prototype, 'getTrack').mockResolvedValue(mockTrackDetails)
-  })
-
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
         TypeOrmModule.forFeature([
@@ -79,9 +72,12 @@ describe('QueueService', () => {
         SpotifyService,
         SpotifyAuthService,
         NetworkService,
-        { provide: SpotifyService, useValue: { queueTrack: jest.fn().mockResolvedValue(true) } },
       ],
     }).compile()
+
+    jest.spyOn(JukeSessionService.prototype, 'generateQrCode').mockResolvedValue('')
+    jest.spyOn(SpotifyService.prototype, 'getTrack').mockResolvedValue(mockTrackDetails)
+    jest.spyOn(SpotifyService.prototype, 'queueTrack').mockResolvedValue()
 
     controller = module.get<QueueController>(QueueController)
     service = module.get<QueueService>(QueueService)
@@ -93,31 +89,27 @@ describe('QueueService', () => {
     spotifyAuthService = module.get<SpotifyAuthService>(SpotifyAuthService)
 
     jukebox = await jukeboxService.create({ name: 'Test Jukebox', club_id: 1 })
-    jukeSession1 = await jukeSessionService.create(jukebox.id, {
+    jukeSession = await jukeSessionService.create(jukebox.id, {
       end_at: new Date(new Date().getTime() + 30 * 60 * 1000),
     })
-    jukeSession2 = await jukeSessionService.create(jukebox.id, {
-      end_at: new Date(new Date().getTime() + 30 * 60 * 1000),
-    })
-    jukeSession3 = await jukeSessionService.create(jukebox.id, {
-      end_at: new Date(new Date().getTime() + 30 * 60 * 1000),
-    })
-    jukeSessionMembership = await jukeSessionService.createMembership(jukeSession1.id, {
+    sessionId = jukeSession.id
+    jukeSessionMembership = await jukeSessionService.createMembership(sessionId, {
       user_id: 1,
     })
     accountLink = await accountLinkService.create(jukebox.id, {
       spotify_account_id: (await spotifyAuthService.addAccount(mockSpotifyAccount)).id,
     })
 
-    sessionId1 = jukeSession1.id
-    sessionId2 = jukeSession2.id
-    sessionId3 = jukeSession3.id
-
     queueTrackParams = [
-      sessionId1,
+      sessionId,
       jukebox.id,
       { spotify_track_id: mockCreateTrack.spotify_id, queued_by: { id: jukeSessionMembership.id } },
     ]
+  })
+
+  afterEach(async () => {
+    const datasource = module.get<DataSource>(DataSource)
+    await datasource.dropDatabase()
   })
 
   it('should be defined', () => {
@@ -129,20 +121,20 @@ describe('QueueService', () => {
     let queuedTrackToRemain = await controller.queueTrack(...queueTrackParams)
     const queuedTrackToBeRemoved = await controller.queueTrack(...queueTrackParams)
 
-    let queue = await controller.getQueuedTracks(sessionId1, jukebox.id)
-    const getQueuedTrack = await service.getNextTrack(sessionId1)
+    let queue = await controller.getQueuedTracks(sessionId, jukebox.id)
+    const getQueuedTrack = await service.getNextTrack(sessionId)
     expect(getQueuedTrack).toEqual(queue.tracks[0])
 
-    const popQueuedTrack = await service.popNextTrack(sessionId1)
+    const popQueuedTrack = await service.popNextTrack(sessionId)
     const queueLengthBeforePop = queue.tracks.length
     expect(popQueuedTrack).toEqual(queue.tracks[0])
 
-    queue = await controller.getQueuedTracks(sessionId1, jukebox.id)
+    queue = await controller.getQueuedTracks(sessionId, jukebox.id)
     expect(queueLengthBeforePop - 1).toEqual(queue.tracks.length)
 
-    await service.removeTrackFromQueue(sessionId1, queuedTrackToBeRemoved.id)
+    await service.removeTrackFromQueue(sessionId, queuedTrackToBeRemoved.id)
     const queueLengthBeforeRemove = queue.tracks.length
-    queue = await controller.getQueuedTracks(sessionId1, jukebox.id)
+    queue = await controller.getQueuedTracks(sessionId, jukebox.id)
     expect(queueLengthBeforeRemove - 1).toEqual(queue.tracks.length)
 
     queuedTrackToRemain = await service.getQueuedTrackById(queuedTrackToRemain.id)
@@ -150,10 +142,10 @@ describe('QueueService', () => {
   })
 
   it('should play a queued track', async () => {
-    queueTrackParams[0] = sessionId2
+    queueTrackParams[0] = sessionId
 
     await controller.queueTrack(...queueTrackParams)
-    const popQueuedTrack = await service.popNextTrack(sessionId2)
+    const popQueuedTrack = await service.popNextTrack(sessionId)
     await service.playQueuedTrack(popQueuedTrack.id)
     const queuedTrack = await service.getQueuedTrackById(popQueuedTrack.id)
     expect(queuedTrack.is_editable).toBeFalsy()
@@ -161,11 +153,11 @@ describe('QueueService', () => {
   })
 
   it('should queue a track to spotify', async () => {
-    queueTrackParams[0] = sessionId3
+    queueTrackParams[0] = sessionId
 
     await controller.queueTrack(...queueTrackParams)
-    await service.queueNextTrackToSpotify(jukebox.id, sessionId3)
-    const queue = await controller.getQueuedTracks(sessionId3, jukebox.id)
+    await service.queueNextTrackToSpotify(jukebox.id, sessionId)
+    const queue = await controller.getQueuedTracks(sessionId, jukebox.id)
     expect(queue.tracks[0].is_editable).toBeFalsy()
   })
 })

@@ -1,4 +1,5 @@
-import { Type } from 'class-transformer'
+import { OmitType } from '@nestjs/swagger'
+import { Expose, Type } from 'class-transformer'
 import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, ValidateNested } from 'class-validator'
 import { TrackDto } from 'src/track/dto/track.dto'
 
@@ -31,3 +32,10 @@ export class PlayerAuxUpdateDto {
   @Type(() => TrackDto)
   current_track?: TrackDto
 }
+
+export class PlayerJoinDto extends OmitType(PlayerAuxUpdateDto, [
+  'action' as const,
+  'progress' as const,
+  'timestamp' as const,
+  'current_track' as const,
+]) {}

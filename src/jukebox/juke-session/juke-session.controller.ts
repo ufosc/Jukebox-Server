@@ -92,17 +92,6 @@ export class JukeSessionController {
     return this.jukeSessionService.remove(id)
   }
 
-  @Roles('admin')
-  @UseGuards(RolesGuard)
-  @Post(':id/end')
-  @ApiOperation({ summary: '[ADMIN] End juke session' })
-  endJukeSession(
-    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
-    @Param('id', new NumberPipe('id')) id: number,
-  ) {
-    return this.jukeSessionService.endSession(id)
-  }
-
   @Roles('member')
   @UseGuards(RolesGuard)
   @Get(':id/membership/')

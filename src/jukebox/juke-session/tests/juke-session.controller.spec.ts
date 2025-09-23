@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common'
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -19,16 +19,18 @@ import type { TrackDto } from 'src/track/dto/track.dto'
 import { Track } from 'src/track/entities/track.entity'
 import { TrackService } from 'src/track/track.service'
 import { MockAxiosProvider, MockCacheProvider } from 'src/utils/mock'
-import type { CreateJukeSessionDto } from '../dto/juke-session.dto'
+import type { CreateJukeSessionDto, JukeSessionDto } from '../dto/juke-session.dto'
 import { JukeSession } from '../entities/juke-session.entity'
 import { JukeSessionMembership } from '../entities/membership.entity'
 import { JukeSessionController } from '../juke-session.controller'
 import { JukeSessionService } from '../juke-session.service'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
+import { DataSource } from 'typeorm'
 
 const getEndAtDate = (hours = 2) => new Date(new Date().getTime() + 1000 * 60 * 60 * hours)
 
 describe('JukeSessionController', () => {
+  let module: TestingModule
   let controller: JukeSessionController
 
   let queueService: QueueService
@@ -50,7 +52,17 @@ describe('JukeSessionController', () => {
   const createTestJukeSession = async (
     payload?: Partial<CreateJukeSessionDto & { jukebox_id: number }>,
   ) => {
-    const session = await jukeSessionService.create(payload?.jukebox_id ?? jukebox.id, {
+    const jukeboxId = payload?.jukebox_id ?? jukebox.id
+    try {
+      const activeSession = await jukeSessionService.getCurrentSession(jukeboxId)
+      await jukeSessionService.update(activeSession.id, { is_active: false })
+    } catch (err: any) {
+      if (!(err instanceof NotFoundException)) {
+        throw err
+      }
+    }
+
+    const session = await jukeSessionService.create(jukeboxId, {
       end_at: getEndAtDate(),
       ...(payload ?? {}),
     })
@@ -58,7 +70,7 @@ describe('JukeSessionController', () => {
   }
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
         TypeOrmModule.forFeature([
@@ -112,6 +124,11 @@ describe('JukeSessionController', () => {
     })
   })
 
+  afterEach(async () => {
+    const datasource = module.get<DataSource>(DataSource)
+    await datasource.dropDatabase()
+  })
+
   it('should be defined', () => {
     expect(controller).toBeDefined()
   })
@@ -120,6 +137,14 @@ describe('JukeSessionController', () => {
     const result = await controller.create(jukebox.id, {
       end_at: getEndAtDate(),
     })
+
+    // Cannot create juke session when one is active
+    await expect(
+      controller.create(jukebox.id, {
+        end_at: getEndAtDate(),
+      }),
+    ).rejects.toThrow(InternalServerErrorException)
+    await controller.update(result.id, jukebox.id, { is_active: false })
 
     expect(result).toBeDefined()
     expect(result.jukebox_id).toEqual(jukebox.id)
@@ -174,8 +199,9 @@ describe('JukeSessionController', () => {
 
   it('should end a juke session', async () => {
     const session = await createTestJukeSession()
-    const result = await controller.endJukeSession(jukebox.id, session.id)
+    const result = await controller.update(session.id, jukebox.id, { is_active: false })
     expect(result.end_at).not.toEqual(session.end_at)
+    expect(result.is_active).toBeFalsy()
     expect(result.end_at.getHours()).toEqual(new Date().getHours())
     expect(result.end_at.getMinutes()).toEqual(new Date().getMinutes())
   })

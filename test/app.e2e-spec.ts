@@ -3,46 +3,89 @@ import { Test } from '@nestjs/testing'
 import type { INestApplication } from '@nestjs/common'
 import * as request from 'supertest'
 import { AppModule } from 'src/app.module'
-import { RolesGuard } from 'src/utils/guards/roles.guard'
-import { Reflector } from '@nestjs/core'
-import { DatabaseModule } from 'src/config/database.module'
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
-import { JukeboxService } from 'src/jukebox/jukebox.service'
 import { NetworkService } from 'src/network/network.service'
-import { AxiosProvider } from 'src/utils/mock'
-import { Axios } from 'axios'
+import type { Socket } from 'socket.io-client'
+import { io } from 'socket.io-client'
+import { JukeboxService } from 'src/jukebox/jukebox.service'
+import type { JukeboxDto } from 'src/jukebox/dto/jukebox.dto'
+
+const connectSocket = (url: string, handshakeData: Object): Promise<Socket> => {
+  return new Promise<Socket>((resolve, _) => {
+    const socket = io(url, { autoConnect: true, transports: ['websocket'], ...handshakeData })
+    socket.once('connect', () => resolve(socket))
+    socket.once('connect_error', (err) => {
+      console.log(err)
+      resolve(socket)
+    })
+  })
+}
+
+const disconnectSocket = (socket: Socket): Promise<Socket> => {
+  return new Promise<Socket>((resolve, _) => {
+    socket.once('disconnect', () => resolve(socket))
+    socket.disconnect()
+  })
+}
 
 describe('AppController (e2e)', () => {
   let app: INestApplication
-  let guard: RolesGuard
-  let reflector: Reflector
+
   let jukeboxService: JukeboxService
-  let networkService: NetworkService
+
+  let jukebox: JukeboxDto
 
   const networkMock = {
     sendRequest: jest
       .fn()
+      // GUARDS
+
+      // For jukebox result
+      .mockResolvedValueOnce({
+        status: 200,
+        description: 'test',
+        data: [{ id: 0, name: 'Baby', testingData: 'create' }],
+      })
+      // For find all result
+      .mockResolvedValueOnce({
+        status: 200,
+        description: 'test',
+        data: [{ id: 0, name: 'Baby', testingData: 'findAll' }],
+      })
+      // For jukebox error result
+      .mockResolvedValueOnce({
+        status: 200,
+        description: 'test',
+        data: [{ testingData: 'error' }],
+      })
+      // For jukebox delete result
+      .mockResolvedValueOnce({
+        status: 200,
+        description: 'test',
+        data: [{ id: 0, name: 'Baby', testingData: 'delete' }],
+      })
+
+      // SOCKETS
+
+      // For member
       .mockResolvedValueOnce({
         status: 200,
         description: 'test',
         data: [{ id: 0, name: 'Baby' }],
       })
+      // For admin
       .mockResolvedValueOnce({
         status: 200,
         description: 'test',
         data: [{ id: 0, name: 'Baby' }],
       })
+      // For not part of club
       .mockResolvedValueOnce({
         status: 200,
         description: 'test',
         data: [],
-      })
-      .mockResolvedValueOnce({
-        status: 200,
-        description: 'test',
-        data: [{ id: 0, name: 'Baby' }],
       }),
+
+    setToken: jest.fn().mockImplementation(() => {}),
   }
 
   beforeEach(async () => {
@@ -55,12 +98,10 @@ describe('AppController (e2e)', () => {
 
     app = module.createNestApplication()
     await app.init()
+    await app.listen(0)
 
     jukeboxService = module.get<JukeboxService>(JukeboxService)
-    networkService = module.get<NetworkService>(NetworkService)
-
-    reflector = new Reflector()
-    guard = new RolesGuard(jukeboxService, networkService, reflector)
+    jukebox = await jukeboxService.create({ name: 'WS Test', club_id: 0 })
   })
 
   it('/ (GET)', async () => {
@@ -101,5 +142,73 @@ describe('AppController (e2e)', () => {
       .delete(`/jukebox/jukeboxes/${jukeboxResult.body.id}`)
       .set('Authorization', 'Bearer ADMIN_TOKEN')
     expect(deleteJukeboxResult.status).toBe(200)
+  })
+
+  it('player WS should function correctly', async () => {
+    const url = await app.getUrl()
+    const memberSocket: Socket = await connectSocket(url, {
+      auth: {
+        token: 'MEMBER_TOKEN',
+      },
+      query: {
+        role: 'member',
+        jukeboxId: jukebox.id,
+      },
+    })
+    expect(memberSocket.connected).toBe(true)
+
+    const adminSocket: Socket = await connectSocket(url, {
+      auth: {
+        token: 'ADMIN_TOKEN',
+      },
+      query: {
+        role: 'admin',
+        jukeboxId: jukebox.id,
+      },
+    })
+    expect(adminSocket.connected).toBe(true)
+
+    const failureSocket1: Socket = await connectSocket(url, {
+      auth: {
+        token: '',
+      },
+      query: {
+        role: 'admin',
+        jukeboxId: jukebox.id,
+      },
+    })
+    expect(failureSocket1.connected).toBe(false)
+
+    const failureSocket2: Socket = await connectSocket(url, {
+      auth: {
+        token: 'ADMIN_TOKEN',
+      },
+      query: {
+        role: '',
+        jukeboxId: jukebox.id,
+      },
+    })
+    expect(failureSocket2.connected).toBe(false)
+
+    const wrongPermission: Socket = await connectSocket(url, {
+      auth: {
+        token: 'MEMBER_TOKEN',
+      },
+      query: {
+        role: 'admin',
+        jukeboxId: jukebox.id,
+      },
+    })
+    expect(wrongPermission.connected).toBe(false)
+
+    const notAllowedResult = await new Promise<string>((resolve, _) => {
+      memberSocket.once('exception', () => resolve('failure'))
+      memberSocket.once('player-state-update', () => resolve('success'))
+      memberSocket.emit('player-aux-update', { jukebox_id: jukebox.id, action: 'paused' })
+    })
+    expect(notAllowedResult).toContain('failure')
+
+    await disconnectSocket(memberSocket)
+    await disconnectSocket(adminSocket)
   })
 })

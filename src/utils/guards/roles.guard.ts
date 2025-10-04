@@ -54,8 +54,6 @@ export class RolesGuard implements CanActivate {
       return false
     }
 
-    console.log(clubs)
-
     return !!clubs.data.find((m) => m.id == clubId)
   }
 }

@@ -30,6 +30,7 @@ import { CLUBS_URL, NODE_ENV } from 'src/config'
 import { JukeboxService } from './jukebox.service'
 import { NetworkService } from 'src/network/network.service'
 import { WSExceptionFilter } from 'src/utils/filters/ws-exception.filter'
+import { QueuedTrackDto } from './queue/dto'
 
 @UseFilters(new WSExceptionFilter())
 @WebSocketGateway({
@@ -66,10 +67,10 @@ export class JukeboxGateway implements OnGatewayInit {
           )
         }
 
-        const jukeboxId = client.handshake.query?.jukeboxId ?? null
+        const clubId = client.handshake.query?.club_id ?? null
         const role = client.handshake.query?.role ?? null
 
-        if (jukeboxId == null) {
+        if (clubId == null) {
           return next(
             this.handleConnectionRejection(
               client,
@@ -89,9 +90,6 @@ export class JukeboxGateway implements OnGatewayInit {
           )
         }
 
-        const jukebox = await this.jukeboxService.findOne(parseInt(jukeboxId as string, 10))
-        const clubId = jukebox.club_id
-
         const clubs = (await this.networkService.sendRequest(
           `${CLUBS_URL}/api/v1/club/clubs/${role === 'admin' ? '?is_admin=true' : ''}`,
           'GET',
@@ -107,16 +105,17 @@ export class JukeboxGateway implements OnGatewayInit {
           )
         }
 
-        if (!!clubs.data.find((m) => m.id === clubId)) {
-          console.log(`[WS] Client ${client.id} authorized for jukebox ${jukeboxId} as ${role}`)
+        if (!!clubs.data.find((m) => m.id === parseInt(clubId as string))) {
+          console.log(`[WS] Client ${client.id} authorized for club ${clubId} as ${role}`)
           client['role'] = role
+          this.server.emit('hands shaked')
           return next()
         } else {
           return next(
             this.handleConnectionRejection(
               client,
-              `Connection rejected: user not member of jukebox ${jukeboxId}`,
-              'Authorization failed: you are not a member of this jukebox.',
+              `Connection rejected: user not member of club ${clubId}`,
+              'Authorization failed: you are not a member of this club.',
             ),
           )
         }
@@ -124,7 +123,7 @@ export class JukeboxGateway implements OnGatewayInit {
         return next(
           this.handleConnectionRejection(
             client,
-            'Unexpected error during handshake',
+            `Unexpected error during handshake: ${e}`,
             'Authorization failed: unexpected error',
           ),
         )
@@ -137,19 +136,36 @@ export class JukeboxGateway implements OnGatewayInit {
     if (client['role'] !== 'member' && client['role'] !== 'admin') {
       throw new WsException('You are not authorized')
     }
+
     const jukeboxId = payload.jukebox_id.toString()
+    console.log('Joining ', jukeboxId)
     client.join(jukeboxId)
-    client.to(jukeboxId).emit('player-join-success', { success: true })
+    const playerState = await this.playerService.getPlayerState(+jukeboxId)
+    console.log(playerState)
+    this.server.to(jukeboxId).emit('player-join-success', playerState)
+  }
+
+  @SubscribeMessage('player-ping')
+  async handlePlayerPing(@ConnectedSocket() client: Socket) {
+    if (client['role'] !== 'admin') {
+      throw new WsException('You are not authorized')
+    }
+
+    console.log('Player Available')
   }
 
   @SubscribeMessage('player-aux-update')
-  async handlePlayerAuxUpdate(client: Socket, @MessageBody() payload: PlayerAuxUpdateDto) {
+  async handlePlayerAuxUpdate(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: PlayerAuxUpdateDto,
+  ) {
+    console.log('Received Player Aux Update')
     if (client['role'] !== 'admin') {
       throw new WsException('You are not authorized')
     }
 
     console.log(payload)
-    const { jukebox_id, action, progress, current_track } = payload
+    const { jukebox_id, action, progress, spotify_track, duration_ms } = payload
     const session = await this.jukeSessionService.getCurrentSession(jukebox_id)
 
     switch (action) {
@@ -160,21 +176,28 @@ export class JukeboxGateway implements OnGatewayInit {
         this.playerService.setIsPlaying(jukebox_id, false)
         break
       case 'changed_tracks':
-        if (current_track && !current_track?.spotify_id) {
+        if (spotify_track && !spotify_track?.spotify_id) {
           throw new WsException('Track must have a spotify id')
         }
 
         // Check if next track was next in queue, if so pop it
-        const nextTrack = await this.queueService.getNextTrack(session.id)
+        let nextTrack: QueuedTrackDto | null
+        try {
+          nextTrack = await this.queueService.getNextTrack(session.id)
+        } catch (err) {
+          if (err instanceof NotFoundException) {
+            nextTrack = null
+          } else throw new err()
+        }
 
-        if (nextTrack.track.spotify_id === current_track?.spotify_id) {
+        if (nextTrack && nextTrack.track.spotify_id === spotify_track?.spotify_id) {
           // Changed track was next from queue
           const track = await this.queueService.popNextTrack(session.id)
           await this.playerService.setCurrentQueuedTrack(jukebox_id, track)
           await this.queueService.queueNextTrackToSpotify(jukebox_id, session.id)
-        } else if (current_track) {
+        } else if (spotify_track) {
           // Changed track was outside of queue
-          const track = await this.tracksService.getTrack(current_track.spotify_id!, jukebox_id)
+          const track = await this.tracksService.getTrack(spotify_track.spotify_id!, jukebox_id)
           await this.playerService.setCurrentSpotifyTrack(jukebox_id, track)
         }
         break
@@ -187,7 +210,9 @@ export class JukeboxGateway implements OnGatewayInit {
     }
 
     const playerState = await this.playerService.getPlayerState(jukebox_id)
-    client.to(jukebox_id.toString()).emit('player-state-update', playerState)
+    const result = { ...playerState, spotify_track: { ...spotify_track, duration_ms } }
+    console.log(result)
+    this.server.to(jukebox_id.toString()).emit('player-state-update', result)
   }
 
   private handleConnectionRejection(client: Socket, loggingMessage: string, errorMessage: string) {

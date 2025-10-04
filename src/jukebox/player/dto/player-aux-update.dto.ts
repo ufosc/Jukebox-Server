@@ -24,18 +24,23 @@ export class PlayerAuxUpdateDto {
   progress?: number
 
   @IsOptional()
+  @IsNumber()
+  duration_ms?: number
+
+  @IsOptional()
+  @Type(() => Date)
   @IsDate()
   timestamp?: Date
 
   @IsOptional()
   @ValidateNested()
   @Type(() => TrackDto)
-  current_track?: TrackDto
+  spotify_track?: TrackDto
 }
 
 export class PlayerJoinDto extends OmitType(PlayerAuxUpdateDto, [
   'action' as const,
   'progress' as const,
   'timestamp' as const,
-  'current_track' as const,
+  'spotify_track' as const,
 ]) {}

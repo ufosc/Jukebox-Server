@@ -1,12 +1,14 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common'
-import { HttpArgumentsHost } from '@nestjs/common/interfaces'
-import { error } from 'console'
-import { Request, Response } from 'express'
+import { Response } from 'express'
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     Logger.error(exception, exception.stack)
+    if (host.getType() !== 'http') {
+      throw exception instanceof Error ? exception : new Error(String(exception))
+    }
+
     const ctx = host.switchToHttp()
     const response = ctx.getResponse<Response>()
     let status: number

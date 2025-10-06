@@ -122,8 +122,12 @@ export class JukeSessionController {
   @UseGuards(RolesGuard)
   @Post(':id/members/join/')
   @Serialize(JukeSessionMembershipDto)
-  @ApiOperation({ summary: 'Add Juke Session Member' })
-  joinJukeSession(@Param('id', new NumberPipe('id')) id: number, @CurrentUser() user: UserDto) {
+  @ApiOperation({ summary: '[MEMBER] Add Juke Session Member' })
+  joinJukeSession(
+    @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
+    @Param('id', new NumberPipe('id')) id: number,
+    @CurrentUser() user: UserDto,
+  ) {
     return this.jukeSessionService.createMembership(id, { user_id: user.id })
   }
 

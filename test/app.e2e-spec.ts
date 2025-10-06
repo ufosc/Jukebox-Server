@@ -70,13 +70,13 @@ describe('AppController (e2e)', () => {
       .mockResolvedValueOnce({
         status: 200,
         description: 'test',
-        data: [{ id: 0, name: 'Baby' }],
+        data: [{ id: 1, name: 'Baby' }],
       })
       // For admin
       .mockResolvedValueOnce({
         status: 200,
         description: 'test',
-        data: [{ id: 0, name: 'Baby' }],
+        data: [{ id: 1, name: 'Baby' }],
       })
       // For not part of club
       .mockResolvedValueOnce({
@@ -123,7 +123,7 @@ describe('AppController (e2e)', () => {
     expect(jukeboxResult.status).toBe(201)
 
     const findAllJukeboxResult = await request(app.getHttpServer())
-      .get('/jukebox/jukeboxes/?clubId=0')
+      .get('/jukebox/jukeboxes/?club_id=0')
       .set('Authorization', 'Bearer MEMBER_TOKEN')
     expect(findAllJukeboxResult.status).toBe(200)
 
@@ -152,7 +152,7 @@ describe('AppController (e2e)', () => {
       },
       query: {
         role: 'member',
-        jukeboxId: jukebox.id,
+        club_id: 1,
       },
     })
     expect(memberSocket.connected).toBe(true)
@@ -163,7 +163,7 @@ describe('AppController (e2e)', () => {
       },
       query: {
         role: 'admin',
-        jukeboxId: jukebox.id,
+        club_id: 1,
       },
     })
     expect(adminSocket.connected).toBe(true)
@@ -174,7 +174,7 @@ describe('AppController (e2e)', () => {
       },
       query: {
         role: 'admin',
-        jukeboxId: jukebox.id,
+        club_id: 1,
       },
     })
     expect(failureSocket1.connected).toBe(false)
@@ -185,7 +185,7 @@ describe('AppController (e2e)', () => {
       },
       query: {
         role: '',
-        jukeboxId: jukebox.id,
+        club_id: 1,
       },
     })
     expect(failureSocket2.connected).toBe(false)
@@ -196,7 +196,7 @@ describe('AppController (e2e)', () => {
       },
       query: {
         role: 'admin',
-        jukeboxId: jukebox.id,
+        club_id: 1,
       },
     })
     expect(wrongPermission.connected).toBe(false)

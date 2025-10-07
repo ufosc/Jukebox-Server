@@ -214,7 +214,23 @@ export class JukeSessionService {
       juke_session: { id: jukeSessionId },
       ...payload,
     })
-    const createdMembership = await this.membershipRepo.save(preMembership)
+
+    var createdMembership: JukeSessionMembership
+    try {
+      createdMembership = await this.membershipRepo.save(preMembership)
+    } catch (err) {
+      const dbError = err.driverError
+      // Checks Postgres Unique Constraint Error Code
+      if (err instanceof QueryFailedError && dbError?.code === '23505') {
+        if (dbError.constraint === 'unique_user_per_session') {
+          throw new InternalServerErrorException(
+            'Failed to generate membership, an user_id already exists on this session',
+          )
+        }
+      }
+      throw err
+    }
+
     const membership = await this.getMembership(createdMembership.id)
     return membership
   }

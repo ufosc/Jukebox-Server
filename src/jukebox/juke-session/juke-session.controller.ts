@@ -95,7 +95,6 @@ export class JukeSessionController {
   @Roles('member')
   @UseGuards(RolesGuard)
   @Get(':id/membership/')
-  @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: 'Get Juke Session Membership for Current User' })
   getJukeSessionMembership(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
@@ -108,7 +107,6 @@ export class JukeSessionController {
   @Roles('admin')
   @UseGuards(RolesGuard)
   @Post(':id/members/')
-  @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: '[ADMIN] Add juke session member' })
   addJukeSessionMember(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
@@ -121,7 +119,6 @@ export class JukeSessionController {
   @Roles('member')
   @UseGuards(RolesGuard)
   @Post(':id/members/join/')
-  @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: '[MEMBER] Add Juke Session Member' })
   joinJukeSession(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
@@ -134,7 +131,6 @@ export class JukeSessionController {
   @Roles('member')
   @UseGuards(RolesGuard)
   @Post(':id/members/code')
-  @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: '[MEMBER] Add juke session member by join code' })
   addJukeSessionMemberByJoinCode(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
@@ -147,7 +143,6 @@ export class JukeSessionController {
   @Roles('member')
   @UseGuards(RolesGuard)
   @Get(':id/members')
-  @Serialize(JukeSessionMembershipDto)
   @ApiOperation({
     summary: '[MEMBER] (PAGINATED: 0-indexed) Get members/memberships of a juke session',
   })
@@ -163,7 +158,6 @@ export class JukeSessionController {
   @Roles('member')
   @UseGuards(RolesGuard)
   @Get(':id/members/:membership_id')
-  @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: '[MEMBER] Get member/membership for a juke session' })
   getJukeSessionMember(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
@@ -175,7 +169,6 @@ export class JukeSessionController {
   @Roles('admin')
   @UseGuards(RolesGuard)
   @Delete(':id/members/:membership_id')
-  @Serialize(JukeSessionMembershipDto)
   @ApiOperation({ summary: '[ADMIN] Delete member/membership for a juke session' })
   deleteJukeSessionMembership(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,

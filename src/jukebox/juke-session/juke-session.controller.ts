@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
@@ -10,7 +11,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 import { AuthInterceptor } from 'src/auth/auth.interceptor'
 import { NumberPipe } from 'src/pipes/int-pipe.pipe'
 import { UserDto } from 'src/shared'
@@ -146,6 +147,8 @@ export class JukeSessionController {
   @ApiOperation({
     summary: '[MEMBER] (PAGINATED: 0-indexed) Get members/memberships of a juke session',
   })
+  @ApiQuery({ name: 'page', required: false, type: Number, schema: { default: 0, minimum: 0 } })
+  @ApiQuery({ name: 'rows', required: false, type: Number, schema: { default: 7, minimum: 1 } })
   getJukeSessionMembers(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @Param('id', new NumberPipe('id')) id: number,

@@ -277,4 +277,20 @@ describe('JukeSessionController', () => {
 
     expect(membership.user_id).toEqual(testUserId)
   })
+
+  it('should get queued tracks for a member', async () => {
+    const session = await createTestJukeSession()
+    const testUserId = 4
+    const membership = await controller.addJukeSessionMemberByJoinCode(
+      jukebox.id,
+      session.join_code,
+      {
+        user_id: testUserId,
+      },
+    )
+    await queueService.queueTrack(session.id, { queued_by: { id: membership.id }, track })
+
+    const membershipWithQueued = await controller.getJukeSessionMember(jukebox.id, membership.id)
+    expect(membershipWithQueued.queued_tracks[0]).toEqual(track.id)
+  })
 })

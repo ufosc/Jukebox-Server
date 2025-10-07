@@ -6,6 +6,7 @@ import { SpotifyService } from 'src/spotify/spotify.service'
 import { Repository } from 'typeorm'
 import { CreateTrackDto, TrackDto } from './dto/track.dto'
 import { Track } from './entities/track.entity'
+import { JukeboxSearchDto } from 'src/jukebox/dto/jukebox-search.dto'
 
 @Injectable()
 export class TrackService {
@@ -34,6 +35,12 @@ export class TrackService {
     const preTrack = this.trackRepo.create({ ...payload, spotify_uri: payload.spotify_uri ?? uri })
     const track = await this.trackRepo.save(preTrack)
     return plainToInstance(TrackDto, track)
+  }
+
+  async searchTracks(jukeboxId: number, searchQuery: JukeboxSearchDto): Promise<TrackDto> {
+    const link = await this.accountLinkService.getActiveAccount(jukeboxId)
+    const search = await this.spotifyService.searchTracks(link.spotify_account, searchQuery)
+    return plainToInstance(TrackDto, search)
   }
 
   // findAll() {

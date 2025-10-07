@@ -3,6 +3,7 @@ import { EntityDtoBase } from 'src/config/dtos'
 import { JukeSessionMembership } from '../entities/membership.entity'
 import { JukeSessionDto } from './juke-session.dto'
 import { IsNotEmpty, IsNumber } from 'class-validator'
+import { QueuedTrack } from 'src/jukebox/queue/entities/queued-track.entity'
 
 export class JukeSessionMembershipInlineDto {
   @Expose()
@@ -21,6 +22,9 @@ export class JukeSessionMembershipDto extends EntityDtoBase<JukeSessionMembershi
   user_id: number
 
   @Expose()
+  @Transform(({ obj }) =>
+    obj.queued_tracks ? obj.queued_tracks.map((track: QueuedTrack) => track.id) : [],
+  )
   queued_tracks: number[]
 }
 

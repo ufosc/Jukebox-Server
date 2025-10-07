@@ -275,6 +275,7 @@ export class JukeSessionService {
   ): Promise<JukeSessionMembershipDto> {
     const membership = await this.membershipRepo.findOne({
       where: { user_id: userId, juke_session: { id: jukeSessionId } },
+      relations: { juke_session: true, queued_tracks: true },
     })
     if (!membership) {
       throw new NotFoundException(`User ${userId} is not a member of juke session ${jukeSessionId}`)

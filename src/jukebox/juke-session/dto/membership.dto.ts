@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer'
+import { Expose, Transform } from 'class-transformer'
 import { EntityDtoBase } from 'src/config/dtos'
 import { JukeSessionMembership } from '../entities/membership.entity'
 import { JukeSessionDto } from './juke-session.dto'
@@ -14,6 +14,7 @@ export class JukeSessionMembershipInlineDto {
 
 export class JukeSessionMembershipDto extends EntityDtoBase<JukeSessionMembership> {
   @Expose()
+  @Transform(({ obj }) => obj.juke_session.id)
   juke_session: number
 
   @Expose()

@@ -33,6 +33,18 @@ export class JukeSessionService {
   // ============================================
 
   async create(jukeboxId: number, payload: CreateJukeSessionDto): Promise<JukeSessionDto> {
+    // Deactivate session if it should be expired
+    try {
+      const activeSession = await this.getCurrentSession(jukeboxId)
+      if (activeSession.end_at <= new Date()) {
+        this.update(activeSession.id, { is_active: false })
+      }
+    } catch (err) {
+      if (!(err instanceof NotFoundException)) {
+        throw err
+      }
+    }
+
     const preSession = this.jukeSessionRepo.create({
       jukebox: { id: jukeboxId },
       start_at: payload.start_at ?? new Date(),
@@ -202,8 +214,9 @@ export class JukeSessionService {
       juke_session: { id: jukeSessionId },
       ...payload,
     })
-    const membership = await this.membershipRepo.save(preMembership)
-    return plainToInstance(JukeSessionMembershipDto, membership)
+    const createdMembership = await this.membershipRepo.save(preMembership)
+    const membership = await this.getMembership(createdMembership.id)
+    return membership
   }
 
   async getMemberships(
@@ -216,6 +229,7 @@ export class JukeSessionService {
       skip: membershipsToSkip,
       take: rows,
       where: { juke_session: { id: jukeSessionId } },
+      relations: { juke_session: true },
       order: { user_id: 'ASC' },
     })
 
@@ -230,6 +244,7 @@ export class JukeSessionService {
   async getMembership(membershipId: number): Promise<JukeSessionMembershipDto> {
     const membership = await this.membershipRepo.findOne({
       where: { id: membershipId },
+      relations: { juke_session: true, queued_tracks: true },
     })
     if (!membership) {
       throw new NotFoundException(`Juke Session Membership with id ${membershipId} not found`)

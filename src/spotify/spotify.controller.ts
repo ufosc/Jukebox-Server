@@ -26,7 +26,6 @@ export class SpotifyController {
   login(@CurrentUser() user: UserDto, @Query() query: { redirectUri: string; jukeboxId: number }) {
     const { redirectUri, jukeboxId } = query
     const url = this.spotifyAuthService.getSpotifyRedirectUri(user.id, redirectUri, jukeboxId)
-
     return { url }
   }
 

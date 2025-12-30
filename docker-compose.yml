@@ -27,7 +27,9 @@ services:
     volumes:
       - ./src:/app/src
       - ./package.json:/app/package.json
+      - ./jest.setup.ts:/app/jest.setup.ts
     command: npm run start:dev
+    user: root
 
   postgres:
     image: postgres:13-alpine

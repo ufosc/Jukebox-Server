@@ -1,13 +1,14 @@
+import { NotFoundException } from '@nestjs/common'
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { DatabaseModule } from 'src/config/database.module'
+import { NetworkService } from 'src/network/network.service'
+import { mockUser } from 'src/utils/mock'
+import { DataSource } from 'typeorm'
 import { Jukebox, TimeFormat } from '../entities/jukebox.entity'
 import { JukeboxController } from '../jukebox.controller'
 import { JukeboxService } from '../jukebox.service'
-import { NotFoundException } from '@nestjs/common'
-import { NetworkService } from 'src/network/network.service'
-import { DataSource } from 'typeorm'
 
 describe('JukeboxController', () => {
   let module: TestingModule
@@ -21,7 +22,6 @@ describe('JukeboxController', () => {
       controllers: [JukeboxController],
       providers: [
         JukeboxService,
-        NetworkService,
         {
           provide: NetworkService,
           useValue: {
@@ -81,7 +81,7 @@ describe('JukeboxController', () => {
 
   // TODO: ADD TESTING OF AUTO CREATION ON CLUB W/O JUKEBOX
   it('should find all jukeboxes with a clubId and create if none exist for admin', async () => {
-    const adminResult = await controller.findAll(adminClubId)
+    const adminResult = await controller.findAll(adminClubId, mockUser)
     expect(adminResult.length).toBeGreaterThanOrEqual(1)
     expect(adminResult[0].club_id).toEqual(adminClubId)
 
@@ -92,12 +92,12 @@ describe('JukeboxController', () => {
     const name2 = 'FindAll2'
     const jukebox2 = await controller.create({ name: name2, club_id: clubId1 })
 
-    const result1 = await controller.findAll(clubId1)
+    const result1 = await controller.findAll(clubId1, mockUser)
     expect(result1.length).toBeGreaterThanOrEqual(2)
     expect(result1.some((j) => j.id === jukebox1.id)).toBeTruthy()
     expect(result1.some((j) => j.id === jukebox2.id)).toBeTruthy()
 
-    const result2 = await controller.findAll(123123)
+    const result2 = await controller.findAll(123123, mockUser)
     expect(result2.length).toEqual(0)
   })
 

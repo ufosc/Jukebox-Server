@@ -2,11 +2,10 @@ import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { DatabaseModule } from 'src/config/database.module'
+import { NetworkService } from 'src/network/network.service'
+import { Track } from 'src/track/entities/track.entity'
 import { Jukebox } from '../entities/jukebox.entity'
 import { JukeboxService } from '../jukebox.service'
-import { Track } from 'src/track/entities/track.entity'
-import { NetworkService } from 'src/network/network.service'
-import { AxiosProvider } from 'src/utils/mock'
 
 describe('JukeboxService', () => {
   let service: JukeboxService
@@ -14,7 +13,13 @@ describe('JukeboxService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [DatabaseModule, TypeOrmModule.forFeature([Jukebox, Track])],
-      providers: [AxiosProvider, JukeboxService, NetworkService],
+      providers: [
+        JukeboxService,
+        {
+          provide: NetworkService,
+          useValue: {},
+        },
+      ],
     }).compile()
 
     service = module.get<JukeboxService>(JukeboxService)

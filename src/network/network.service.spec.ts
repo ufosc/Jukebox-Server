@@ -1,6 +1,6 @@
+import { HttpService } from '@nestjs/axios'
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
-import { AxiosProvider } from 'src/utils/mock/mock-axios-provider'
 import { NetworkService } from './network.service'
 
 describe('NetworkService', () => {
@@ -8,7 +8,7 @@ describe('NetworkService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [NetworkService, AxiosProvider],
+      providers: [NetworkService, { provide: HttpService, useValue: {} }],
     }).compile()
 
     service = module.get<NetworkService>(NetworkService)

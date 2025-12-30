@@ -37,7 +37,7 @@
     "@nestjs/websockets": "^11.1.6",
     "@redocly/cli": "^2.0.8",
     "@spotify/web-api-ts-sdk": "^1.2.0",
-    "axios": "^1.11.0",
+    "axios": "^1.13.2",
     "cache-manager": "^7.2.0",
     "cache-manager-redis-store": "^3.0.1",
     "class-transformer": "^0.5.1",
@@ -49,6 +49,7 @@
     "socket.io": "^4.8.1",
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.26",
+    "typeorm-extension": "^3.7.1",
     "yaml": "^2.8.1"
   },
   "devDependencies": {
@@ -112,6 +113,9 @@
     ],
     "testPathIgnorePatterns": [
       "_deprecated"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.ts"
     ]
   },
   "workspaces": [

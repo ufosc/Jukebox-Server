@@ -20,11 +20,12 @@ export class JukeboxService {
     return plainToInstance(JukeboxDto, jukebox)
   }
 
-  async findAll(clubId: number): Promise<JukeboxDto[]> {
+  async findAll(clubId: number, authToken: string): Promise<JukeboxDto[]> {
     let result = await this.jukeboxRepo.find({ where: { club_id: clubId } })
 
     if (result.length === 0) {
       const clubs = (await this.networkService.sendRequest(
+        authToken,
         `${CLUBS_URL}/api/v1/club/clubs/?is_admin=true`,
         'GET',
       )) as {

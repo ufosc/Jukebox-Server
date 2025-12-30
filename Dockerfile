@@ -6,15 +6,20 @@ COPY ./package*.json ./
 
 USER root
 
-RUN npm install -g npm && \
+# RUN --mount=type=cache,target=/app/node_modules  \
+    # --mount=type=cache,target=/usr/local/lib/node_modules  \
+RUN \
+    npm install -g npm && \
     npm install -g typescript && \
-    npm install
+    # npm install -g @nestjs/cli && \
+    npm ci
 
 COPY ./tsconfig*.json ./
 COPY ./nest-cli.json ./
 COPY ./src ./src
 # COPY ./packages ./packages
 COPY ./test ./test
+COPY ./jest.setup.ts ./
 
 RUN npm run build
 

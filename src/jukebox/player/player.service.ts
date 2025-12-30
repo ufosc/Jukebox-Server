@@ -146,8 +146,8 @@ export class PlayerService {
    * because of Spotify auto play, or because a user manually set the
    * current track in spotify despite the queue.
    */
-  async setCurrentSpotifyTrack(jukeboxId: number, track: TrackDto): Promise<PlayerStateDto> {
-    return await this.updatePlayerState(jukeboxId, { spotify_track: track })
+  async setCurrentSpotifyTrack(jukeboxId: number, track: TrackDto | null): Promise<PlayerStateDto> {
+    return await this.updatePlayerState(jukeboxId, { spotify_track: track ?? undefined })
   }
 
   /**

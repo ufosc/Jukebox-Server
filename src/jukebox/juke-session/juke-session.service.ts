@@ -32,7 +32,11 @@ export class JukeSessionService {
   // MARK: CRUD Ops
   // ============================================
 
-  async create(jukeboxId: number, payload: CreateJukeSessionDto): Promise<JukeSessionDto> {
+  async create(
+    jukeboxId: number,
+    payload: CreateJukeSessionDto,
+    token: string,
+  ): Promise<JukeSessionDto> {
     // Deactivate session if it should be expired
     try {
       const activeSession = await this.getCurrentSession(jukeboxId)
@@ -101,6 +105,7 @@ export class JukeSessionService {
           jukeboxId,
           createdSession.join_code,
           createdSession.jukebox.club_id,
+          token,
         ),
       },
     )
@@ -113,8 +118,10 @@ export class JukeSessionService {
     jukeboxId: number,
     joinCode: string,
     clubId: number,
+    token: string,
   ): Promise<string> {
     const link = await this.networkService.sendRequest(
+      token,
       `${CLUBS_URL}/api/v1/analytics/links/`,
       'POST',
       {
@@ -131,6 +138,7 @@ export class JukeSessionService {
     }
 
     const qrCode = await this.networkService.sendRequest(
+      token,
       `${CLUBS_URL}/api/v1/analytics/qrcode/`,
       'POST',
       {
@@ -326,5 +334,17 @@ export class JukeSessionService {
     }
 
     return plainToInstance(JukeSessionDto, session)
+  }
+
+  /**
+   * Get current JukeSession or return null.
+   */
+  async maybeGetCurrentSession(jukeboxId: number): Promise<JukeSessionDto | null> {
+    try {
+      const session = await this.getCurrentSession(jukeboxId)
+      return session
+    } catch (e) {
+      return null
+    }
   }
 }

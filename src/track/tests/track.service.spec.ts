@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios'
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -12,12 +13,12 @@ import { NetworkService } from 'src/network/network.service'
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import { SpotifyService } from 'src/spotify/spotify.service'
-import { MockAxiosProvider, mockSpotifyAccount } from 'src/utils/mock'
+import { mockSpotifyAccount } from 'src/utils/mock'
 import { mockCreateTrack } from 'src/utils/mock/mock-create-track'
 import { mockTrackDetails } from 'src/utils/mock/mock-track-details'
+import { DataSource } from 'typeorm'
 import { Track } from '../entities/track.entity'
 import { TrackService } from '../track.service'
-import { DataSource } from 'typeorm'
 
 describe('TrackService', () => {
   let module: TestingModule
@@ -37,7 +38,6 @@ describe('TrackService', () => {
         TypeOrmModule.forFeature([Track, Jukebox, AccountLink, SpotifyAccount]),
       ],
       providers: [
-        MockAxiosProvider,
         TrackService,
         JukeboxService,
         NetworkService,
@@ -47,6 +47,10 @@ describe('TrackService', () => {
         {
           provide: SpotifyService,
           useValue: { getTrack: jest.fn().mockResolvedValue(mockTrackDetails) },
+        },
+        {
+          provide: HttpService,
+          useValue: {},
         },
       ],
     }).compile()

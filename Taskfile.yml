@@ -9,7 +9,7 @@ tasks:
     desc: "Build docker image if necessary"
     sources:
       - ./Dockerfile
-      - ./package*.json
+      - ./package-lock.json
     run: when_changed
     cmds:
       - docker-compose build

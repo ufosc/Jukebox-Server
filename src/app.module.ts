@@ -1,3 +1,4 @@
+import { HttpModule } from '@nestjs/axios'
 import { CacheModule } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
@@ -10,26 +11,22 @@ import { JukeboxModule } from './jukebox/jukebox.module'
 import { NetworkModule } from './network/network.module'
 import { SpotifyModule } from './spotify/spotify.module'
 import { TrackModule } from './track/track.module'
-import { AxiosProvider } from './utils/mock/mock-axios-provider'
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     CacheModule.registerAsync(CacheOptions),
+    HttpModule.register({
+      timeout: 5000,
+      maxRedirects: 5,
+    }),
     DatabaseModule,
     NetworkModule,
     SpotifyModule,
     JukeboxModule,
     TrackModule,
   ],
-  // controllers: [AppController],
-  providers: [
-    AppService,
-    AppGateway,
-    AxiosProvider,
-    // NetworkService,
-    // { provide: APP_INTERCEPTOR, useClass: AuthInterceptor },
-  ],
+  providers: [AppService, AppGateway],
   controllers: [AppController],
 })
 export class AppModule {}

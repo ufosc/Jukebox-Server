@@ -7,6 +7,7 @@ enum UpdateActionType {
   PLAYED = 'played',
   PAUSED = 'paused',
   CHANGED_TRACKS = 'changed_tracks',
+  PROGRESS = 'progress',
   OTHER = 'other',
 }
 

@@ -1,9 +1,9 @@
+import { HttpService } from '@nestjs/axios'
 import { Injectable, Logger } from '@nestjs/common'
-import { Axios } from 'axios'
+import { MaxInt } from '@spotify/web-api-ts-sdk'
 import { JukeboxSearchDto } from 'src/jukebox/dto/jukebox-search.dto'
 import { SpotifyTokensDto } from './dto/spotify-tokens.dto'
 import { SpotifyBaseService } from './spotify-base.service'
-import { MaxInt } from '@spotify/web-api-ts-sdk'
 
 export interface ISpotifyService {
   setPlayerDevice(spotifyAuth: SpotifyTokensDto, deviceId: string): Promise<void>
@@ -17,7 +17,7 @@ export interface ISpotifyService {
 
 @Injectable()
 export class SpotifyService extends SpotifyBaseService implements ISpotifyService {
-  constructor(protected axios: Axios) {
+  constructor(protected httpService: HttpService) {
     super()
   }
 
@@ -36,7 +36,7 @@ export class SpotifyService extends SpotifyBaseService implements ISpotifyServic
   async queueTrack(spotifyAuth: SpotifyTokensDto, track_uri: string) {
     // const sdk = this.getSdk(spotifyAuth)
     // await sdk.player.addItemToPlaybackQueue(track.uri)
-    await this.axios
+    await this.httpService.axiosRef
       .post(
         `https://api.spotify.com/v1/me/player/queue?uri=${track_uri}`,
         {},

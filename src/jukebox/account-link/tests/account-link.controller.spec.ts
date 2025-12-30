@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios'
 import { NotFoundException } from '@nestjs/common'
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
@@ -10,12 +11,11 @@ import { NetworkService } from 'src/network/network.service'
 import type { CreateSpotifyAccountDto } from 'src/spotify/dto'
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
 import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
-import { MockAxiosProvider, MockCacheProvider, mockSpotifyAccount } from 'src/utils/mock'
+import { MockCacheProvider, mockSpotifyAccount } from 'src/utils/mock'
 import { AccountLinkController } from '../account-link.controller'
 import { AccountLinkService } from '../account-link.service'
 import type { CreateAccountLinkDto } from '../dto'
 import { AccountLink } from '../entities/account-link.entity'
-import { DataSource } from 'typeorm'
 
 describe('AccountLinkController', () => {
   let module: TestingModule
@@ -49,12 +49,18 @@ describe('AccountLinkController', () => {
       imports: [DatabaseModule, TypeOrmModule.forFeature([AccountLink, SpotifyAccount, Jukebox])],
       controllers: [AccountLinkController],
       providers: [
-        MockAxiosProvider,
         MockCacheProvider,
         AccountLinkService,
-        SpotifyAuthService,
         JukeboxService,
-        NetworkService,
+        SpotifyAuthService,
+        {
+          provide: NetworkService,
+          useValue: {},
+        },
+        {
+          provide: HttpService,
+          useValue: {},
+        },
       ],
     }).compile()
 
@@ -74,11 +80,6 @@ describe('AccountLinkController', () => {
     jukeboxId2 = jukebox2.id
     jukeboxId3 = jukebox3.id
     jukeboxId4 = jukebox4.id
-  })
-
-  afterEach(async () => {
-    const datasource = module.get<DataSource>(DataSource)
-    await datasource.dropDatabase()
   })
 
   it('should be defined', () => {

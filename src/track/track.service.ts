@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { plainToInstance } from 'class-transformer'
 import { AccountLinkService } from 'src/jukebox/account-link/account-link.service'
+import { JukeboxSearchDto } from 'src/jukebox/dto/jukebox-search.dto'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { Repository } from 'typeorm'
 import { CreateTrackDto, TrackDto } from './dto/track.dto'
 import { Track } from './entities/track.entity'
-import { JukeboxSearchDto } from 'src/jukebox/dto/jukebox-search.dto'
 
 @Injectable()
 export class TrackService {
@@ -69,6 +69,7 @@ export class TrackService {
 
     let track: TrackDto | undefined
     if (!result) {
+      console.log(`No result found for ${spotifyId}, creating track...`)
       if (!jukeboxId) {
         throw new Error(
           'Could not create a track because local track does not yet exist and spotify details could not be found',
@@ -80,6 +81,7 @@ export class TrackService {
         accountLink.spotify_account,
         spotifyId,
       )
+      console.log('track details:', trackDetails)
       const releaseYear = new Date(trackDetails.album.release_date).getFullYear()
       track = await this.create({
         release_year: releaseYear,
@@ -93,6 +95,7 @@ export class TrackService {
         preview_url: trackDetails.preview_url,
       })
     }
+    console.log('track:', track)
 
     return plainToInstance(TrackDto, result ?? track)
   }

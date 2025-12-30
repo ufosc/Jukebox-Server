@@ -8,6 +8,7 @@
 !tsconfig.json
 !tsconfig.build.json
 !jest.config.ts
+!jest.setup.ts
 !common/
 !websocket/
 !packages/

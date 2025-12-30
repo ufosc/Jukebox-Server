@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  DefaultValuePipe,
   Delete,
   Get,
   Param,
@@ -15,12 +14,11 @@ import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 import { AuthInterceptor } from 'src/auth/auth.interceptor'
 import { NumberPipe } from 'src/pipes/int-pipe.pipe'
 import { UserDto } from 'src/shared'
-import { Serialize } from 'src/utils'
 import { CurrentUser } from 'src/utils/decorators'
 import { Roles } from 'src/utils/decorators/roles.decorator'
 import { RolesGuard } from 'src/utils/guards/roles.guard'
 import { CreateJukeSessionDto, JukeSessionDto, UpdateJukeSessionDto } from './dto/juke-session.dto'
-import { CreateJukeSessionMembershipDto, JukeSessionMembershipDto } from './dto/membership.dto'
+import { CreateJukeSessionMembershipDto } from './dto/membership.dto'
 import { JukeSessionService } from './juke-session.service'
 
 @ApiTags('JukeSession')
@@ -37,8 +35,9 @@ export class JukeSessionController {
   create(
     @Param('jukebox_id', new NumberPipe('jukebox_id')) jukeboxId: number,
     @Body() createJukeSessionDto: CreateJukeSessionDto,
+    @CurrentUser() user: UserDto,
   ) {
-    return this.jukeSessionService.create(jukeboxId, createJukeSessionDto)
+    return this.jukeSessionService.create(jukeboxId, createJukeSessionDto, user.token)
   }
 
   @Roles('admin')

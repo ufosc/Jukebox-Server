@@ -1,7 +1,8 @@
+import { HttpService } from '@nestjs/axios'
 import { Injectable } from '@nestjs/common'
-import { Axios, AxiosRequestConfig } from 'axios'
+import type { AxiosRequestConfig } from 'axios'
 import { CLUBS_URL, NODE_ENV } from 'src/config'
-import { UserDto } from 'src/shared'
+import type { UserDto } from 'src/shared'
 import { sleep } from 'src/utils'
 
 @Injectable()
@@ -12,9 +13,10 @@ export class NetworkService {
   }
   private token = ''
 
-  constructor(protected axios: Axios) {}
+  constructor(protected httpService: HttpService) {}
 
   public sendRequest = async (
+    token: string,
     url: string,
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE',
     body?: AxiosRequestConfig['data'],
@@ -24,11 +26,11 @@ export class NetworkService {
       await sleep(1000)
     }
 
-    const res = await this.axios.request({
+    const res = await this.httpService.axiosRef.request({
       method: method || 'GET',
       url,
       headers: {
-        Authorization: `Token ${this.token}`,
+        Authorization: `Token ${token}`,
         'Content-Type': 'application/json',
 
         ...config?.headers,
@@ -44,16 +46,12 @@ export class NetworkService {
     }
   }
 
-  setToken(token: string) {
-    this.token = token
-  }
-
   isToken(): boolean {
     return !!this.isToken
   }
 
-  async fetchUser(): Promise<UserDto> {
-    const res = await this.sendRequest(this.routes.getUser)
+  async fetchUser(token: string): Promise<UserDto> {
+    const res = await this.sendRequest(token, this.routes.getUser)
 
     if (res.status > 299) {
       throw new Error('Error fetching data from network')
@@ -63,6 +61,7 @@ export class NetworkService {
       id: +res.data.id,
       email: res.data.email ?? '',
       username: res.data.username,
+      token,
     }
   }
 }

@@ -21,7 +21,7 @@ export class TokenGuard implements CanActivate {
 
     if (!token) return false
 
-    networkService.setToken(token)
+    // networkService.setToken(token)
     return true
   }
 }

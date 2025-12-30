@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios'
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -7,7 +8,6 @@ import { AccountLink } from 'src/jukebox/account-link/entities/account-link.enti
 import { Jukebox } from 'src/jukebox/entities/jukebox.entity'
 import { JukeboxService } from 'src/jukebox/jukebox.service'
 import { NetworkModule } from 'src/network/network.module'
-import { MockAxiosProvider } from 'src/utils/mock'
 import { SpotifyAccount } from '../entities/spotify-account.entity'
 import { SpotifyAuthService } from '../spotify-auth.service'
 import { SpotifyController } from '../spotify.controller'
@@ -28,8 +28,8 @@ describe('SpotifyController', () => {
         SpotifyAuthService,
         SpotifyService,
         AccountLinkService,
-        MockAxiosProvider,
         JukeboxService,
+        { provide: HttpService, useValue: {} },
       ],
     }).compile()
 

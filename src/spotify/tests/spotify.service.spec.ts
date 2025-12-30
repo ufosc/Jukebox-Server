@@ -1,8 +1,9 @@
+import { HttpService } from '@nestjs/axios'
 import { BadRequestException } from '@nestjs/common'
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm'
-import { Axios } from 'axios'
+import type { Axios } from 'axios'
 import { DatabaseModule } from 'src/config/database.module'
 import { DataSource, type Repository } from 'typeorm'
 import { SpotifyAccount } from '../entities/spotify-account.entity'
@@ -23,12 +24,7 @@ describe('SpotifyAuthService', () => {
 
     module = await Test.createTestingModule({
       imports: [DatabaseModule, TypeOrmModule.forFeature([SpotifyAccount])],
-      providers: [
-        SpotifyAuthService,
-
-        // { provide: getRepositoryToken(SpotifyAccount), useClass: Repository },
-        { provide: Axios, useValue: axios },
-      ],
+      providers: [SpotifyAuthService, { provide: HttpService, useValue: { axiosRef: axios } }],
     }).compile()
 
     service = module.get<SpotifyAuthService>(SpotifyAuthService)

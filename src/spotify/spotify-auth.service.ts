@@ -13,12 +13,13 @@ import { CreateSpotifyAccountDto, UpdateSpotifyAccountDto } from './dto/spotify-
 import { SpotifyTokensDto } from './dto/spotify-tokens.dto'
 import { isSpotifyLink, SpotifyAccount } from './entities/spotify-account.entity'
 import { SpotifyBaseService } from './spotify-base.service'
+import { HttpService } from '@nestjs/axios'
 
 @Injectable()
 export class SpotifyAuthService extends SpotifyBaseService {
   constructor(
     @InjectRepository(SpotifyAccount) private repo: Repository<SpotifyAccount>,
-    protected axios: Axios,
+    protected httpService: HttpService,
   ) {
     super()
   }
@@ -31,7 +32,7 @@ export class SpotifyAuthService extends SpotifyBaseService {
     }
     const authBuffer = Buffer.from(SPOTIFY_CLIENT_ID + ':' + SPOTIFY_CLIENT_SECRET)
 
-    const res = await this.axios
+    const res = await this.httpService.axiosRef
       .post('https://accounts.spotify.com/api/token', body, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -116,7 +117,7 @@ export class SpotifyAuthService extends SpotifyBaseService {
     })
     const authBuffer = Buffer.from(SPOTIFY_CLIENT_ID + ':' + SPOTIFY_CLIENT_SECRET)
 
-    const res = await this.axios
+    const res = await this.httpService.axiosRef
       .post('https://accounts.spotify.com/api/token', body, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

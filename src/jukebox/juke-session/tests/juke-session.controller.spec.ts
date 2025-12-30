@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios'
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
@@ -14,18 +15,18 @@ import { QueuedTrack } from 'src/jukebox/queue/entities/queued-track.entity'
 import { QueueService } from 'src/jukebox/queue/queue.service'
 import { NetworkService } from 'src/network/network.service'
 import { SpotifyAccount } from 'src/spotify/entities/spotify-account.entity'
+import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import type { TrackDto } from 'src/track/dto/track.dto'
 import { Track } from 'src/track/entities/track.entity'
 import { TrackService } from 'src/track/track.service'
-import { MockAxiosProvider, MockCacheProvider } from 'src/utils/mock'
-import type { CreateJukeSessionDto, JukeSessionDto } from '../dto/juke-session.dto'
+import { MockCacheProvider, mockUser } from 'src/utils/mock'
+import { DataSource } from 'typeorm'
+import type { CreateJukeSessionDto } from '../dto/juke-session.dto'
 import { JukeSession } from '../entities/juke-session.entity'
 import { JukeSessionMembership } from '../entities/membership.entity'
 import { JukeSessionController } from '../juke-session.controller'
 import { JukeSessionService } from '../juke-session.service'
-import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
-import { DataSource } from 'typeorm'
 
 const getEndAtDate = (hours = 2) => new Date(new Date().getTime() + 1000 * 60 * 60 * hours)
 
@@ -62,10 +63,14 @@ describe('JukeSessionController', () => {
       }
     }
 
-    const session = await jukeSessionService.create(jukeboxId, {
-      end_at: getEndAtDate(),
-      ...(payload ?? {}),
-    })
+    const session = await jukeSessionService.create(
+      jukeboxId,
+      {
+        end_at: getEndAtDate(),
+        ...(payload ?? {}),
+      },
+      mockUser.token,
+    )
     return session
   }
 
@@ -86,13 +91,19 @@ describe('JukeSessionController', () => {
       ],
       controllers: [JukeSessionController],
       providers: [
-        MockAxiosProvider,
         MockCacheProvider,
         JukeSessionService,
         PlayerService,
         SpotifyService,
         QueueService,
-        NetworkService,
+        {
+          provide: NetworkService,
+          useValue: {},
+        },
+        {
+          provide: HttpService,
+          useValue: { axiosRef: { post: async (...args) => {} } },
+        },
         JukeboxService,
         TrackService,
         AccountLinkService,
@@ -134,15 +145,23 @@ describe('JukeSessionController', () => {
   })
 
   it('should create a juke session', async () => {
-    const result = await controller.create(jukebox.id, {
-      end_at: getEndAtDate(),
-    })
+    const result = await controller.create(
+      jukebox.id,
+      {
+        end_at: getEndAtDate(),
+      },
+      mockUser,
+    )
 
     // Cannot create juke session when one is active
     await expect(
-      controller.create(jukebox.id, {
-        end_at: getEndAtDate(),
-      }),
+      controller.create(
+        jukebox.id,
+        {
+          end_at: getEndAtDate(),
+        },
+        mockUser,
+      ),
     ).rejects.toThrow(InternalServerErrorException)
     await controller.update(result.id, jukebox.id, { is_active: false })
 

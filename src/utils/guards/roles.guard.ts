@@ -33,6 +33,7 @@ export class RolesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest()
     const { body, query, params } = request
     let clubId = body?.club_id ?? query?.club_id ?? params?.club_id ?? null
+    const [_, token] = request.headers.authorization?.split(' ') ?? []
 
     if (clubId === null) {
       const jukeboxId = params?.jukebox_id ?? query?.jukeboxId ?? null
@@ -46,6 +47,7 @@ export class RolesGuard implements CanActivate {
     }
 
     const clubs = (await this.networkService.sendRequest(
+      token,
       `${CLUBS_URL}/api/v1/club/clubs/${role === 'admin' ? '?is_admin=true' : ''}`,
       'GET',
     )) as { status: number; description: string; data: { id: number; name: string }[] }

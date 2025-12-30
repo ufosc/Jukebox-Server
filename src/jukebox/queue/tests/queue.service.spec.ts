@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios'
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -19,13 +20,13 @@ import { SpotifyAuthService } from 'src/spotify/spotify-auth.service'
 import { SpotifyService } from 'src/spotify/spotify.service'
 import { Track } from 'src/track/entities/track.entity'
 import { TrackService } from 'src/track/track.service'
-import { MockAxiosProvider, mockSpotifyAccount } from 'src/utils/mock'
+import { mockSpotifyAccount, mockUser } from 'src/utils/mock'
 import { mockCreateTrack } from 'src/utils/mock/mock-create-track'
 import { mockTrackDetails } from 'src/utils/mock/mock-track-details'
+import { DataSource } from 'typeorm'
 import { QueuedTrack } from '../entities/queued-track.entity'
 import { QueueController } from '../queue.controller'
 import { QueueService } from '../queue.service'
-import { DataSource } from 'typeorm'
 
 describe('QueueService', () => {
   let module: TestingModule
@@ -63,7 +64,7 @@ describe('QueueService', () => {
       ],
       controllers: [QueueController],
       providers: [
-        MockAxiosProvider,
+        { provide: HttpService, useValue: {} },
         QueueService,
         TrackService,
         JukeSessionService,
@@ -89,9 +90,13 @@ describe('QueueService', () => {
     spotifyAuthService = module.get<SpotifyAuthService>(SpotifyAuthService)
 
     jukebox = await jukeboxService.create({ name: 'Test Jukebox', club_id: 1 })
-    jukeSession = await jukeSessionService.create(jukebox.id, {
-      end_at: new Date(new Date().getTime() + 30 * 60 * 1000),
-    })
+    jukeSession = await jukeSessionService.create(
+      jukebox.id,
+      {
+        end_at: new Date(new Date().getTime() + 30 * 60 * 1000),
+      },
+      mockUser.token,
+    )
     sessionId = jukeSession.id
     jukeSessionMembership = await jukeSessionService.createMembership(sessionId, {
       user_id: 1,

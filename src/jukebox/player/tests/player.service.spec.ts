@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios'
 import { CACHE_MANAGER } from '@nestjs/cache-manager'
 import type { TestingModule } from '@nestjs/testing'
 import { Test } from '@nestjs/testing'
@@ -25,11 +26,11 @@ import { SpotifyService } from 'src/spotify/spotify.service'
 import type { TrackDto } from 'src/track/dto/track.dto'
 import { Track } from 'src/track/entities/track.entity'
 import { TrackService } from 'src/track/track.service'
-import { MockAxiosProvider, MockCacheProvider, mockUser } from 'src/utils/mock'
+import { MockCacheProvider, mockUser } from 'src/utils/mock'
+import { DataSource } from 'typeorm'
 import type { PlayerStateDto } from '../dto'
 import { InteractionType, PlayerInteraction } from '../entity/player-interaction.entity'
 import { PlayerService } from '../player.service'
-import { DataSource } from 'typeorm'
 
 describe('PlayerService', () => {
   let service: PlayerService
@@ -78,7 +79,6 @@ describe('PlayerService', () => {
         ]),
       ],
       providers: [
-        MockAxiosProvider,
         MockCacheProvider,
         PlayerService,
         SpotifyService,
@@ -90,6 +90,7 @@ describe('PlayerService', () => {
         AccountLinkService,
         SpotifyService,
         SpotifyAuthService,
+        { provide: HttpService, useValue: {} },
       ],
     }).compile()
 
@@ -102,9 +103,13 @@ describe('PlayerService', () => {
     cache = module.get<Cache>(CACHE_MANAGER)
 
     jukebox = await jukeboxService.create({ club_id: clubId, name: 'Test Jukebox' })
-    jukeSession = await jukeSessionService.create(jukebox.id, {
-      end_at: new Date(new Date().getTime() + 1000 * 60 * 60 * 2),
-    })
+    jukeSession = await jukeSessionService.create(
+      jukebox.id,
+      {
+        end_at: new Date(new Date().getTime() + 1000 * 60 * 60 * 2),
+      },
+      mockUser.token,
+    )
     jukeSessionMembership = await jukeSessionService.createMembership(jukeSession.id, {
       user_id: userId,
     })

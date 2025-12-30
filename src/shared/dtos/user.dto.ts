@@ -9,4 +9,6 @@ export class UserDto {
 
   @Expose()
   username: string
+
+  token: string
 }

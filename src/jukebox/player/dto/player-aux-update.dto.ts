@@ -44,4 +44,6 @@ export class PlayerJoinDto extends OmitType(PlayerAuxUpdateDto, [
   'progress' as const,
   'timestamp' as const,
   'spotify_track' as const,
-]) {}
+]) {
+  jukebox_id: any
+}

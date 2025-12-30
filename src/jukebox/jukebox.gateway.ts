@@ -140,7 +140,6 @@ export class JukeboxGateway implements OnGatewayInit {
 
   @SubscribeMessage('player-join')
   async handlePlayerJoin(@ConnectedSocket() client: Socket, @MessageBody() payload: PlayerJoinDto) {
-    console.log('http in join:', this.httpService)
     if (client['role'] !== 'member' && client['role'] !== 'admin') {
       throw new WsException('You are not authorized')
     }
@@ -184,6 +183,7 @@ export class JukeboxGateway implements OnGatewayInit {
         break
       case 'progress':
         this.playerService.setCurrentProgress(jukebox_id, progress ?? 0)
+        break
       case 'changed_tracks':
         if (spotify_track && !spotify_track?.spotify_id) {
           throw new WsException('Track must have a spotify id')
@@ -191,10 +191,10 @@ export class JukeboxGateway implements OnGatewayInit {
 
         if (!session) {
           if (!spotify_track) {
-            this.playerService.setCurrentSpotifyTrack(jukebox_id, null)
+            // this.playerService.setCurrentSpotifyTrack(jukebox_id, null)
           } else {
             const track = await this.tracksService.getTrack(spotify_track?.spotify_id, jukebox_id)
-            this.playerService.setCurrentSpotifyTrack(jukebox_id, track)
+            await this.playerService.setCurrentSpotifyTrack(jukebox_id, track)
           }
         } else {
           // Check if next track was next in queue, if so pop it
@@ -229,9 +229,7 @@ export class JukeboxGateway implements OnGatewayInit {
     }
 
     const playerState = await this.playerService.getPlayerState(jukebox_id)
-    const result = { ...playerState, spotify_track: { ...spotify_track, duration_ms } }
-    console.log(result)
-    this.server.to(jukebox_id.toString()).emit('player-state-update', result)
+    this.server.to(jukebox_id.toString()).emit('player-state-update', playerState)
   }
 
   private handleConnectionRejection(client: Socket, loggingMessage: string, errorMessage: string) {

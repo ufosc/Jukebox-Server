@@ -20,4 +20,7 @@ export class Track extends EntityBase {
 
   @Column()
   spotify_uri: string
+
+  @Column()
+  duration_ms: number
 }
